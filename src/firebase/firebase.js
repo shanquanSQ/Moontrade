@@ -1,11 +1,7 @@
 import { initializeApp } from "firebase/app";
 
-// getDatabase method from firebase's database.
 import { getDatabase } from "firebase/database";
-
-// After creating a firebase storage for the corresponding project, add this line.
 import { getStorage } from "firebase/storage";
-
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {

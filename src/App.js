@@ -1,24 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import { Routes, Route } from "react-router-dom";
+
+// Import Pages
+import { HomePage } from "./Pages/HomePage";
+import { LogInPage } from "./Pages/LogInPage";
+
+// Import Components
+
+// Import Styling
+import "./App.css";
+import { ChakraProvider } from "@chakra-ui/react";
+
+// Save the Firebase message folder name as a constant to avoid bugs due to misspelling
+const DB_MESSAGES_KEY = "tradingdatabase"; //This corresponds to the Firebase RTDB branch/document
+const STORAGE_KEY = "filestorage/"; // This corresponds to the Firebase Storage branch/document
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <ChakraProvider>
+        <Routes>
+          <Route path="/" element={<LogInPage />} />
+          <Route path="home" element={<HomePage />} />
+        </Routes>
+      </ChakraProvider>
+    </>
   );
 }
 
