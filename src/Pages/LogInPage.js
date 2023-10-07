@@ -29,8 +29,6 @@ export const LogInPage = () => {
 
   const handleLogIn = () => {
     userAuth.signInUser(user);
-
-    navigate("markets");
   };
 
   return (

@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
 
         console.log("user is: ", user);
         console.log("user credentials is: ", userCredential);
-        navigate("home");
+        navigate("markets");
       })
       .catch((error) => {
         const errorCode = error.code;

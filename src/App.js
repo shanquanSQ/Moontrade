@@ -8,9 +8,9 @@ import { useAuth } from "./util/auth.js";
 // Import Pages
 import { Markets } from "./Pages/Markets";
 import { LogInPage } from "./Pages/LogInPage";
-import { TradePage } from "./Pages/TradePage";
 import { PositionPage } from "./Pages/PositionPage";
 import { UserPage } from "./Pages/UserPage";
+import { Trade } from "./Pages/Trade";
 import { PortfolioPage } from "./Pages/PortfolioPage";
 
 // Import Components
@@ -54,13 +54,12 @@ function App() {
         <ChakraProvider>
           <Routes>
             <Route path="/" element={<LogInPage />} />
-            <Route path="home" element={<HomePage />} />
+            <Route path="home" element={<Markets />} />
             <Route path="user" element={<UserPage />} />
 
             <Route path="portfolio" element={<PortfolioPage />} />
 
-            {/* <Route path="trade" element={<TradePage />} />
-          <Route path="position" element={<PositionPage />} /> */}
+            <Route path="position" element={<PositionPage />} />
           </Routes>
         </ChakraProvider>
       </AuthProvider>
