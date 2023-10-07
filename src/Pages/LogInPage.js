@@ -29,35 +29,9 @@ export const LogInPage = () => {
 
   const handleLogIn = () => {
     userAuth.signInUser(user);
+
+    navigate("markets");
   };
-
-  ////////// This function has been moved to auth.js
-  // const signInUser = () => {
-  //   setPersistence(auth, browserSessionPersistence)
-  //     .then(() =>
-  //       signInWithEmailAndPassword(auth, user.email, user.password).then(
-  //         (userCredential) => {
-  //           const user = userCredential.user;
-  //           // console.log(userCredential);
-  //           // console.log(user);
-  //           // pass this user to Global Variable Context
-
-  //           alert("successful log in!");
-  //           navigate("home");
-  //           // handleLogin();
-  //         }
-  //       )
-  //     )
-  //     .catch((error) => {
-  //       const errorCode = error.code;
-  //       const errorMessage = error.message;
-
-  //       alert("Account not Found!");
-
-  //       // console.log("sign in error code is: ", errorCode);
-  //       // console.log("sign in error message is: ", errorMessage);
-  //     });
-  // };
 
   return (
     <>

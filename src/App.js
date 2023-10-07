@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Switch } from "react-router-dom";
 import { useState } from "react";
 
 // Import our custom Auth Provider
@@ -6,7 +6,7 @@ import { AuthProvider } from "./util/auth";
 import { useAuth } from "./util/auth.js";
 
 // Import Pages
-import { HomePage } from "./Pages/HomePage";
+import { Markets } from "./Pages/Markets";
 import { LogInPage } from "./Pages/LogInPage";
 import { TradePage } from "./Pages/TradePage";
 import { PositionPage } from "./Pages/PositionPage";
@@ -64,6 +64,13 @@ function App() {
           </Routes>
         </ChakraProvider>
       </AuthProvider>
+      <ChakraProvider>
+        <Routes>
+          <Route path="/" element={<LogInPage />} />
+          <Route path="markets" element={<Markets />} />
+          <Route path="/trade/:Symbol" element={<Trade />} />
+        </Routes>
+      </ChakraProvider>
     </>
   );
 }
