@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 // Import Pages
 import { HomePage } from "./Pages/HomePage";
 import { LogInPage } from "./Pages/LogInPage";
+import { Trade } from "./Pages/Trade";
 
 // Import Components
 
@@ -21,6 +22,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LogInPage />} />
           <Route path="home" element={<HomePage />} />
+          <Route path="trade" element={<Trade />} />
         </Routes>
       </ChakraProvider>
     </>
