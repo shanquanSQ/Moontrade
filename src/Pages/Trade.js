@@ -9,7 +9,7 @@ import {
 
 import { useNavigate } from "react-router-dom";
 
-export const LogInPage = () => {
+export const Trade = () => {
   const navigate = useNavigate();
 
   const handleLogIn = () => {
