@@ -1,42 +1,76 @@
-import {
-  Box,
-  Center,
-  VStack,
-  Input,
-  InputGroup,
-  InputLeftAddon,
-} from "@chakra-ui/react";
+import { useState } from "react";
+import { createContext } from "react";
+import { useAuth } from "../util/auth.js";
 
-import { useNavigate } from "react-router-dom";
+// Firebase Auth
+// import {
+//   createUserWithEmailAndPassword,
+//   signInWithEmailAndPassword,
+//   setPersistence,
+//   browserSessionPersistence,
+// } from "firebase/auth";
 
 export const LogInPage = () => {
-  const navigate = useNavigate();
+  const [user, setUser] = useState({ user: "", password: "" });
+
+  // this will allow access to the auth functions from our custom auth.js in util
+  // similar to userObject in Sam's video
+  const userAuth = useAuth();
+
+  const handleChange = (ev) => {
+    let name = ev.target.name;
+    let value = ev.target.value;
+
+    setUser((prevState) => {
+      return { ...prevState, [name]: value };
+    });
+    console.log("yay");
+  };
 
   const handleLogIn = () => {
-    // useAuth().login(user);  // Why does this not work?
-    // authUser.login(user);
+    userAuth.signInUser(user);
+
     navigate("markets");
   };
 
   return (
     <>
-      <Center>
-        <VStack>
-          <div>This is the Login Page</div>
+      <div className="flex flex-row justify-center h-[100vh]">
+        <div className="flex flex-col justify-center gap-[1rem] p-[2rem] ">
+          <div className="text-center">MoonTrade</div>
 
-          <InputGroup size="sm">
-            <InputLeftAddon children="Email" />
-            <Input variant="outline" placeholder="Outline" />
-          </InputGroup>
-
-          <InputGroup size="sm">
-            <InputLeftAddon children="Password" />
-            <Input variant="outline" placeholder="Outline" />
-          </InputGroup>
-
-          <input type="button" onClick={handleLogIn} value="Log In" />
-        </VStack>
-      </Center>
+          <div>
+            <label>Email:</label>
+            <input
+              type="text"
+              name="email"
+              onChange={handleChange}
+              value={user.email}
+              autoComplete="off"
+              placeholder="Insert your registered email"
+              className="input input-bordered w-full max-w-xs"
+            />
+          </div>
+          <div>
+            <label>Password:</label>
+            <input
+              type="text"
+              name="password"
+              onChange={handleChange}
+              value={user.password}
+              autoComplete="off"
+              placeholder="Insert your passsword"
+              className="input input-bordered w-full max-w-xs"
+            />
+          </div>
+          <input
+            type="button"
+            onClick={handleLogIn}
+            value="Log In"
+            className="btn btn-accent"
+          />
+        </div>
+      </div>
     </>
   );
 };
