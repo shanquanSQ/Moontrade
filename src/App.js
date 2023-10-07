@@ -3,10 +3,13 @@ import { Routes, Route } from "react-router-dom";
 // Import Pages
 import { HomePage } from "./Pages/HomePage";
 import { LogInPage } from "./Pages/LogInPage";
-import { Trade } from "./Pages/Trade";
-import { Position } from ".Pages/Position";
+import { TradePage } from "./Pages/TradePage";
+import { PositionPage } from "./Pages/PositionPage";
+import { UserPage } from "./Pages/UserPage";
+import { PortfolioPage } from "./Pages/PortfolioPage";
 
 // Import Components
+import { Navbar } from "./Components/NavBar/Navbar.js";
 
 // Import Styling
 import "./App.css";
@@ -19,12 +22,17 @@ const STORAGE_KEY = "filestorage/"; // This corresponds to the Firebase Storage 
 function App() {
   return (
     <>
+      <Navbar />
       <ChakraProvider>
         <Routes>
           <Route path="/" element={<LogInPage />} />
           <Route path="home" element={<HomePage />} />
-          <Route path="trade" element={<Trade />} />
-          <Route path="position" element={<Position />} />
+          <Route path="user" element={<UserPage />} />
+
+          <Route path="portfolio" element={<PortfolioPage />} />
+
+          {/* <Route path="trade" element={<TradePage />} />
+          <Route path="position" element={<PositionPage />} /> */}
         </Routes>
       </ChakraProvider>
     </>
