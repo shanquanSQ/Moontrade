@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { createChart } from "lightweight-charts";
-import { realTimeDatabase } from "../firebase/firebase";
-import { initializeUser } from "./Profile"; // Import the function from profile.js
+import { getDatabase, ref, push, update } from "firebase/database";
 
 export function Trade() {
   const { Symbol } = useParams();
+  const db = getDatabase();
   const [stockData, setStockData] = useState({
     name: "",
     latestPrice: null,
@@ -20,13 +20,10 @@ export function Trade() {
   const [orderAmount, setOrderAmount] = useState("");
   const [orderType, setOrderType] = useState("buy"); // or 'sell'
 
-  // Assuming userId is hardcoded for this example.
   // Ideally, you'd get this dynamically after a user logs in.
   const userId = "someUserId";
 
   useEffect(() => {
-    initializeUser(userId); // Initialize the user with default buying power if not already present
-
     const fetchPrice = axios.get(
       `https://api.polygon.io/v2/last/trade/${Symbol}?apiKey=${process.env.REACT_APP_POLYGON_API_KEY}`
     );
@@ -55,19 +52,8 @@ export function Trade() {
       });
   }, [Symbol]);
 
-  useEffect(() => {
-    // Fetch the user's buying power from the database and update the state
-    const userRef = realTimeDatabase.ref("users/" + userId);
-    userRef.on("value", (snapshot) => {
-      const userCredits = snapshot.val().credits;
-      setCurrentUserCredits(userCredits);
-    });
-
-    // Cleanup the listener on component unmount
-    return () => userRef.off();
-  }, [userId]);
-
-  const handleOrderSubmit = () => {
+  const handleOrderSubmit = (event) => {
+    event.preventDefault();
     const orderData = {
       Symbol: Symbol,
       name: stockData.name,
@@ -78,10 +64,10 @@ export function Trade() {
     };
 
     // Save to Firebase Realtime Database
-    const orderRef = realTimeDatabase.ref("orders");
-    orderRef.push(orderData);
+    const orderRef = ref(db, "orders");
+    push(orderRef, orderData);
 
-    const userRef = realTimeDatabase.ref("users/" + userId);
+    const userRef = ref(db, "users/" + userId);
     let updatedCredits = currentUserCredits;
 
     if (orderType === "buy") {
@@ -89,7 +75,7 @@ export function Trade() {
     } else if (orderType === "sell") {
       updatedCredits += stockData.latestPrice * orderAmount;
     }
-    userRef.update({ credits: updatedCredits });
+    update(userRef, { credits: updatedCredits });
   };
 
   return (
