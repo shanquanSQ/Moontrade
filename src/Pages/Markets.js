@@ -27,7 +27,7 @@ function getLastWorkingDay() {
 
 export function Markets() {
   const [stocks, setStocks] = useState([]);
-  const [sortType, setSortType] = useState("volume");
+  const [sortType, setSortType] = useState("name");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,7 +62,7 @@ export function Markets() {
     const sortArray = (type) => {
       const types = {
         volume: "volume",
-        name: "Name",
+        name: "name",
       };
       const sortProperty = types[type];
       const sorted = [...stocks].sort(
@@ -76,8 +76,8 @@ export function Markets() {
   return (
     <div>
       <select onChange={(e) => setSortType(e.target.value)}>
-        <option value="volume">Volume</option>
         <option value="name">Alphabetical</option>
+        <option value="volume">Volume</option>
       </select>
 
       <table>
@@ -85,7 +85,7 @@ export function Markets() {
           <tr>
             <th>Ticker</th>
             <th>Name</th>
-            <th>Last Price</th>
+            <th>Last Close</th>
             <th>Volume</th>
             <th>Action</th>
           </tr>
