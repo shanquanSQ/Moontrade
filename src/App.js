@@ -1,10 +1,9 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Switch } from "react-router-dom";
 
 // Import Pages
-import { HomePage } from "./Pages/HomePage";
+import { Markets } from "./Pages/Markets";
 import { LogInPage } from "./Pages/LogInPage";
 import { Trade } from "./Pages/Trade";
-import { Position } from ".Pages/Position";
 
 // Import Components
 
@@ -22,9 +21,8 @@ function App() {
       <ChakraProvider>
         <Routes>
           <Route path="/" element={<LogInPage />} />
-          <Route path="home" element={<HomePage />} />
-          <Route path="trade" element={<Trade />} />
-          <Route path="position" element={<Position />} />
+          <Route path="markets" element={<Markets />} />
+          <Route path="/trade/:Symbol" element={<Trade />} />
         </Routes>
       </ChakraProvider>
     </>
