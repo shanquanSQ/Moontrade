@@ -20,23 +20,33 @@ export const LogInPage = () => {
 
   return (
     <>
-      <Center>
-        <VStack>
-          <div>This is the Login Page</div>
+      {/* <Center>
+        <VStack> */}
+      <div className="flex flex-row justify-center h-[100vh]">
+        <div className="flex flex-col justify-center gap-[5rem] p-[2rem] ">
+          <div className="text-center">MoonTrade</div>
 
-          <InputGroup size="sm">
-            <InputLeftAddon children="Email" />
-            <Input variant="outline" placeholder="Outline" />
-          </InputGroup>
+          <div>
+            <InputGroup size="sm">
+              <InputLeftAddon children="Email" />
+              <Input variant="outline" placeholder="Outline" />
+            </InputGroup>
 
-          <InputGroup size="sm">
-            <InputLeftAddon children="Password" />
-            <Input variant="outline" placeholder="Outline" />
-          </InputGroup>
-
-          <input type="button" onClick={handleLogIn} value="Log In" />
-        </VStack>
-      </Center>
+            <InputGroup size="sm">
+              <InputLeftAddon children="Password" />
+              <Input variant="outline" placeholder="Outline" />
+            </InputGroup>
+          </div>
+          <input
+            type="button"
+            onClick={handleLogIn}
+            value="Log In"
+            className="bg-violet-400"
+          />
+        </div>
+      </div>
+      {/* </VStack>
+      </Center> */}
     </>
   );
 };
