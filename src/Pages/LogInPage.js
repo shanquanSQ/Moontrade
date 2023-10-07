@@ -15,7 +15,7 @@ export const LogInPage = () => {
   const handleLogIn = () => {
     // useAuth().login(user);  // Why does this not work?
     // authUser.login(user);
-    navigate("home");
+    navigate("markets");
   };
 
   return (

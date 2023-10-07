@@ -1,42 +1,21 @@
-import {
-  Box,
-  Center,
-  VStack,
-  Input,
-  InputGroup,
-  InputLeftAddon,
-} from "@chakra-ui/react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
-import { useNavigate } from "react-router-dom";
+export function Trade() {
+  const { Symbol } = useParams();
+  const [stockData, setStockData] = useState({});
 
-export const Trade = () => {
-  const navigate = useNavigate();
-
-  const handleLogIn = () => {
-    // useAuth().login(user);  // Why does this not work?
-    // authUser.login(user);
-    navigate("home");
-  };
+  useEffect(() => {
+    // Fetch stock details using Symbol if required. E.g.:
+    // axios.get(`someEndpoint/${Symbol}`).then(response => {
+    //     setStockData(response.data);
+    // });
+  }, [Symbol]);
 
   return (
-    <>
-      <Center>
-        <VStack>
-          <div>This is the Login Page</div>
-
-          <InputGroup size="sm">
-            <InputLeftAddon children="Email" />
-            <Input variant="outline" placeholder="Outline" />
-          </InputGroup>
-
-          <InputGroup size="sm">
-            <InputLeftAddon children="Password" />
-            <Input variant="outline" placeholder="Outline" />
-          </InputGroup>
-
-          <input type="button" onClick={handleLogIn} value="Log In" />
-        </VStack>
-      </Center>
-    </>
+    <div>
+      {/* Display your stock's trading information here */}
+      <h1>Trading Page for {Symbol}</h1>
+    </div>
   );
-};
+}

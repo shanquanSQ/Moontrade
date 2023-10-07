@@ -22,19 +22,7 @@ export const Position = () => {
     <>
       <Center>
         <VStack>
-          <div>This is the Login Page</div>
-
-          <InputGroup size="sm">
-            <InputLeftAddon children="Email" />
-            <Input variant="outline" placeholder="Outline" />
-          </InputGroup>
-
-          <InputGroup size="sm">
-            <InputLeftAddon children="Password" />
-            <Input variant="outline" placeholder="Outline" />
-          </InputGroup>
-
-          <input type="button" onClick={handleLogIn} value="Log In" />
+          <div>This is the Position Page</div>
         </VStack>
       </Center>
     </>
