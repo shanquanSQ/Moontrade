@@ -17,7 +17,7 @@ export function Trade() {
     logoURL: "",
     marketCap: null,
   });
-  const [currentUserCredits, setCurrentUserCredits] = useState(null); //
+  const [userCredits, setUserCredits] = useState(null); //
   const [orderAmount, setOrderAmount] = useState("");
   const [orderType, setOrderType] = useState("buy"); // or 'sell'
 
@@ -29,7 +29,7 @@ export function Trade() {
       const userCreditsRef = ref(db, `users/${userID}/credits`);
       onValue(userCreditsRef, (snapshot) => {
         if (snapshot.exists()) {
-          setCurrentUserCredits(snapshot.val());
+          setUserCredits(snapshot.val().credits);
         }
       });
     }
@@ -76,19 +76,26 @@ export function Trade() {
       type: orderType,
     };
 
-    // Save to Firebase Realtime Database
+    // Save to Firebase Realtime Database and update credits atomically
     const orderRef = ref(db, "orders");
-    push(orderRef, orderData);
-
     const userCreditsRef = ref(db, `users/${userID}/credits`);
-    let updatedCredits = currentUserCredits;
+
+    let updatedCredits = userCredits;
 
     if (orderType === "buy") {
       updatedCredits -= stockData.latestPrice * orderAmount;
     } else if (orderType === "sell") {
       updatedCredits += stockData.latestPrice * orderAmount;
     }
-    update(userCreditsRef, { credits: updatedCredits });
+
+    // Create an updates object for atomic updates
+    const updates = {
+      [`orders/${orderRef.key}`]: orderData,
+      [`users/${userID}/credits`]: updatedCredits, // Update the user's credits correctly
+    };
+
+    // Update both order and user credits atomically
+    update(ref(db), updates);
   };
 
   return (
@@ -138,11 +145,10 @@ export function Trade() {
         </tbody>
       </table>
 
-      {/* Displaying the user's current balance */}
-      <h3>
-        Your Current Balance: $
-        {currentUserCredits ? currentUserCredits.toFixed(2) : "Loading..."}
-      </h3>
+      {/* Displaying the user's current balance if available */}
+      {userCredits !== null && (
+        <h3>Your Current Balance: ${userCredits.toFixed(2)}</h3>
+      )}
 
       {/* Your TradingView chart can go here */}
 

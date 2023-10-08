@@ -43,7 +43,7 @@ function App() {
       {showNavBar && <Navbar />}
       <Routes>
         <Route path="/" element={<LogInPage />} />
-        <Route path="home" element={<Markets />} />
+        <Route path="markets" element={<Markets />} />
         <Route path="user" element={<UserPage />} />
         <Route path="portfolio" element={<PortfolioPage />} />
         <Route path="position" element={<PositionPage />} />
