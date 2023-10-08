@@ -26,6 +26,9 @@ export const LogInPage = () => {
     });
     console.log("yay");
   };
+  const handleSignUp = () => {
+    userAuth.createUser(user);
+  };
 
   const handleLogIn = () => {
     userAuth.signInUser(user);
@@ -52,7 +55,7 @@ export const LogInPage = () => {
           <div>
             <label>Password:</label>
             <input
-              type="text"
+              type="password"
               name="password"
               onChange={handleChange}
               value={user.password}
@@ -65,6 +68,12 @@ export const LogInPage = () => {
             type="button"
             onClick={handleLogIn}
             value="Log In"
+            className="btn btn-accent"
+          />
+          <input
+            type="button"
+            onClick={handleSignUp}
+            value="Sign Up"
             className="btn btn-accent"
           />
         </div>

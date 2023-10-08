@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { createChart } from "lightweight-charts";
-import { getDatabase, ref, push, update } from "firebase/database";
+import { getDatabase, ref, push, update, onValue } from "firebase/database";
+import { useAuth } from "../util/auth";
 
 export function Trade() {
   const { Symbol } = useParams();
@@ -16,12 +17,23 @@ export function Trade() {
     logoURL: "",
     marketCap: null,
   });
-  const [currentUserCredits, setCurrentUserCredits] = useState(10000); // Default to 10,000
+  const [currentUserCredits, setCurrentUserCredits] = useState(null); //
   const [orderAmount, setOrderAmount] = useState("");
   const [orderType, setOrderType] = useState("buy"); // or 'sell'
 
-  // Ideally, you'd get this dynamically after a user logs in.
-  const userId = "someUserId";
+  const auth = useAuth();
+  const userID = auth.user.uid; // This will give you the uid of the logged-in user
+
+  useEffect(() => {
+    if (userID) {
+      const userCreditsRef = ref(db, `users/${userID}/credits`);
+      onValue(userCreditsRef, (snapshot) => {
+        if (snapshot.exists()) {
+          setCurrentUserCredits(snapshot.val());
+        }
+      });
+    }
+  }, [userID, db]);
 
   useEffect(() => {
     const fetchPrice = axios.get(
@@ -55,6 +67,7 @@ export function Trade() {
   const handleOrderSubmit = (event) => {
     event.preventDefault();
     const orderData = {
+      userId: userID,
       Symbol: Symbol,
       name: stockData.name,
       price: stockData.latestPrice,
@@ -67,7 +80,7 @@ export function Trade() {
     const orderRef = ref(db, "orders");
     push(orderRef, orderData);
 
-    const userRef = ref(db, "users/" + userId);
+    const userCreditsRef = ref(db, `users/${userID}/credits`);
     let updatedCredits = currentUserCredits;
 
     if (orderType === "buy") {
@@ -75,7 +88,7 @@ export function Trade() {
     } else if (orderType === "sell") {
       updatedCredits += stockData.latestPrice * orderAmount;
     }
-    update(userRef, { credits: updatedCredits });
+    update(userCreditsRef, { credits: updatedCredits });
   };
 
   return (
@@ -124,6 +137,12 @@ export function Trade() {
           </tr>
         </tbody>
       </table>
+
+      {/* Displaying the user's current balance */}
+      <h3>
+        Your Current Balance: $
+        {currentUserCredits ? currentUserCredits.toFixed(2) : "Loading..."}
+      </h3>
 
       {/* Your TradingView chart can go here */}
 
