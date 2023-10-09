@@ -25,9 +25,10 @@ export const AuthProvider = ({ children }) => {
   const createUser = (userInput) => {
     createUserWithEmailAndPassword(auth, userInput.email, userInput.password)
       .then((userCredential) => {
-        const randomUserID = uuidv4();
+        const userUID = userCredential.user.uid;
         const db = getDatabase();
-        const userRef = ref(db, "users/" + randomUserID);
+        const userRef = ref(db, "users/" + userUID);
+
         set(userRef, {
           credits: INITIAL_CREDITS,
         });
