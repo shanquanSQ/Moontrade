@@ -15,6 +15,7 @@ import { PortfolioPage } from "./Pages/PortfolioPage";
 
 // Import Components
 import { Navbar } from "./Components/NavBar/Navbar.js";
+import { TradingView } from "./Components/TradingView/TradingView.js";
 
 // Import Styling
 import "./App.css";
@@ -55,8 +56,8 @@ function App() {
         <Route path="markets" element={<Markets />} />
         <Route path="user" element={<UserPage />} />
         <Route path="portfolio" element={<PortfolioPage />} />
-        <Route path="position" element={<PositionPage />} />
         <Route path="/trade/:Symbol" element={<Trade />} />
+        <Route path="user" element={<UserPage />} />
       </Routes>
     </AuthProvider>
   );
