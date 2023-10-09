@@ -58,7 +58,6 @@ function App() {
             <Route path="user" element={<UserPage />} />
 
             <Route path="portfolio" element={<PortfolioPage />} />
-
             <Route path="position" element={<PositionPage />} />
           </Routes>
         </ChakraProvider>
