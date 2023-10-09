@@ -2,7 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { createChart } from "lightweight-charts";
-import { getDatabase, ref, push, update, onValue } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  push,
+  update,
+  onValue,
+  runTransaction,
+  set,
+} from "firebase/database";
 import { useAuth } from "../util/auth";
 
 export function Trade() {
@@ -17,7 +25,7 @@ export function Trade() {
     logoURL: "",
     marketCap: null,
   });
-  const [userCredits, setUserCredits] = useState(null); //
+  const [userCredits, setUserCredits] = useState(0); //
   const [orderAmount, setOrderAmount] = useState("");
   const [orderType, setOrderType] = useState("buy"); // or 'sell'
 
@@ -28,12 +36,13 @@ export function Trade() {
     if (userID) {
       const userCreditsRef = ref(db, `users/${userID}/credits`);
       onValue(userCreditsRef, (snapshot) => {
-        if (snapshot.exists()) {
-          setUserCredits(snapshot.val().credits);
+        const creditsValue = snapshot.val();
+        if (typeof creditsValue === "number") {
+          setUserCredits(creditsValue);
         }
       });
     }
-  }, [userID, db]);
+  }, [userID]);
 
   useEffect(() => {
     const fetchPrice = axios.get(
@@ -76,26 +85,23 @@ export function Trade() {
       type: orderType,
     };
 
-    // Save to Firebase Realtime Database and update credits atomically
+    // Save to Firebase Realtime Database and update credits
     const orderRef = ref(db, "orders");
     const userCreditsRef = ref(db, `users/${userID}/credits`);
 
-    let updatedCredits = userCredits;
+    runTransaction(userCreditsRef, (currentCredits) => {
+      if (orderType === "buy") {
+        return currentCredits - stockData.latestPrice * orderAmount;
+      } else if (orderType === "sell") {
+        return currentCredits + stockData.latestPrice * orderAmount;
+      }
 
-    if (orderType === "buy") {
-      updatedCredits -= stockData.latestPrice * orderAmount;
-    } else if (orderType === "sell") {
-      updatedCredits += stockData.latestPrice * orderAmount;
-    }
-
-    // Create an updates object for atomic updates
-    const updates = {
-      [`orders/${orderRef.key}`]: orderData,
-      [`users/${userID}/credits`]: updatedCredits, // Update the user's credits correctly
-    };
-
-    // Update both order and user credits atomically
-    update(ref(db), updates);
+      return currentCredits; // If neither buy or sell, return the current amount
+    }).then(() => {
+      const ordersRef = ref(db, "orders");
+      const newOrderRef = push(ordersRef);
+      set(newOrderRef, orderData);
+    });
   };
 
   return (
@@ -146,7 +152,7 @@ export function Trade() {
       </table>
 
       {/* Displaying the user's current balance if available */}
-      {userCredits !== null && (
+      {typeof userCredits === "number" && (
         <h3>Your Current Balance: ${userCredits.toFixed(2)}</h3>
       )}
 
