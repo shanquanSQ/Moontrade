@@ -7,7 +7,7 @@ import { FaChartPie, FaUser, FaHouse } from "react-icons/fa6";
 export const Navbar = () => {
   return (
     <nav>
-      <NavLink to="home">
+      <NavLink to="markets">
         <div>
           <FaHouse size={25} />
         </div>
