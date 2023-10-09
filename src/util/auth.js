@@ -1,16 +1,15 @@
-// Firebase Auth
+import { v4 as uuidv4 } from "uuid";
+import { getDatabase, ref, set } from "@firebase/database";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   setPersistence,
   browserSessionPersistence,
+  signOut,
 } from "firebase/auth";
-
 import { useContext, useState } from "react";
 import { createContext } from "react";
-
 import { auth } from "../firebase/firebase.js";
-import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext(null);
@@ -21,74 +20,65 @@ export const AuthProvider = ({ children }) => {
 
   const navigate = useNavigate();
 
-  const createUser = (user) => {
-    createUserWithEmailAndPassword(auth, user.email, user.password)
+  const INITIAL_CREDITS = 100000;
+
+  const createUser = (userInput) => {
+    createUserWithEmailAndPassword(auth, userInput.email, userInput.password)
       .then((userCredential) => {
-        // When this promise runs, the user is Signed Up.
-        // userCredential (name is whatever) is a firebase object.
-        const user = userCredential.user;
-
-        setUser(user);
+        const randomUserID = uuidv4();
+        const db = getDatabase();
+        const userRef = ref(db, "users/" + randomUserID);
+        set(userRef, {
+          credits: INITIAL_CREDITS,
+        });
+        setUser(userCredential.user);
         setIsLoggedIn(true);
-
-        console.log("user is: ", user);
-        console.log("user credentials is: ", userCredential);
         navigate("markets");
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-
-        console.log("error code is: ", errorCode);
-        console.log("error message is: ", errorMessage);
+        console.error("Error creating user:", error);
       });
   };
 
-  // important to put in user state as props here!
-  const signInUser = (user) => {
+  const signInUser = (userInput) => {
     setPersistence(auth, browserSessionPersistence)
-      .then(() =>
-        signInWithEmailAndPassword(auth, user.email, user.password).then(
-          (userCredential) => {
-            const user = userCredential.user;
-            setUser(user);
+      .then(() => {
+        signInWithEmailAndPassword(auth, userInput.email, userInput.password)
+          .then((userCredential) => {
+            setUser(userCredential.user);
             setIsLoggedIn(true);
-
-            alert("successful log in!");
-            navigate("home");
-          }
-        )
-      )
+            navigate("markets");
+          })
+          .catch((error) => {
+            console.error("Error signing in:", error);
+          });
+      })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-
-        alert("Account not Found!");
-
-        // console.log("sign in error code is: ", errorCode);
-        // console.log("sign in error message is: ", errorMessage);
+        console.error("Error setting persistence:", error);
       });
   };
 
-  const signOutUser = (user) => {
+  const signOutUser = () => {
     signOut(auth)
       .then(() => {
         setUser(null);
         setIsLoggedIn(false);
-        console.log("Sign out Successful");
-
-        alert("Sign Out Successful!");
         navigate("/");
       })
       .catch((error) => {
-        console.log("Error occured while signing out");
-        alert("Error when signing out");
+        console.error("Error signing out:", error);
       });
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, isLoggedIn, signInUser, signOutUser, createUser }}
+      value={{
+        user,
+        isLoggedIn,
+        signInUser,
+        signOutUser,
+        createUser,
+      }}
     >
       {children}
     </AuthContext.Provider>

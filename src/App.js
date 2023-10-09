@@ -1,5 +1,5 @@
 import { Routes, Route, Switch } from "react-router-dom";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // Import our custom Auth Provider
 import { AuthProvider } from "./util/auth";
@@ -18,7 +18,6 @@ import { Navbar } from "./Components/NavBar/Navbar.js";
 
 // Import Styling
 import "./App.css";
-import { ChakraProvider } from "@chakra-ui/react";
 
 // Import Firebase Auth
 import { onAuthStateChanged } from "firebase/auth";
@@ -41,36 +40,25 @@ function App() {
     }
   });
 
+  useEffect(() => {
+    setShowNavBar(!!(userAuth && userAuth.user));
+  }, [userAuth]);
+
   console.log("app.js userAuth: ", userAuth);
   console.log("navbar status: ", showNavBar);
 
   return (
-    <>
-      <AuthProvider>
-        {/* <Navbar /> */}
-        {showNavBar === false ? null : <Navbar />}
-        {/* {userAuth.isLoggedin === false ? null : <Navbar />} */}
-        {/* {userAuth === null ? null : <Navbar />} */}
-        <ChakraProvider>
-          <Routes>
-            <Route path="/" element={<LogInPage />} />
-            <Route path="home" element={<Markets />} />
-            <Route path="user" element={<UserPage />} />
-
-            <Route path="portfolio" element={<PortfolioPage />} />
-
-            <Route path="position" element={<PositionPage />} />
-          </Routes>
-        </ChakraProvider>
-      </AuthProvider>
-      <ChakraProvider>
-        <Routes>
-          <Route path="/" element={<LogInPage />} />
-          <Route path="markets" element={<Markets />} />
-          <Route path="/trade/:Symbol" element={<Trade />} />
-        </Routes>
-      </ChakraProvider>
-    </>
+    <AuthProvider>
+      {showNavBar && <Navbar />}
+      <Routes>
+        <Route path="/" element={<LogInPage />} />
+        <Route path="markets" element={<Markets />} />
+        <Route path="user" element={<UserPage />} />
+        <Route path="portfolio" element={<PortfolioPage />} />
+        <Route path="position" element={<PositionPage />} />
+        <Route path="/trade/:Symbol" element={<Trade />} />
+      </Routes>
+    </AuthProvider>
   );
 }
 

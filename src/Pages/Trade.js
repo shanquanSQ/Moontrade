@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { createChart } from "lightweight-charts";
-import { getDatabase, ref, push, update } from "firebase/database";
+import { getDatabase, ref, push, update, onValue } from "firebase/database";
+import { useAuth } from "../util/auth";
 
 export function Trade() {
   const { Symbol } = useParams();
@@ -16,12 +17,23 @@ export function Trade() {
     logoURL: "",
     marketCap: null,
   });
-  const [currentUserCredits, setCurrentUserCredits] = useState(10000); // Default to 10,000
+  const [userCredits, setUserCredits] = useState(null); //
   const [orderAmount, setOrderAmount] = useState("");
   const [orderType, setOrderType] = useState("buy"); // or 'sell'
 
-  // Ideally, you'd get this dynamically after a user logs in.
-  const userId = "someUserId";
+  const auth = useAuth();
+  const userID = auth.user.uid; // This will give you the uid of the logged-in user
+
+  useEffect(() => {
+    if (userID) {
+      const userCreditsRef = ref(db, `users/${userID}/credits`);
+      onValue(userCreditsRef, (snapshot) => {
+        if (snapshot.exists()) {
+          setUserCredits(snapshot.val().credits);
+        }
+      });
+    }
+  }, [userID, db]);
 
   useEffect(() => {
     const fetchPrice = axios.get(
@@ -55,6 +67,7 @@ export function Trade() {
   const handleOrderSubmit = (event) => {
     event.preventDefault();
     const orderData = {
+      userId: userID,
       Symbol: Symbol,
       name: stockData.name,
       price: stockData.latestPrice,
@@ -63,19 +76,26 @@ export function Trade() {
       type: orderType,
     };
 
-    // Save to Firebase Realtime Database
+    // Save to Firebase Realtime Database and update credits atomically
     const orderRef = ref(db, "orders");
-    push(orderRef, orderData);
+    const userCreditsRef = ref(db, `users/${userID}/credits`);
 
-    const userRef = ref(db, "users/" + userId);
-    let updatedCredits = currentUserCredits;
+    let updatedCredits = userCredits;
 
     if (orderType === "buy") {
       updatedCredits -= stockData.latestPrice * orderAmount;
     } else if (orderType === "sell") {
       updatedCredits += stockData.latestPrice * orderAmount;
     }
-    update(userRef, { credits: updatedCredits });
+
+    // Create an updates object for atomic updates
+    const updates = {
+      [`orders/${orderRef.key}`]: orderData,
+      [`users/${userID}/credits`]: updatedCredits, // Update the user's credits correctly
+    };
+
+    // Update both order and user credits atomically
+    update(ref(db), updates);
   };
 
   return (
@@ -124,6 +144,11 @@ export function Trade() {
           </tr>
         </tbody>
       </table>
+
+      {/* Displaying the user's current balance if available */}
+      {userCredits !== null && (
+        <h3>Your Current Balance: ${userCredits.toFixed(2)}</h3>
+      )}
 
       {/* Your TradingView chart can go here */}
 
