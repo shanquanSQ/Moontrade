@@ -31,6 +31,15 @@ function App() {
   const [showNavBar, setShowNavBar] = useState(false);
   const userAuth = useAuth();
 
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const uid = user.uid;
+      setShowNavBar(true);
+    } else {
+      // console.log("user is signed out");
+    }
+  });
+
   useEffect(() => {
     setShowNavBar(!!(userAuth && userAuth.user));
   }, [userAuth]);

@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
           .then((userCredential) => {
             setUser(userCredential.user);
             setIsLoggedIn(true);
-            navigate("home");
+            navigate("markets");
           })
           .catch((error) => {
             console.error("Error signing in:", error);
