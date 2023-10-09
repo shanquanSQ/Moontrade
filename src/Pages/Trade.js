@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { createChart } from "lightweight-charts";
 import {
   getDatabase,
   ref,
@@ -12,6 +11,7 @@ import {
   set,
 } from "firebase/database";
 import { useAuth } from "../util/auth";
+import { TradingView } from "../Components/TradingView/TradingView";
 
 export function Trade() {
   const { Symbol } = useParams();
@@ -31,6 +31,8 @@ export function Trade() {
 
   const auth = useAuth();
   const userID = auth.user.uid; // This will give you the uid of the logged-in user
+
+  const [stockChartData, setStockChartData] = useState([]); // Data for the chart
 
   useEffect(() => {
     if (userID) {
@@ -157,6 +159,7 @@ export function Trade() {
       )}
 
       {/* Your TradingView chart can go here */}
+      <TradingView ticker={Symbol} data={stockChartData} />
 
       {/* Remaining code for buying/selling and other functionalities */}
       <form onSubmit={handleOrderSubmit}>
