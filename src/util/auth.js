@@ -44,21 +44,23 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signInUser = (userInput) => {
-    setPersistence(auth, browserSessionPersistence)
-      .then(() => {
-        signInWithEmailAndPassword(auth, userInput.email, userInput.password)
-          .then((userCredential) => {
-            setUser(userCredential.user);
-            setIsLoggedIn(true);
-            navigate("markets");
-          })
-          .catch((error) => {
-            console.error("Error signing in:", error);
-          });
+    ///// SetPersistence is what is storing the userAuth whenever we refresh, so even when you log out the navBar is not reset.
+    //// But still having runtime errors when i refresh a page
+    // setPersistence(auth, browserSessionPersistence)
+    //   .then(() => {
+    signInWithEmailAndPassword(auth, userInput.email, userInput.password)
+      .then((userCredential) => {
+        setUser(userCredential.user);
+        setIsLoggedIn(true);
+        navigate("markets");
       })
       .catch((error) => {
-        console.error("Error setting persistence:", error);
+        console.error("Error signing in:", error);
       });
+    // })
+    // .catch((error) => {
+    //   console.error("Error setting persistence:", error);
+    // });
   };
 
   const signOutUser = () => {
