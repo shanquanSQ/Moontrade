@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+
 import {
   getDatabase,
   ref,
@@ -12,6 +13,26 @@ import {
 } from "firebase/database";
 import { useAuth } from "../util/auth";
 import { TradingView } from "../Components/TradingView/TradingView";
+
+// Helper Functions
+// Month in JavaScript is 0-indexed (January is 0, February is 1, etc),
+// But I made some modifications so you can key in 1-12 normally, just fyi
+function getDatesInMonth(month, year) {
+  const date = new Date(year, month - 1, 1);
+  const days = [];
+  while (date.getMonth() === month - 1) {
+    const addDate = `${new Date(date).getFullYear()}-${String(
+      new Date(date).getMonth()
+    ).padStart(2, "0")}-${String(new Date(date).getDate()).padStart(2, "0")}`;
+
+    days.push(addDate);
+    date.setDate(date.getDate() + 1);
+  }
+  console.log("all days is: ", days);
+  return days;
+}
+
+// getDatesInMonth(1, 2023);
 
 export function Trade() {
   const { Symbol } = useParams();
@@ -33,6 +54,44 @@ export function Trade() {
   const userID = auth.user.uid; // This will give you the uid of the logged-in user
 
   const [stockChartData, setStockChartData] = useState([]); // Data for the chart
+
+  useEffect(() => {
+    /////////////////////////////////////////
+    // Polygon.io API call to get Daily Open/Close data.
+    // Need to run the API call 30 times to get monthly data.
+    ////////////////////////////////////////
+
+    const daysInfo = getDatesInMonth(9, 2023);
+    // console.log("days info is : ", daysInfo);
+    const chartInfo = [];
+
+    const getOneDayData = async (eachDate) => {
+      console.log("each date is: ", eachDate);
+      return await axios.get(
+        `https://api.polygon.io/v1/open-close/AAPL/${eachDate.toString()}?adjusted=true&apiKey=${
+          process.env.REACT_APP_POLYGON_API_KEY
+        }`
+      );
+    };
+
+    const getAllDaysData = async (alldays) => {
+      for (let i = 0; i < alldays.length; i++) {
+        try {
+          const response = await getOneDayData(alldays[i]);
+          const data = response.data;
+
+          chartInfo.push({ time: data.from, value: data.close });
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      // This console.log will show the sequence of how the async functions run
+      console.log("chart is: ", chartInfo);
+      setStockChartData(chartInfo);
+    };
+
+    getAllDaysData(daysInfo);
+  }, []);
 
   useEffect(() => {
     if (userID) {
@@ -66,7 +125,7 @@ export function Trade() {
           volume: priceData.q,
           description: detailData.description,
           homepageURL: detailData.homepage_url,
-          logoURL: detailData.branding.logo_url,
+          // logoURL: detailData.branding.logo_url,  //throwing an error
           marketCap: detailData.market_cap,
         });
       })
@@ -159,6 +218,7 @@ export function Trade() {
       )}
 
       {/* Your TradingView chart can go here */}
+      {/* {console.log("the stock chart data: ",  stockChartData)} */}
       <TradingView ticker={Symbol} data={stockChartData} />
 
       {/* Remaining code for buying/selling and other functionalities */}
