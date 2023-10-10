@@ -10,6 +10,9 @@ import {
   onValue,
   runTransaction,
   set,
+  query,
+  orderByChild,
+  equalTo,
 } from "firebase/database";
 import { useAuth } from "../util/auth";
 import { TradingView } from "../Components/TradingView/TradingView";
@@ -54,6 +57,7 @@ export function Trade() {
   const userID = auth.user.uid; // This will give you the uid of the logged-in user
 
   const [stockChartData, setStockChartData] = useState([]); // Data for the chart
+  const [currentHolding, setCurrentHolding] = useState(0);
 
   useEffect(() => {
     /////////////////////////////////////////
@@ -134,8 +138,40 @@ export function Trade() {
       });
   }, [Symbol]);
 
+  useEffect(() => {
+    const ordersRef = query(
+      ref(db, "orders"),
+      orderByChild("userId"),
+      equalTo(userID)
+    );
+
+    onValue(ordersRef, (snapshot) => {
+      const trades = [];
+      let stockHoldingAmount = 0;
+
+      snapshot.forEach((childSnapshot) => {
+        trades.push(childSnapshot.val());
+      });
+
+      trades.forEach((trade) => {
+        if (trade.Symbol === Symbol) {
+          if (trade.type === "buy") {
+            stockHoldingAmount += parseFloat(trade.amount);
+          } else if (trade.type === "sell") {
+            stockHoldingAmount -= parseFloat(trade.amount);
+          }
+        }
+      });
+
+      setCurrentHolding(stockHoldingAmount);
+    });
+  }, [userID, Symbol, db]);
+
   const handleOrderSubmit = (event) => {
     event.preventDefault();
+
+    if (!isValidTransaction()) return;
+
     const orderData = {
       userId: userID,
       Symbol: Symbol,
@@ -146,21 +182,37 @@ export function Trade() {
       type: orderType,
     };
 
-    // Save to Firebase Realtime Database and update credits
-    const orderRef = ref(db, "orders");
+    updateCreditsAndSaveOrder(orderData);
+  };
+
+  const isValidTransaction = () => {
+    if (parseFloat(orderAmount) <= 0) {
+      alert("Please enter a valid amount!");
+      return false;
+    }
+    if (orderType === "sell" && orderAmount > currentHolding) {
+      alert("You don't have enough stocks to sell!");
+      return false;
+    } else if (
+      orderType === "buy" &&
+      orderAmount * stockData.latestPrice > userCredits
+    ) {
+      alert("You don't have enough credits to buy this stock!");
+      return false;
+    }
+    return true;
+  };
+
+  const updateCreditsAndSaveOrder = (orderData) => {
     const userCreditsRef = ref(db, `users/${userID}/credits`);
-
     runTransaction(userCreditsRef, (currentCredits) => {
-      if (orderType === "buy") {
-        return currentCredits - stockData.latestPrice * orderAmount;
-      } else if (orderType === "sell") {
-        return currentCredits + stockData.latestPrice * orderAmount;
-      }
-
-      return currentCredits; // If neither buy or sell, return the current amount
+      return orderType === "buy"
+        ? currentCredits - stockData.latestPrice * orderAmount
+        : orderType === "sell"
+        ? currentCredits + stockData.latestPrice * orderAmount
+        : currentCredits;
     }).then(() => {
-      const ordersRef = ref(db, "orders");
-      const newOrderRef = push(ordersRef);
+      const newOrderRef = push(ref(db, "orders"));
       set(newOrderRef, orderData);
     });
   };
@@ -212,10 +264,17 @@ export function Trade() {
         </tbody>
       </table>
 
-      {/* Displaying the user's current balance if available */}
+      {/* Displaying the user's current balance & stock holding if available */}
       {typeof userCredits === "number" && (
-        <h3>Your Current Balance: ${userCredits.toFixed(2)}</h3>
+        <>
+          <h3>Your Current Balance: ${userCredits.toFixed(2)}</h3>
+          <h3>
+            Your Current Holdings for {stockData.name}: {currentHolding}
+          </h3>
+        </>
       )}
+
+      {/* Displaying the user's current stock holdings if available */}
 
       {/* Your TradingView chart can go here */}
       {/* {console.log("the stock chart data: ",  stockChartData)} */}
