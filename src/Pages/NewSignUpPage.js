@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 //   browserSessionPersistence,
 // } from "firebase/auth";
 
-export const LogInPage = () => {
+export const NewSignUpPage = () => {
   const [user, setUser] = useState({ user: "", password: "" });
   const navigate = useNavigate();
 
@@ -29,8 +29,8 @@ export const LogInPage = () => {
     console.log("yay");
   };
 
-  const handleLogIn = () => {
-    userAuth.signInUser(user);
+  const handleSignUp = () => {
+    userAuth.createUser(user);
   };
 
   return (
@@ -51,7 +51,7 @@ export const LogInPage = () => {
               />
             </div>
           </div>
-          <p className="text-[#5D5FEF] font-bold pb-[1rem]">Log In</p>
+          <p className="text-fuchsia-400 font-bold pb-[1rem]">Create Account</p>
           <form className="flex flex-col justify-between  h-[80vh] ">
             <div>
               <label className="text-sm font-semibold lg:text-[1rem] leading-[2rem] lg:leading-[2rem]">
@@ -86,14 +86,14 @@ export const LogInPage = () => {
             <div className="">
               <input
                 type="button"
-                onClick={handleLogIn}
-                value="LOG IN"
-                className="primary-cta-btn"
+                onClick={handleSignUp}
+                value="SIGN UP"
+                className="secondary-cta-btn"
               />
               <input
                 type="button"
-                onClick={() => navigate("/newsignup")}
-                value="NEW USER?"
+                onClick={() => navigate("/login")}
+                value="EXISTING USER?"
                 className="neutral-btn-one"
               />
             </div>
