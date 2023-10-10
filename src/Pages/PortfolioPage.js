@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../util/auth";
+import axios from "axios";
 
 // Firebase v9 SDK imports
 import {
@@ -56,6 +57,9 @@ export const PortfolioPage = () => {
             sellAmount: 0, // Separate sell amount accumulator
             averageBuyPrice: 0,
             averageSellPrice: 0,
+            unrealizedPL: 0,
+            realizedPL: 0,
+            currentPrice: 0,
           };
         }
 
@@ -76,6 +80,40 @@ export const PortfolioPage = () => {
           aggregatedTrade.totalBuyCost / aggregatedTrade.buyAmount || 0; // Use buyAmount
         aggregatedTrade.averageSellPrice =
           aggregatedTrade.totalSellCost / aggregatedTrade.sellAmount || 0; // Use sellAmount
+
+        // Calculate Realized P&L
+        if (trade.type === "sell") {
+          aggregatedTrade.realizedPL +=
+            (trade.price - aggregatedTrade.averageBuyPrice) *
+            parseFloat(trade.amount);
+        }
+
+        // Calculate Unrealized P&L
+        // Fetch the current market price for the stock
+        const calculateTrades = async () => {
+          for (const trade of trades) {
+            try {
+              const response = await axios.get(
+                `https://api.polygon.io/v2/last/trade/${trade.Symbol}?apiKey=${process.env.REACT_APP_POLYGON_API_KEY}`
+              );
+              const currentMarketPrice = response.data.results.p;
+
+              // Store current market price to the aggregatedTrade object
+              aggregatedTrade.currentPrice = currentMarketPrice;
+
+              // Calculate Unrealized P&L
+              aggregatedTrade.unrealizedPL =
+                (currentMarketPrice - aggregatedTrade.averageBuyPrice) *
+                aggregatedTrade.amount;
+            } catch (error) {
+              console.error("Error fetching stock price:", error);
+            }
+          }
+          const positionsArray = Object.values(aggregatedTrades);
+          setPositions(positionsArray);
+        };
+
+        calculateTrades();
       });
 
       const positionsArray = Object.values(aggregatedTrades);
@@ -93,19 +131,31 @@ export const PortfolioPage = () => {
           <tr>
             <th>Symbol</th>
             <th>Name</th>
-            <th>Amount</th>
+            <th>Current Price</th>
+            <th>Current Holding</th>
             <th>Average Buy Price</th>
+            <th>Amount Bought</th>
             <th>Average Sell Price</th>
+            <th>Amount Sold</th>
+            <th>Unrealized P&L</th>
+            <th>Realized P&L</th>
           </tr>
         </thead>
         <tbody>
           {positions.map((position, index) => (
             <tr key={index}>
-              <td>{position.Symbol}</td>
+              <td>
+                <Link to={`/trade/${position.Symbol}`}>{position.Symbol}</Link>
+              </td>
               <td>{position.name}</td>
+              <td>${position.currentPrice.toFixed(2)}</td>
               <td>{position.amount}</td>
               <td>${position.averageBuyPrice.toFixed(2)}</td>
+              <td>{position.buyAmount.toFixed(0)}</td>
               <td>${position.averageSellPrice.toFixed(2)}</td>
+              <td>{position.sellAmount.toFixed(0)}</td>
+              <td>${position.unrealizedPL.toFixed(2)}</td>
+              <td>${position.realizedPL.toFixed(2)}</td>
             </tr>
           ))}
         </tbody>
