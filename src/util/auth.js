@@ -21,6 +21,7 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   const INITIAL_CREDITS = 100000;
+  const INITIAL_PNL = 0;
 
   const createUser = (userInput) => {
     createUserWithEmailAndPassword(auth, userInput.email, userInput.password)
@@ -31,6 +32,7 @@ export const AuthProvider = ({ children }) => {
 
         set(userRef, {
           credits: INITIAL_CREDITS,
+          realizedPnL: INITIAL_PNL,
         });
         setUser(userCredential.user);
         setIsLoggedIn(true);
