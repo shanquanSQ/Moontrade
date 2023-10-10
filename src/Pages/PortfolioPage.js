@@ -18,15 +18,37 @@ export const PortfolioPage = () => {
   const [credits, setCredits] = useState(0);
   const [positions, setPositions] = useState([]);
   const auth = useAuth();
-  const userID = auth.user.uid; // This will give you the uid of the logged-in user
-
+  const userID = auth.user.uid;
   const db = getDatabase();
+
+  const calculateTrades = async (aggregatedTrades, trades) => {
+    for (const trade of trades) {
+      try {
+        const response = await axios.get(
+          `https://api.polygon.io/v2/last/trade/${trade.Symbol}?apiKey=${process.env.REACT_APP_POLYGON_API_KEY}`
+        );
+        const currentMarketPrice = response.data.results.p;
+        const aggregatedTrade = aggregatedTrades[trade.Symbol];
+
+        // Store current market price to the aggregatedTrade object
+        aggregatedTrade.currentPrice = currentMarketPrice;
+
+        // Calculate Unrealized P&L
+        aggregatedTrade.unrealizedPL =
+          (currentMarketPrice - aggregatedTrade.averageBuyPrice) *
+          aggregatedTrade.amount;
+      } catch (error) {
+        console.error("Error fetching stock price:", error);
+      }
+    }
+    setPositions(Object.values(aggregatedTrades));
+  };
 
   useEffect(() => {
     const userRef = ref(db, `users/${userID}`);
     onValue(userRef, (snapshot) => {
       if (snapshot.exists()) {
-        console.log("User data from Firebase:", snapshot.val()); // Add this line
+        console.log("User data from Firebase:", snapshot.val());
         setCredits(snapshot.val().credits);
       }
     });
@@ -53,8 +75,8 @@ export const PortfolioPage = () => {
             amount: 0,
             totalBuyCost: 0,
             totalSellCost: 0,
-            buyAmount: 0, // Separate buy amount accumulator
-            sellAmount: 0, // Separate sell amount accumulator
+            buyAmount: 0,
+            sellAmount: 0,
             averageBuyPrice: 0,
             averageSellPrice: 0,
             unrealizedPL: 0,
@@ -66,20 +88,20 @@ export const PortfolioPage = () => {
         const aggregatedTrade = aggregatedTrades[trade.Symbol];
         if (trade.type === "buy") {
           aggregatedTrade.amount += parseFloat(trade.amount);
-          aggregatedTrade.buyAmount += parseFloat(trade.amount); // Increment the buy amount
+          aggregatedTrade.buyAmount += parseFloat(trade.amount);
           aggregatedTrade.totalBuyCost +=
             parseFloat(trade.amount) * trade.price;
         } else if (trade.type === "sell") {
           aggregatedTrade.amount -= parseFloat(trade.amount);
-          aggregatedTrade.sellAmount += parseFloat(trade.amount); // Increment the sell amount
+          aggregatedTrade.sellAmount += parseFloat(trade.amount);
           aggregatedTrade.totalSellCost +=
             parseFloat(trade.amount) * trade.price;
         }
 
         aggregatedTrade.averageBuyPrice =
-          aggregatedTrade.totalBuyCost / aggregatedTrade.buyAmount || 0; // Use buyAmount
+          aggregatedTrade.totalBuyCost / aggregatedTrade.buyAmount || 0;
         aggregatedTrade.averageSellPrice =
-          aggregatedTrade.totalSellCost / aggregatedTrade.sellAmount || 0; // Use sellAmount
+          aggregatedTrade.totalSellCost / aggregatedTrade.sellAmount || 0;
 
         // Calculate Realized P&L
         if (trade.type === "sell") {
@@ -87,37 +109,10 @@ export const PortfolioPage = () => {
             (trade.price - aggregatedTrade.averageBuyPrice) *
             parseFloat(trade.amount);
         }
-
-        // Calculate Unrealized P&L
-        // Fetch the current market price for the stock
-        const calculateTrades = async () => {
-          for (const trade of trades) {
-            try {
-              const response = await axios.get(
-                `https://api.polygon.io/v2/last/trade/${trade.Symbol}?apiKey=${process.env.REACT_APP_POLYGON_API_KEY}`
-              );
-              const currentMarketPrice = response.data.results.p;
-
-              // Store current market price to the aggregatedTrade object
-              aggregatedTrade.currentPrice = currentMarketPrice;
-
-              // Calculate Unrealized P&L
-              aggregatedTrade.unrealizedPL =
-                (currentMarketPrice - aggregatedTrade.averageBuyPrice) *
-                aggregatedTrade.amount;
-            } catch (error) {
-              console.error("Error fetching stock price:", error);
-            }
-          }
-          const positionsArray = Object.values(aggregatedTrades);
-          setPositions(positionsArray);
-        };
-
-        calculateTrades();
       });
 
-      const positionsArray = Object.values(aggregatedTrades);
-      setPositions(positionsArray);
+      // Call the function to calculate trades after constructing aggregatedTrades
+      calculateTrades(aggregatedTrades, trades);
     });
   }, [db]);
 

@@ -31,28 +31,30 @@ export function Markets() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const fetchedStocks = [];
-
-      for (let stock of stockList) {
-        try {
-          const lastWorkingDate = getLastWorkingDay();
-
-          const response = await axios.get(
+      const lastWorkingDate = getLastWorkingDay();
+      const promises = stockList.map((stock) =>
+        axios
+          .get(
             `https://api.polygon.io/v1/open-close/${stock.Symbol}/${lastWorkingDate}?adjusted=true&apiKey=${process.env.REACT_APP_POLYGON_API_KEY}`
-          );
+          )
+          .then((response) => {
+            return {
+              ...stock,
+              ...response.data,
+            };
+          })
+          .catch((error) => {
+            console.error(`Error fetching data for ${stock.Symbol}`, error);
+          })
+      );
 
-          const mergedData = {
-            ...stock,
-            ...response.data,
-          };
+      // Fetch all stock data in parallel
+      const fetchedStocks = await Promise.all(promises);
 
-          fetchedStocks.push(mergedData);
-        } catch (error) {
-          console.error(`Error fetching data for ${stock.Symbol}`, error);
-        }
-      }
+      // Filter out any undefined values (due to errors in fetching)
+      const validStocks = fetchedStocks.filter(Boolean);
 
-      setStocks(fetchedStocks);
+      setStocks(validStocks);
     };
 
     fetchData();
