@@ -18,7 +18,8 @@ export const PortfolioPage = () => {
   const [credits, setCredits] = useState(0);
   const [positions, setPositions] = useState([]);
   const auth = useAuth();
-  const userID = auth.user.uid;
+  const userID = auth.user.uid; // might not always be defined user is not defined on page
+  // take out 21 line out
   const db = getDatabase();
 
   const calculateTrades = async (aggregatedTrades, trades) => {
@@ -45,6 +46,7 @@ export const PortfolioPage = () => {
   };
 
   useEffect(() => {
+    //if user.auth.id exists, then run this
     const userRef = ref(db, `users/${userID}`);
     onValue(userRef, (snapshot) => {
       if (snapshot.exists()) {

@@ -35,12 +35,12 @@ function App() {
   const userAuth = useAuth();
 
   useEffect(() => {
-    console.log("App.js useEffect is triggered");
-    // console.log("userauth context is: ", userAuth); // Not sure why this is null even when it is in useEffect.
+    // console.log("App.js useEffect is triggered");
+    // console.log("userauth context is: ", userAuth); // Not sure why this is always initialised as null even when it is in useEffect.
+
     onAuthStateChanged(auth, (user) => {
-      console.log("App.js onAuthStateChangeTriggered");
+      console.log("App.js onAuthStateChange Triggered");
       if (user) {
-        const uid = user.uid;
         console.log("user logged in: ", user);
         setShowNavBar(true);
       } else {
@@ -54,8 +54,8 @@ function App() {
   //   setShowNavBar(!!(userAuth && userAuth.user));
   // }, [userAuth]);
 
-  console.log("app.js userAuth: ", userAuth);
-  console.log("navbar status: ", showNavBar);
+  // console.log("app.js userAuth: ", userAuth);
+  // console.log("navbar status: ", showNavBar);
 
   return (
     <AuthProvider>

@@ -6,8 +6,9 @@ import {
   setPersistence,
   browserSessionPersistence,
   signOut,
+  onAuthStateChanged,
 } from "firebase/auth";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { createContext } from "react";
 import { auth } from "../firebase/firebase.js";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +24,21 @@ export const AuthProvider = ({ children }) => {
   const INITIAL_CREDITS = 100000;
   const INITIAL_PNL = 0;
 
+  useEffect(() => {
+    console.log("auth.js useEffect triggered");
+    // console.log("auth.js isLoggedIn: ", isLoggedIn);
+    // console.log("auth.js user: ", user);
+
+    onAuthStateChanged(auth, (user) => {
+      console.log("auth.js onAuthStateChange Triggered");
+      if (user) {
+        console.log("auth.js user logged in: ", user);
+        setUser(user);
+        setIsLoggedIn(true);
+      }
+    });
+  }, []);
+
   const createUser = (userInput) => {
     createUserWithEmailAndPassword(auth, userInput.email, userInput.password)
       .then((userCredential) => {
@@ -34,6 +50,7 @@ export const AuthProvider = ({ children }) => {
           credits: INITIAL_CREDITS,
           realizedPnL: INITIAL_PNL,
         });
+
         setUser(userCredential.user);
         setIsLoggedIn(true);
         navigate("markets");
