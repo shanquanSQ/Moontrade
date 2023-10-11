@@ -28,7 +28,6 @@ export const AuthProvider = ({ children }) => {
     console.log("auth.js useEffect triggered");
     // console.log("auth.js isLoggedIn: ", isLoggedIn);
     // console.log("auth.js user: ", user);
-
     onAuthStateChanged(auth, (user) => {
       console.log("auth.js onAuthStateChange Triggered");
       if (user) {

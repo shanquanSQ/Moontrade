@@ -17,9 +17,18 @@ export const PortfolioPage = () => {
   const navigate = useNavigate();
   const [credits, setCredits] = useState(0);
   const [positions, setPositions] = useState([]);
+  // const auth = useAuth();
+  // const userID = auth.user.uid; // might not always be defined user is not defined on page
   const auth = useAuth();
-  const userID = auth.user.uid; // might not always be defined user is not defined on page
-  // take out 21 line out
+  const [userID, setUserID] = useState(null); // <-- Initialize userID as null
+
+  useEffect(() => {
+    if (auth.user) {
+      console.log("logging: ", auth.user);
+      setUserID(auth.user.uid); // <-- Set the userID when auth.user is available
+    }
+  });
+
   const db = getDatabase();
 
   const calculateTrades = async (aggregatedTrades, trades) => {
@@ -47,75 +56,77 @@ export const PortfolioPage = () => {
 
   useEffect(() => {
     //if user.auth.id exists, then run this
-    const userRef = ref(db, `users/${userID}`);
-    onValue(userRef, (snapshot) => {
-      if (snapshot.exists()) {
-        console.log("User data from Firebase:", snapshot.val());
-        setCredits(snapshot.val().credits);
-      }
-    });
-
-    const ordersRef = query(
-      ref(db, "orders"),
-      orderByChild("userId"),
-      equalTo(userID)
-    );
-
-    onValue(ordersRef, (snapshot) => {
-      const trades = [];
-      const aggregatedTrades = {};
-
-      snapshot.forEach((childSnapshot) => {
-        trades.push(childSnapshot.val());
-      });
-
-      trades.forEach((trade) => {
-        if (!aggregatedTrades[trade.Symbol]) {
-          aggregatedTrades[trade.Symbol] = {
-            Symbol: trade.Symbol,
-            name: trade.name,
-            amount: 0,
-            totalBuyCost: 0,
-            totalSellCost: 0,
-            buyAmount: 0,
-            sellAmount: 0,
-            averageBuyPrice: 0,
-            averageSellPrice: 0,
-            unrealizedPL: 0,
-            realizedPL: 0,
-            currentPrice: 0,
-          };
-        }
-
-        const aggregatedTrade = aggregatedTrades[trade.Symbol];
-        if (trade.type === "buy") {
-          aggregatedTrade.amount += parseFloat(trade.amount);
-          aggregatedTrade.buyAmount += parseFloat(trade.amount);
-          aggregatedTrade.totalBuyCost +=
-            parseFloat(trade.amount) * trade.price;
-        } else if (trade.type === "sell") {
-          aggregatedTrade.amount -= parseFloat(trade.amount);
-          aggregatedTrade.sellAmount += parseFloat(trade.amount);
-          aggregatedTrade.totalSellCost +=
-            parseFloat(trade.amount) * trade.price;
-        }
-
-        aggregatedTrade.averageBuyPrice =
-          aggregatedTrade.totalBuyCost / aggregatedTrade.buyAmount || 0;
-        aggregatedTrade.averageSellPrice =
-          aggregatedTrade.totalSellCost / aggregatedTrade.sellAmount || 0;
-
-        // Calculate Realized P&L
-        if (trade.type === "sell") {
-          aggregatedTrade.realizedPL +=
-            (trade.price - aggregatedTrade.averageBuyPrice) *
-            parseFloat(trade.amount);
+    if (userID) {
+      const userRef = ref(db, `users/${userID}`);
+      onValue(userRef, (snapshot) => {
+        if (snapshot.exists()) {
+          console.log("User data from Firebase:", snapshot.val());
+          setCredits(snapshot.val().credits);
         }
       });
 
-      // Call the function to calculate trades after constructing aggregatedTrades
-      calculateTrades(aggregatedTrades, trades);
-    });
+      const ordersRef = query(
+        ref(db, "orders"),
+        orderByChild("userId"),
+        equalTo(userID)
+      );
+
+      onValue(ordersRef, (snapshot) => {
+        const trades = [];
+        const aggregatedTrades = {};
+
+        snapshot.forEach((childSnapshot) => {
+          trades.push(childSnapshot.val());
+        });
+
+        trades.forEach((trade) => {
+          if (!aggregatedTrades[trade.Symbol]) {
+            aggregatedTrades[trade.Symbol] = {
+              Symbol: trade.Symbol,
+              name: trade.name,
+              amount: 0,
+              totalBuyCost: 0,
+              totalSellCost: 0,
+              buyAmount: 0,
+              sellAmount: 0,
+              averageBuyPrice: 0,
+              averageSellPrice: 0,
+              unrealizedPL: 0,
+              realizedPL: 0,
+              currentPrice: 0,
+            };
+          }
+
+          const aggregatedTrade = aggregatedTrades[trade.Symbol];
+          if (trade.type === "buy") {
+            aggregatedTrade.amount += parseFloat(trade.amount);
+            aggregatedTrade.buyAmount += parseFloat(trade.amount);
+            aggregatedTrade.totalBuyCost +=
+              parseFloat(trade.amount) * trade.price;
+          } else if (trade.type === "sell") {
+            aggregatedTrade.amount -= parseFloat(trade.amount);
+            aggregatedTrade.sellAmount += parseFloat(trade.amount);
+            aggregatedTrade.totalSellCost +=
+              parseFloat(trade.amount) * trade.price;
+          }
+
+          aggregatedTrade.averageBuyPrice =
+            aggregatedTrade.totalBuyCost / aggregatedTrade.buyAmount || 0;
+          aggregatedTrade.averageSellPrice =
+            aggregatedTrade.totalSellCost / aggregatedTrade.sellAmount || 0;
+
+          // Calculate Realized P&L
+          if (trade.type === "sell") {
+            aggregatedTrade.realizedPL +=
+              (trade.price - aggregatedTrade.averageBuyPrice) *
+              parseFloat(trade.amount);
+          }
+        });
+
+        // Call the function to calculate trades after constructing aggregatedTrades
+        calculateTrades(aggregatedTrades, trades);
+      });
+    }
   }, [db]);
 
   return (
