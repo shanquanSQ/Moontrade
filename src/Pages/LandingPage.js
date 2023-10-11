@@ -4,16 +4,11 @@ import { useEffect } from "react";
 
 export const LandingPage = () => {
   const navigate = useNavigate();
-  // const userAuth = useAuth();
-
-  // // useEffect(() => {
-
-  // // }, []);
 
   return (
     <>
       <div className="flex flex-row justify-center h-[100vh]">
-        <div className="flex flex-col justify-between gap-[10rem] p-[2rem] pt-[15rem] min-w-[30%]  ">
+        <div className="flex flex-col justify-between  p-[2rem] pt-[7rem] min-w-[30%]  ">
           <div className="flex flex-row justify-center w-[100%]  ">
             <div className="relative left-[-25%] w-[40%]">
               <img
