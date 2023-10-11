@@ -59,42 +59,41 @@ export function Trade() {
   const [stockChartData, setStockChartData] = useState([]); // Data for the chart
   const [currentHolding, setCurrentHolding] = useState(0);
 
+  const [userWatchList, setUserWatchList] = useState([]); // list of KEY:VALUE => SYMBOL:SYMBOL
+
   useEffect(() => {
     /////////////////////////////////////////
     // Polygon.io API call to get Daily Open/Close data.
     // Need to run the API call 30 times to get monthly data.
     ////////////////////////////////////////
 
+    // Need to un-hardcode this
     const daysInfo = getDatesInMonth(9, 2023);
-    // console.log("days info is : ", daysInfo);
-    const chartInfo = [];
 
-    const getOneDayData = async (eachDate) => {
-      console.log("each date is: ", eachDate);
-      return await axios.get(
-        `https://api.polygon.io/v1/open-close/AAPL/${eachDate.toString()}?adjusted=true&apiKey=${
-          process.env.REACT_APP_POLYGON_API_KEY
-        }`
+    const fetchData = async () => {
+      const collectedAPIcall = daysInfo.map((eachDate) =>
+        axios
+          .get(
+            `https://api.polygon.io/v1/open-close/AAPL/${eachDate.toString()}?adjusted=true&apiKey=${
+              process.env.REACT_APP_POLYGON_API_KEY
+            }`
+          )
+          .then((response) => {
+            return { time: response.data.from, value: response.data.close };
+          })
+          .catch((error) => {
+            console.error(`Error fetching data for date: ${eachDate}`);
+          })
       );
+
+      const allDaysData = await Promise.all(collectedAPIcall);
+      // To get rid of all the undefined weekends
+      const validDaysData = allDaysData.filter(Boolean);
+
+      setStockChartData(validDaysData);
     };
 
-    const getAllDaysData = async (alldays) => {
-      for (let i = 0; i < alldays.length; i++) {
-        try {
-          const response = await getOneDayData(alldays[i]);
-          const data = response.data;
-
-          chartInfo.push({ time: data.from, value: data.close });
-        } catch (error) {
-          console.log(error);
-        }
-      }
-      // This console.log will show the sequence of how the async functions run
-      console.log("chart is: ", chartInfo);
-      setStockChartData(chartInfo);
-    };
-
-    getAllDaysData(daysInfo);
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -129,7 +128,7 @@ export function Trade() {
           volume: priceData.q,
           description: detailData.description,
           homepageURL: detailData.homepage_url,
-          // logoURL: detailData.branding.logo_url,  //throwing an error
+          logoURL: detailData.branding.logo_url, //throwing an error
           marketCap: detailData.market_cap,
         });
       })
@@ -183,6 +182,27 @@ export function Trade() {
     };
 
     updateCreditsAndSaveOrder(orderData);
+  };
+
+  // Listener to detect changes to Watchlist
+  // useEffect(() => {
+  //   const userWatchListRef = ref(db, `users/${userID}/watchlist/`);
+  //   onValue(userWatchListRef, (snapshot) => {
+  //     console.log("Watchlist onValue triggered");
+  //     console.log(snapshot);
+  //     // const data = [...snapshot];
+  //     // setUserWatchList(data);
+  //   });
+  // }, []);
+
+  const handleSaveToWatchlist = () => {
+    // add to user branch
+    // Find the watchlist in the database. Will be tagged to each user.
+    const userWatchListRef = ref(db, `users/${userID}/watchlist/`);
+    set(userWatchListRef, {
+      // [Symbol]: `watch_${userID}`,
+      [Symbol]: `${Symbol}`,
+    });
   };
 
   const isValidTransaction = () => {
@@ -277,6 +297,9 @@ export function Trade() {
             <h3 className="text-lg">
               Your Current Holdings for {stockData.name}: {currentHolding}
             </h3>
+            <button className="primary-cta-btn" onClick={handleSaveToWatchlist}>
+              Add to WatchList
+            </button>
           </div>
         )}
 
