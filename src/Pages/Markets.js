@@ -76,40 +76,64 @@ export function Markets() {
   }, [sortType]);
 
   return (
-    <div>
-      <select onChange={(e) => setSortType(e.target.value)}>
-        <option value="name">Alphabetical</option>
-        <option value="volume">Volume</option>
-      </select>
+    <div className="flex flex-col items-center justify-center h-screen font-sans bg-gray-800 text-white">
+      <div className="w-full max-w-6xl px-4">
+        <h1>Markets</h1>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Ticker</th>
-            <th>Name</th>
-            <th>Last Close</th>
-            <th>Volume</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {stocks.map((stock) => (
-            <tr key={stock.Symbol}>
-              <td>
-                <Link to={`/trade/${stock.Symbol}`}>{stock.Symbol}</Link>
-              </td>
-              <td>
-                <Link to={`/trade/${stock.Symbol}`}>{stock.Name}</Link>
-              </td>
-              <td>{stock.close}</td>
-              <td>{stock.volume}</td>
-              <td>
-                <button>Add to Watchlist</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        <div className="flex flex-col items-center justify-center h-screen font-sans">
+          <div className="table-responsive bg-white text-black rounded-lg shadow-lg p-4">
+            <div className="flex flex-row justify-center w-full">
+              <select
+                className="my-2 primary-cta-btn"
+                onChange={(e) => setSortType(e.target.value)}
+              >
+                <option value="name">Alphabetical</option>
+                <option value="volume">Volume</option>
+              </select>
+            </div>
+            <table className="w-full border-collapse bg-white rounded-lg shadow-lg">
+              <thead>
+                <tr className="text-gray-800">
+                  <th className="py-2 px-4 border-b">Ticker</th>
+                  <th className="py-2 px-4 border-b">Name</th>
+                  <th className="py-2 px-4 border-b">Last Close</th>
+                  <th className="py-2 px-4 border-b">Volume</th>
+                  {/* <th className="py-2 px-4 border-b">Action</th> */}
+                </tr>
+              </thead>
+              <tbody>
+                {stocks.map((stock) => (
+                  <tr key={stock.Symbol} className="hover:bg-gray-100">
+                    <td className="py-2 px-4">
+                      <Link
+                        to={`/trade/${stock.Symbol}`}
+                        className="text-indigo-600 hover:text-indigo-800"
+                      >
+                        {stock.Symbol}
+                      </Link>
+                    </td>
+                    <td className="py-2 px-4">
+                      <Link
+                        to={`/trade/${stock.Symbol}`}
+                        className="text-indigo-600 hover:text-indigo-800"
+                      >
+                        {stock.Name}
+                      </Link>
+                    </td>
+                    <td className="py-2 px-4">{stock.close}</td>
+                    <td className="py-2 px-4">{stock.volume}</td>
+                    {/* <td className="py-2 px-4">
+                    <button className="primary-cta-btn">
+                      Add to Watchlist
+                    </button>
+                  </td> */}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -15,18 +15,18 @@ export const UserPage = () => {
   const navigate = useNavigate();
 
   return (
-    <>
-      <div>User Profile Goes here</div>
-      <div>
-        {/* Welcome{" "} */}
-        {userAuth.isLoggedIn === false ? "Anonymous" : userAuth.user.email}
+    <div className="flex flex-col items-center justify-center h-screen font-sans bg-gray-800 text-white">
+      <div className="w-full max-w-6xl px-4 text-center">
+        <h1>User Profile</h1>
+
+        <div className="my-4">
+          {userAuth.isLoggedIn === false ? "Anonymous" : userAuth.user.email}
+        </div>
+
+        <button onClick={userAuth.signOutUser} className="primary-cta-btn mt-4">
+          Log Out
+        </button>
       </div>
-      <input
-        type="button"
-        onClick={userAuth.signOutUser}
-        value="Log Out"
-        className="btn btn-neutral btn-sm"
-      />
-    </>
+    </div>
   );
 };

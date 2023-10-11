@@ -218,85 +218,95 @@ export function Trade() {
   };
 
   return (
-    <div>
-      <h1>
-        Trading Page for {stockData.name} ({Symbol})
-      </h1>
-      <p>Latest Price: ${stockData.latestPrice}</p>
-      <p>Volume: {stockData.volume}</p>
+    <div className="flex flex-col items-center justify-center h-screen font-sans bg-gray-800 text-white">
+      <div className="w-full max-w-6xl px-4">
+        <h1>
+          Trade {stockData.name} ({Symbol})
+        </h1>
+        <p className="my-2">Latest Price: ${stockData.latestPrice}</p>
+        <p className="mb-4">Volume: {stockData.volume}</p>
 
-      <table>
-        <tbody>
-          <tr>
-            <td>Name</td>
-            <td>{stockData.name}</td>
-          </tr>
-          <tr>
-            <td>Description</td>
-            <td>{stockData.description}</td>
-          </tr>
-          <tr>
-            <td>Homepage URL</td>
-            <td>
-              <a
-                href={stockData.homepageURL}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {stockData.homepageURL}
-              </a>
-            </td>
-          </tr>
-          <tr>
-            <td>Logo</td>
-            <td>
-              <img
-                src={stockData.logoURL}
-                alt={`${stockData.name} logo`}
-                style={{ width: "50px", height: "50px" }}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Market Capitalization</td>
-            <td>${(stockData.marketCap / 1000000000).toFixed(2)} Billion</td>
-          </tr>
-        </tbody>
-      </table>
+        <div className="table-responsive bg-white text-black rounded-lg shadow-lg p-4 mb-4">
+          <table className="w-full border-collapse">
+            <tbody>
+              <tr>
+                <td>Name</td>
+                <td>{stockData.name}</td>
+              </tr>
+              <tr>
+                <td>Description</td>
+                <td>{stockData.description}</td>
+              </tr>
+              <tr>
+                <td>Homepage URL</td>
+                <td>
+                  <a
+                    href={stockData.homepageURL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {stockData.homepageURL}
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td>Logo</td>
+                <td>
+                  <img
+                    src={stockData.logoURL}
+                    alt={`${stockData.name} logo`}
+                    style={{ width: "50px", height: "50px" }}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>Market Capitalization</td>
+                <td>
+                  ${(stockData.marketCap / 1000000000).toFixed(2)} Billion
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-      {/* Displaying the user's current balance & stock holding if available */}
-      {typeof userCredits === "number" && (
-        <>
-          <h3>Your Current Balance: ${userCredits.toFixed(2)}</h3>
-          <h3>
-            Your Current Holdings for {stockData.name}: {currentHolding}
-          </h3>
-        </>
-      )}
+        {typeof userCredits === "number" && (
+          <div className="mt-4">
+            <h3 className="text-lg">
+              Your Current Balance: ${userCredits.toFixed(2)}
+            </h3>
+            <h3 className="text-lg">
+              Your Current Holdings for {stockData.name}: {currentHolding}
+            </h3>
+          </div>
+        )}
 
-      {/* Displaying the user's current stock holdings if available */}
+        <div className="mt-4">
+          <TradingView ticker={Symbol} data={stockChartData} />
+        </div>
 
-      {/* Your TradingView chart can go here */}
-      {/* {console.log("the stock chart data: ",  stockChartData)} */}
-      <TradingView ticker={Symbol} data={stockChartData} />
-
-      {/* Remaining code for buying/selling and other functionalities */}
-      <form onSubmit={handleOrderSubmit}>
-        <select
-          value={orderType}
-          onChange={(e) => setOrderType(e.target.value)}
-        >
-          <option value="buy">Buy</option>
-          <option value="sell">Sell</option>
-        </select>
-        <input
-          type="number"
-          value={orderAmount}
-          onChange={(e) => setOrderAmount(e.target.value)}
-          placeholder="Amount"
-        />
-        <button type="submit">Confirm Order</button>
-      </form>
+        <form className="mt-4" onSubmit={handleOrderSubmit}>
+          <div className="flex items-center space-x-4">
+            <select
+              className="rounded border p-2 text-black"
+              value={orderType}
+              onChange={(e) => setOrderType(e.target.value)}
+            >
+              <option value="buy">Buy</option>
+              <option value="sell">Sell</option>
+            </select>
+            <input
+              className="rounded border p-2 text-black"
+              type="number"
+              value={orderAmount}
+              onChange={(e) => setOrderAmount(e.target.value)}
+              placeholder="Amount"
+            />
+            <button className="primary-cta-btn" type="submit">
+              Confirm Order
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

@@ -117,45 +117,52 @@ export const PortfolioPage = () => {
   }, [db]);
 
   return (
-    <>
-      <div>Portfolio Page</div>
-      <h2>Balance: ${credits.toFixed(2)}</h2>
-      <h3>Positions:</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Symbol</th>
-            <th>Name</th>
-            <th>Current Price</th>
-            <th>Current Holding</th>
-            <th>Average Buy Price</th>
-            <th>Amount Bought</th>
-            <th>Average Sell Price</th>
-            <th>Amount Sold</th>
-            <th>Unrealized P&L</th>
-            <th>Realized P&L</th>
-          </tr>
-        </thead>
-        <tbody>
-          {positions.map((position, index) => (
-            <tr key={index}>
-              <td>
-                <Link to={`/trade/${position.Symbol}`}>{position.Symbol}</Link>
-              </td>
-              <td>{position.name}</td>
-              <td>${position.currentPrice.toFixed(2)}</td>
-              <td>{position.amount}</td>
-              <td>${position.averageBuyPrice.toFixed(2)}</td>
-              <td>{position.buyAmount.toFixed(0)}</td>
-              <td>${position.averageSellPrice.toFixed(2)}</td>
-              <td>{position.sellAmount.toFixed(0)}</td>
-              <td>${position.unrealizedPL.toFixed(2)}</td>
-              <td>${position.realizedPL.toFixed(2)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </>
+    <div className="flex flex-col items-center justify-center h-screen font-sans bg-gray-800 text-white">
+      <div className="w-full max-w-6xl px-4">
+        <h1>Portfolio Page</h1>
+        <h2 className="text-xl mb-2">Balance: ${credits.toFixed(2)}</h2>
+        <h3 className="text-lg mb-4">Positions:</h3>
+
+        <div className="table-responsive bg-white text-black rounded-lg shadow-lg p-4">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="text-gray-800">
+                <th>Symbol</th>
+                <th>Name</th>
+                <th>Current Price</th>
+                <th>Current Holding</th>
+                <th>Average Buy Price</th>
+                <th>Amount Bought</th>
+                <th>Average Sell Price</th>
+                <th>Amount Sold</th>
+                <th>Unrealized P&L</th>
+                <th>Realized P&L</th>{" "}
+              </tr>
+            </thead>
+            <tbody>
+              {positions.map((position, index) => (
+                <tr key={index} className="hover:bg-gray-100">
+                  <td>
+                    <Link to={`/trade/${position.Symbol}`}>
+                      {position.Symbol}
+                    </Link>
+                  </td>
+                  <td>{position.name}</td>
+                  <td>${position.currentPrice.toFixed(2)}</td>
+                  <td>{position.amount}</td>
+                  <td>${position.averageBuyPrice.toFixed(2)}</td>
+                  <td>{position.buyAmount.toFixed(0)}</td>
+                  <td>${position.averageSellPrice.toFixed(2)}</td>
+                  <td>{position.sellAmount.toFixed(0)}</td>
+                  <td>${position.unrealizedPL.toFixed(2)}</td>
+                  <td>${position.realizedPL.toFixed(2)}</td>{" "}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
 };
 
