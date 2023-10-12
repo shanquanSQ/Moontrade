@@ -12,6 +12,8 @@ import { PositionPage } from "./Pages/PositionPage";
 import { UserPage } from "./Pages/UserPage";
 import { Trade } from "./Pages/Trade";
 import { PortfolioPage } from "./Pages/PortfolioPage";
+import { LandingPage } from "./Pages/LandingPage";
+import { NewSignUpPage } from "./Pages/NewSignUpPage";
 
 // Import Components
 import { Navbar } from "./Components/NavBar/Navbar.js";
@@ -32,27 +34,37 @@ function App() {
   const [showNavBar, setShowNavBar] = useState(false);
   const userAuth = useAuth();
 
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      const uid = user.uid;
-      setShowNavBar(true);
-    } else {
-      // console.log("user is signed out");
-    }
-  });
-
   useEffect(() => {
-    setShowNavBar(!!(userAuth && userAuth.user));
-  }, [userAuth]);
+    // console.log("App.js useEffect is triggered");
+    // console.log("userauth context is: ", userAuth); // Not sure why this is always initialised as null even when it is in useEffect.
 
-  console.log("app.js userAuth: ", userAuth);
-  console.log("navbar status: ", showNavBar);
+    onAuthStateChanged(auth, (user) => {
+      console.log("App.js onAuthStateChange Triggered");
+      if (user) {
+        console.log("user logged in: ", user);
+        setShowNavBar(true);
+      } else {
+        setShowNavBar(false);
+        console.log("user is signed out");
+      }
+    });
+  }, []);
+
+  // useEffect(() => {
+  //   setShowNavBar(!!(userAuth && userAuth.user));
+  // }, [userAuth]);
+
+  // console.log("app.js userAuth: ", userAuth);
+  // console.log("navbar status: ", showNavBar);
 
   return (
     <AuthProvider>
       {showNavBar && <Navbar />}
       <Routes>
-        <Route path="/" element={<LogInPage />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="login" element={<LogInPage />} />
+        <Route path="newsignup" element={<NewSignUpPage />} />
+
         <Route path="markets" element={<Markets />} />
         <Route path="user" element={<UserPage />} />
         <Route path="portfolio" element={<PortfolioPage />} />

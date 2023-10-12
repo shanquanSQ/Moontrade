@@ -31,28 +31,30 @@ export function Markets() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const fetchedStocks = [];
-
-      for (let stock of stockList) {
-        try {
-          const lastWorkingDate = getLastWorkingDay();
-
-          const response = await axios.get(
+      const lastWorkingDate = getLastWorkingDay();
+      const promises = stockList.map((stock) =>
+        axios
+          .get(
             `https://api.polygon.io/v1/open-close/${stock.Symbol}/${lastWorkingDate}?adjusted=true&apiKey=${process.env.REACT_APP_POLYGON_API_KEY}`
-          );
+          )
+          .then((response) => {
+            return {
+              ...stock,
+              ...response.data,
+            };
+          })
+          .catch((error) => {
+            console.error(`Error fetching data for ${stock.Symbol}`, error);
+          })
+      );
 
-          const mergedData = {
-            ...stock,
-            ...response.data,
-          };
+      // Fetch all stock data in parallel
+      const fetchedStocks = await Promise.all(promises);
 
-          fetchedStocks.push(mergedData);
-        } catch (error) {
-          console.error(`Error fetching data for ${stock.Symbol}`, error);
-        }
-      }
+      // Filter out any undefined values (due to errors in fetching)
+      const validStocks = fetchedStocks.filter(Boolean);
 
-      setStocks(fetchedStocks);
+      setStocks(validStocks);
     };
 
     fetchData();
@@ -74,40 +76,65 @@ export function Markets() {
   }, [sortType]);
 
   return (
-    <div>
-      <select onChange={(e) => setSortType(e.target.value)}>
-        <option value="name">Alphabetical</option>
-        <option value="volume">Volume</option>
-      </select>
+    <div className="structure">
+      <div className="contentcontainer">
+        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+          <h1 className="heading1">Markets</h1>
+        </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Ticker</th>
-            <th>Name</th>
-            <th>Last Close</th>
-            <th>Volume</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {stocks.map((stock) => (
-            <tr key={stock.Symbol}>
-              <td>
-                <Link to={`/trade/${stock.Symbol}`}>{stock.Symbol}</Link>
-              </td>
-              <td>
-                <Link to={`/trade/${stock.Symbol}`}>{stock.Name}</Link>
-              </td>
-              <td>{stock.close}</td>
-              <td>{stock.volume}</td>
-              <td>
-                <button>Add to Watchlist</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        <div className="flex flex-row justify-between">
+          <select
+            className="my-2 primary-cta-btn"
+            onChange={(e) => setSortType(e.target.value)}
+          >
+            <option value="name">Sort by Alphabet</option>
+            <option value="volume">Sort by Volume</option>
+          </select>
+        </div>
+
+        <div className="table-responsive bg-gray text-black rounded-lg shadow-lg p-4">
+          <table className="w-full border-collapse bg-white rounded-lg shadow-lg">
+            <thead>
+              <tr className="text-gray-800">
+                <th className="py-2 px-4 border-b">Ticker</th>
+                <th className="py-2 px-4 border-b">Name</th>
+                <th className="py-2 px-4 border-b">Last Close</th>
+                <th className="py-2 px-4 border-b">Volume</th>
+                {/* <th className="py-2 px-4 border-b">Action</th> */}
+              </tr>
+            </thead>
+            <tbody>
+              {stocks.map((stock) => (
+                <tr key={stock.Symbol} className="hover:bg-fuchsia-400">
+                  <td className="py-2 px-4">
+                    <Link
+                      to={`/trade/${stock.Symbol}`}
+                      className="text-indigo-600 hover:text-indigo-800"
+                    >
+                      {stock.Symbol}
+                    </Link>
+                  </td>
+                  <td className="py-2 px-4">
+                    <Link
+                      to={`/trade/${stock.Symbol}`}
+                      className="text-indigo-600 hover:text-indigo-800"
+                    >
+                      {stock.Name}
+                    </Link>
+                  </td>
+                  <td className="py-2 px-4">{stock.close}</td>
+                  <td className="py-2 px-4">{stock.volume}</td>
+                  {/* <td className="py-2 px-4">
+                    <button className="primary-cta-btn">
+                      Add to Watchlist
+                    </button>
+                  </td> */}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

@@ -6,8 +6,9 @@ import {
   setPersistence,
   browserSessionPersistence,
   signOut,
+  onAuthStateChanged,
 } from "firebase/auth";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { createContext } from "react";
 import { auth } from "../firebase/firebase.js";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +22,21 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   const INITIAL_CREDITS = 100000;
+  const INITIAL_PNL = 0;
+
+  useEffect(() => {
+    console.log("auth.js useEffect triggered");
+    // console.log("auth.js isLoggedIn: ", isLoggedIn);
+    // console.log("auth.js user: ", user);
+    onAuthStateChanged(auth, (user) => {
+      console.log("auth.js onAuthStateChange Triggered");
+      if (user) {
+        console.log("auth.js user logged in: ", user);
+        setUser(user);
+        setIsLoggedIn(true);
+      }
+    });
+  }, []);
 
   const createUser = (userInput) => {
     createUserWithEmailAndPassword(auth, userInput.email, userInput.password)
@@ -31,7 +47,9 @@ export const AuthProvider = ({ children }) => {
 
         set(userRef, {
           credits: INITIAL_CREDITS,
+          realizedPnL: INITIAL_PNL,
         });
+
         setUser(userCredential.user);
         setIsLoggedIn(true);
         navigate("markets");
@@ -42,21 +60,23 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signInUser = (userInput) => {
-    setPersistence(auth, browserSessionPersistence)
-      .then(() => {
-        signInWithEmailAndPassword(auth, userInput.email, userInput.password)
-          .then((userCredential) => {
-            setUser(userCredential.user);
-            setIsLoggedIn(true);
-            navigate("markets");
-          })
-          .catch((error) => {
-            console.error("Error signing in:", error);
-          });
+    ///// SetPersistence is what is storing the userAuth whenever we refresh, so even when you log out the navBar is not reset.
+    //// But still having runtime errors when i refresh a page
+    // setPersistence(auth, browserSessionPersistence)
+    //   .then(() => {
+    signInWithEmailAndPassword(auth, userInput.email, userInput.password)
+      .then((userCredential) => {
+        setUser(userCredential.user);
+        setIsLoggedIn(true);
+        navigate("markets");
       })
       .catch((error) => {
-        console.error("Error setting persistence:", error);
+        console.error("Error signing in:", error);
       });
+    // })
+    // .catch((error) => {
+    //   console.error("Error setting persistence:", error);
+    // });
   };
 
   const signOutUser = () => {

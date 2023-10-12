@@ -1,5 +1,14 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;500;600;700&display=swap");
+
 .App {
-  text-align: center;
+  font-family: "Open Sans", sans-serif;
+  background-color: #282c34; /* Consider using bg-gray-800 if you are using a dark theme */
+  color: white; /* Consider using text-white for text color */
+  min-height: 100vh; /* Full height to ensure the background color covers the full viewport */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .App-logo {
@@ -35,4 +44,100 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* APP Flex Structure */
+.structure {
+  @apply flex flex-col items-center justify-start h-max min-h-screen py-16 px-4 font-sans bg-gray-800 text-white;
+}
+
+.contentcontainer {
+  @apply w-full max-w-xl;
+}
+
+/* Moontrade Logo CSS */
+.moontradelogo-primary {
+  font-family: "Open Sans", sans-serif;
+  margin: 0;
+  padding: 0;
+  font-weight: bold;
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.5))
+    drop-shadow(0 1px 1px rgb(0 0 0 / 0.06));
+
+  @apply text-[2.5rem] lg:text-[4rem] leading-[0px] 
+    text-white;
+}
+
+/* BUTTONS CSS */
+.primary-cta-btn {
+  font-family: "Open Sans", sans-serif;
+
+  @apply rounded bg-[#5D5FEF] px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-white transition focus:outline-none focus:ring active:bg-indigo-500 active:scale-95;
+}
+
+.secondary-cta-btn {
+  font-family: "Open Sans", sans-serif;
+
+  @apply rounded bg-fuchsia-400 px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-slate-700  transition focus:outline-none focus:ring active:bg-fuchsia-500 active:scale-95;
+}
+
+.neutral-btn-one {
+  font-family: "Open Sans", sans-serif;
+
+  @apply rounded bg-transparent px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-slate-500 border border-slate-400 transition focus:outline-none focus:ring active:bg-slate-200 active:scale-95;
+}
+
+/* UTILITY BTNS */
+.closebtn {
+  font-family: "Open Sans", sans-serif;
+  width: 2rem;
+  height: 2rem;
+  text-align: center;
+
+  @apply bg-transparent text-[#9092ff] font-normal text-[.8rem] px-[.6rem] py-[.2rem] hover:text-orange-500 active:scale-90;
+}
+
+/* TABLE CSS */
+.table-responsive {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin-bottom: 1rem;
+}
+
+th,
+td {
+  padding: 0.75rem;
+  vertical-align: top;
+  border-top: 1px solid #dee2e6;
+}
+
+thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #dee2e6;
+}
+
+tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.075);
+}
+
+table a {
+  @apply text-[#9571FF] hover:text-[#9571FF] transition;
+}
+
+/* TEXT: HEADING */
+
+.heading1 {
+  @apply text-3xl font-semibold leading-6 text-white;
 }

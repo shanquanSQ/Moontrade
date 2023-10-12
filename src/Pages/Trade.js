@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 
 import {
+  get,
   getDatabase,
   ref,
   push,
@@ -10,6 +11,9 @@ import {
   onValue,
   runTransaction,
   set,
+  query,
+  orderByChild,
+  equalTo,
 } from "firebase/database";
 import { useAuth } from "../util/auth";
 import { TradingView } from "../Components/TradingView/TradingView";
@@ -54,6 +58,9 @@ export function Trade() {
   const userID = auth.user.uid; // This will give you the uid of the logged-in user
 
   const [stockChartData, setStockChartData] = useState([]); // Data for the chart
+  const [currentHolding, setCurrentHolding] = useState(0);
+
+  const [userWatchList, setUserWatchList] = useState([]); // list of KEY:VALUE => SYMBOL:SYMBOL
 
   useEffect(() => {
     /////////////////////////////////////////
@@ -61,36 +68,33 @@ export function Trade() {
     // Need to run the API call 30 times to get monthly data.
     ////////////////////////////////////////
 
+    // Need to un-hardcode this
     const daysInfo = getDatesInMonth(9, 2023);
-    // console.log("days info is : ", daysInfo);
-    const chartInfo = [];
 
-    const getOneDayData = async (eachDate) => {
-      console.log("each date is: ", eachDate);
-      return await axios.get(
-        `https://api.polygon.io/v1/open-close/AAPL/${eachDate.toString()}?adjusted=true&apiKey=${
-          process.env.REACT_APP_POLYGON_API_KEY
-        }`
+    const fetchData = async () => {
+      const collectedAPIcall = daysInfo.map((eachDate) =>
+        axios
+          .get(
+            `https://api.polygon.io/v1/open-close/AAPL/${eachDate.toString()}?adjusted=true&apiKey=${
+              process.env.REACT_APP_POLYGON_API_KEY
+            }`
+          )
+          .then((response) => {
+            return { time: response.data.from, value: response.data.close };
+          })
+          .catch((error) => {
+            console.error(`Error fetching data for date: ${eachDate}`);
+          })
       );
+
+      const allDaysData = await Promise.all(collectedAPIcall);
+      // To get rid of all the undefined weekends
+      const validDaysData = allDaysData.filter(Boolean);
+
+      setStockChartData(validDaysData);
     };
 
-    const getAllDaysData = async (alldays) => {
-      for (let i = 0; i < alldays.length; i++) {
-        try {
-          const response = await getOneDayData(alldays[i]);
-          const data = response.data;
-
-          chartInfo.push({ time: data.from, value: data.close });
-        } catch (error) {
-          console.log(error);
-        }
-      }
-      // This console.log will show the sequence of how the async functions run
-      console.log("chart is: ", chartInfo);
-      setStockChartData(chartInfo);
-    };
-
-    getAllDaysData(daysInfo);
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -125,7 +129,7 @@ export function Trade() {
           volume: priceData.q,
           description: detailData.description,
           homepageURL: detailData.homepage_url,
-          // logoURL: detailData.branding.logo_url,  //throwing an error
+          logoURL: detailData.branding.logo_url, //throwing an error
           marketCap: detailData.market_cap,
         });
       })
@@ -134,8 +138,40 @@ export function Trade() {
       });
   }, [Symbol]);
 
+  useEffect(() => {
+    const ordersRef = query(
+      ref(db, "orders"),
+      orderByChild("userId"),
+      equalTo(userID)
+    );
+
+    onValue(ordersRef, (snapshot) => {
+      const trades = [];
+      let stockHoldingAmount = 0;
+
+      snapshot.forEach((childSnapshot) => {
+        trades.push(childSnapshot.val());
+      });
+
+      trades.forEach((trade) => {
+        if (trade.Symbol === Symbol) {
+          if (trade.type === "buy") {
+            stockHoldingAmount += parseFloat(trade.amount);
+          } else if (trade.type === "sell") {
+            stockHoldingAmount -= parseFloat(trade.amount);
+          }
+        }
+      });
+
+      setCurrentHolding(stockHoldingAmount);
+    });
+  }, [userID, Symbol, db]);
+
   const handleOrderSubmit = (event) => {
     event.preventDefault();
+
+    if (!isValidTransaction()) return;
+
     const orderData = {
       userId: userID,
       Symbol: Symbol,
@@ -146,98 +182,158 @@ export function Trade() {
       type: orderType,
     };
 
-    // Save to Firebase Realtime Database and update credits
-    const orderRef = ref(db, "orders");
-    const userCreditsRef = ref(db, `users/${userID}/credits`);
+    updateCreditsAndSaveOrder(orderData);
+  };
 
-    runTransaction(userCreditsRef, (currentCredits) => {
-      if (orderType === "buy") {
-        return currentCredits - stockData.latestPrice * orderAmount;
-      } else if (orderType === "sell") {
-        return currentCredits + stockData.latestPrice * orderAmount;
+  const handleSaveToWatchlist = () => {
+    // instantiates watchlist for firebase RTDB
+    // (impt to note that it is just a reference to the db, it is not an empty string or empty list etc.)
+    const userWatchListRef = ref(db, `users/${userID}/watchlist/`);
+
+    get(userWatchListRef).then((snapshot) => {
+      const data = snapshot.val();
+      if (data === null) {
+        update(userWatchListRef, { [Symbol]: `${Symbol}` });
+      } else {
+        if (Symbol in data) {
+          console.log(
+            `Already in watchlist, Removing ${Symbol} from Watchlist`
+          );
+          update(userWatchListRef, { [Symbol]: null });
+        } else {
+          update(userWatchListRef, { [Symbol]: `${Symbol}` });
+        }
       }
+    });
+  };
 
-      return currentCredits; // If neither buy or sell, return the current amount
+  const isValidTransaction = () => {
+    if (parseFloat(orderAmount) <= 0) {
+      alert("Please enter a valid amount!");
+      return false;
+    }
+    if (orderType === "sell" && orderAmount > currentHolding) {
+      alert("You don't have enough stocks to sell!");
+      return false;
+    } else if (
+      orderType === "buy" &&
+      orderAmount * stockData.latestPrice > userCredits
+    ) {
+      alert("You don't have enough credits to buy this stock!");
+      return false;
+    }
+    return true;
+  };
+
+  const updateCreditsAndSaveOrder = (orderData) => {
+    const userCreditsRef = ref(db, `users/${userID}/credits`);
+    runTransaction(userCreditsRef, (currentCredits) => {
+      return orderType === "buy"
+        ? currentCredits - stockData.latestPrice * orderAmount
+        : orderType === "sell"
+        ? currentCredits + stockData.latestPrice * orderAmount
+        : currentCredits;
     }).then(() => {
-      const ordersRef = ref(db, "orders");
-      const newOrderRef = push(ordersRef);
+      const newOrderRef = push(ref(db, "orders"));
       set(newOrderRef, orderData);
     });
   };
 
   return (
-    <div>
-      <h1>
-        Trading Page for {stockData.name} ({Symbol})
-      </h1>
-      <p>Latest Price: ${stockData.latestPrice}</p>
-      <p>Volume: {stockData.volume}</p>
+    <div className="structure">
+      <div className="contentcontainer">
+        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl font-semibold leading-6 text-white">
+            Trade: {stockData.name} ({Symbol})
+          </h1>
+        </div>
+        <p className="my-2">Latest Price: ${stockData.latestPrice}</p>
+        <p className="mb-4">Volume: {stockData.volume}</p>
 
-      <table>
-        <tbody>
-          <tr>
-            <td>Name</td>
-            <td>{stockData.name}</td>
-          </tr>
-          <tr>
-            <td>Description</td>
-            <td>{stockData.description}</td>
-          </tr>
-          <tr>
-            <td>Homepage URL</td>
-            <td>
-              <a
-                href={stockData.homepageURL}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {stockData.homepageURL}
-              </a>
-            </td>
-          </tr>
-          <tr>
-            <td>Logo</td>
-            <td>
-              <img
-                src={stockData.logoURL}
-                alt={`${stockData.name} logo`}
-                style={{ width: "50px", height: "50px" }}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Market Capitalization</td>
-            <td>${(stockData.marketCap / 1000000000).toFixed(2)} Billion</td>
-          </tr>
-        </tbody>
-      </table>
+        {typeof userCredits === "number" && (
+          <div className="mt-4">
+            <h3 className="text-lg">
+              Your Current Balance: ${userCredits.toFixed(2)}
+            </h3>
+            <h3 className="text-lg">
+              Your Current Holdings for {stockData.name}: {currentHolding}
+            </h3>
+            <button className="primary-cta-btn" onClick={handleSaveToWatchlist}>
+              Add to WatchList
+            </button>
+          </div>
+        )}
 
-      {/* Displaying the user's current balance if available */}
-      {typeof userCredits === "number" && (
-        <h3>Your Current Balance: ${userCredits.toFixed(2)}</h3>
-      )}
+        <div className="mt-4">
+          <TradingView ticker={Symbol} data={stockChartData} />
+        </div>
 
-      {/* Your TradingView chart can go here */}
-      {/* {console.log("the stock chart data: ",  stockChartData)} */}
-      <TradingView ticker={Symbol} data={stockChartData} />
+        <form className="mt-4" onSubmit={handleOrderSubmit}>
+          <div className="flex items-center space-x-4">
+            <select
+              className="rounded border p-2 text-black"
+              value={orderType}
+              onChange={(e) => setOrderType(e.target.value)}
+            >
+              <option value="buy">Buy</option>
+              <option value="sell">Sell</option>
+            </select>
+            <input
+              className="rounded border p-2 text-black"
+              type="number"
+              value={orderAmount}
+              onChange={(e) => setOrderAmount(e.target.value)}
+              placeholder="Amount"
+            />
+            <button className="primary-cta-btn" type="submit">
+              Confirm Order
+            </button>
+          </div>
+        </form>
 
-      {/* Remaining code for buying/selling and other functionalities */}
-      <form onSubmit={handleOrderSubmit}>
-        <select
-          value={orderType}
-          onChange={(e) => setOrderType(e.target.value)}
-        >
-          <option value="buy">Buy</option>
-          <option value="sell">Sell</option>
-        </select>
-        <input
-          type="number"
-          value={orderAmount}
-          onChange={(e) => setOrderAmount(e.target.value)}
-          placeholder="Amount"
-        />
-        <button type="submit">Confirm Order</button>
-      </form>
+        <div className="table-responsive bg-white text-black rounded-lg shadow-lg p-4 mb-4">
+          <table className="w-full border-collapse">
+            <tbody>
+              <tr>
+                <td>Name</td>
+                <td>{stockData.name}</td>
+              </tr>
+              <tr>
+                <td>Description</td>
+                <td>{stockData.description}</td>
+              </tr>
+              <tr>
+                <td>Homepage URL</td>
+                <td>
+                  <a
+                    href={stockData.homepageURL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {stockData.homepageURL}
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td>Logo</td>
+                <td>
+                  <img
+                    src={stockData.logoURL}
+                    alt={`${stockData.name} logo`}
+                    style={{ width: "50px", height: "50px" }}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>Market Capitalization</td>
+                <td>
+                  ${(stockData.marketCap / 1000000000).toFixed(2)} Billion
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }
