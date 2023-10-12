@@ -68,6 +68,16 @@
     text-white;
 }
 
+/* Page Title */
+
+.titlestructure {
+  @apply min-w-0 flex-1 py-4;
+}
+
+.titleheading {
+  @apply text-2xl font-bold leading-7 text-white sm:truncate sm:text-3xl sm:tracking-tight;
+}
+
 /* BUTTONS CSS */
 .primary-cta-btn {
   font-family: "Open Sans", sans-serif;
@@ -111,45 +121,59 @@
 
 /* TABLE CSS */
 .table-responsive {
-  display: block;
-  width: 100%;
-  overflow-x: auto;
+  @apply block w-full overflow-x-auto;
   -webkit-overflow-scrolling: touch;
 }
 
 table {
-  width: 100%;
-  border-collapse: collapse;
-  border-spacing: 0;
-  margin-bottom: 1rem;
+  @apply min-w-full border-collapse mb-4 divide-y divide-gray-300;
 }
 
 th,
 td {
-  padding: 0.75rem;
+  @apply py-3 px-2;
   vertical-align: top;
-  border-top: 1px solid #dee2e6;
 }
 
 thead th {
-  vertical-align: bottom;
+  @apply text-left text-sm font-semibold text-gray-900 whitespace-nowrap;
+  vertical-align: center;
   border-bottom: 2px solid #dee2e6;
 }
 
-tbody tr:nth-of-type(odd) {
-  background-color: rgba(0, 0, 0, 0.05);
-}
+tbody {
+  @apply divide-y divide-gray-200 bg-white;
 
-tbody tr:hover {
-  background-color: rgba(0, 0, 0, 0.075);
+  tr {
+    @apply odd:bg-gray-100;
+    &:hover {
+      @apply bg-gray-200;
+    }
+  }
+
+  td {
+    @apply py-2 px-2 text-sm whitespace-nowrap text-gray-500;
+  }
 }
 
 table a {
-  @apply text-[#9571FF] hover:text-[#9571FF] transition;
+  @apply text-indigo-600 hover:text-indigo-900 transition;
 }
 
-/* TEXT: HEADING */
+/* STATS DATA */
 
-.heading1 {
-  @apply text-3xl font-semibold leading-6 text-white;
+.statsflex {
+  @apply mx-auto grid grid-cols-1 gap-px bg-gray-200 sm:grid-cols-2 lg:grid-cols-4;
+}
+
+.statsbox {
+  @apply flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 bg-white px-4 py-10 sm:px-6 xl:px-8;
+}
+
+.statsheader {
+  @apply text-sm font-medium leading-6 text-gray-500;
+}
+
+.statsdata {
+  @apply mt-1 text-xl font-semibold tracking-tight text-gray-900;
 }

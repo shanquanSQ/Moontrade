@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import stockList from "../sp100/sp100.json";
 import { Link } from "react-router-dom";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { ref, getDatabase, update, get } from "firebase/database";
 import { useAuth } from "../util/auth";
 
@@ -27,9 +28,18 @@ function getLastWorkingDay() {
   return `${year}-${month}-${day}`;
 }
 
+function formatCurrency(number) {
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+  return formatter.format(number);
+}
+
 export function Markets() {
   const [stocks, setStocks] = useState([]);
-  const [sortType, setSortType] = useState("name");
+  const [sortType, setSortType] = useState("");
+  const [sortDirection, setSortDirection] = useState("ascending");
   const [viewWatchList, setViewWatchList] = useState(false);
   const [watchListStocks, setWatchListStocks] = useState([]);
 
@@ -89,6 +99,15 @@ export function Markets() {
     });
   };
 
+  useEffect(() => {
+    console.log("onmount");
+    const userWatchListRef = ref(db, `users/${userID}/watchlist/`);
+
+    get(userWatchListRef).then((snapshot) => {
+      setWatchListStocks(snapshot.val());
+    });
+  }, []);
+
   const handleSaveToWatchlist = (ev) => {
     ev.preventDefault();
     // console.log(ev.target.id);
@@ -128,25 +147,34 @@ export function Markets() {
   };
 
   useEffect(() => {
-    const sortArray = (type) => {
-      const types = {
-        volume: "volume",
-        name: "name",
+    const sortArray = () => {
+      let sorted = [...stocks];
+      const compareFunc = (a, b) => {
+        if (sortType === "symbol") {
+          if (!a.Symbol) return 1;
+          if (!b.Symbol) return -1;
+          return a.Symbol.localeCompare(b.Symbol);
+        } else if (sortType === "volume") {
+          return (b.volume || 0) - (a.volume || 0);
+        }
       };
-      const sortProperty = types[type];
-      const sorted = [...stocks].sort(
-        (a, b) => (b[sortProperty] || 0) - (a[sortProperty] || 0)
-      );
+
+      sorted.sort((a, b) => {
+        const result = compareFunc(a, b);
+        return sortDirection === "ascending" ? result : -result;
+      });
+
       setStocks(sorted);
     };
-    sortArray(sortType);
-  }, [sortType]);
+
+    sortArray();
+  }, [sortType, sortDirection]);
 
   return (
     <div className="structure">
       <div className="contentcontainer">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <h1 className="heading1">Markets</h1>
+        <div className="titlestructure">
+          <h1 className="titleheading">Markets</h1>
         </div>
 
         <div className="flex flex-row w-[100%] justify-end">
@@ -165,104 +193,145 @@ export function Markets() {
         </div>
 
         <div className="table-responsive bg-gray text-black rounded-lg shadow-lg p-4">
-          <table className="w-full border-collapse bg-white rounded-lg shadow-lg">
-            <thead>
-              <tr className="text-gray-800">
-                <th className="py-2 px-4 border-b">Ticker</th>
-                <th className="py-2 px-4 border-b">Name</th>
-                <th className="py-2 px-4 border-b">Last Close</th>
-                <th className="py-2 px-4 border-b">Volume</th>
-                <th className="py-2 px-4 border-b">Watch</th>
-              </tr>
-            </thead>
-            {viewWatchList === true ? (
-              <tbody>
-                {stocks.map((stock) => {
-                  if (stock.Symbol in watchListStocks) {
-                    return (
-                      <tr
-                        key={stock.Symbol}
-                        className="h-[5rem] hover:bg-teal-200"
-                      >
-                        <td className="py-2 px-4 text-center">
-                          <Link
-                            to={`/trade/${stock.Symbol}`}
-                            className="text-indigo-600 hover:text-indigo-800"
-                          >
-                            {stock.Symbol}
-                          </Link>
-                        </td>
-                        <td className="py-2 px-4">
-                          <Link
-                            to={`/trade/${stock.Symbol}`}
-                            className="text-indigo-600 hover:text-indigo-800"
-                          >
-                            {stock.Name}
-                          </Link>
-                        </td>
-                        <td className="py-2 px-4">{stock.close}</td>
-                        <td className="py-2 px-4">{stock.volume}</td>
-                        <td className="py-2 px-4 text-center">
-                          <input
-                            type="button"
-                            id={stock.Symbol}
-                            className={
-                              stock.Symbol in watchListStocks
-                                ? "smallfunctionbtn-primary"
-                                : "smallfunctionbtn-neutral"
-                            }
-                            onClick={handleSaveToWatchlist}
-                            value={stock.Symbol in watchListStocks ? "✓" : "+"}
-                          />
-                        </td>
-                      </tr>
-                    );
-                  }
-                })}
-              </tbody>
-            ) : (
-              <tbody>
-                {stocks.map((stock) => (
-                  <tr
-                    key={stock.Symbol}
-                    className="h-[5rem] hover:bg-indigo-200"
-                  >
-                    <td className="py-2 px-4 text-center">
-                      <Link
-                        to={`/trade/${stock.Symbol}`}
-                        className="text-indigo-600 hover:text-indigo-800"
-                      >
-                        {stock.Symbol}
-                      </Link>
-                    </td>
-                    <td className="py-2 px-4">
-                      <Link
-                        to={`/trade/${stock.Symbol}`}
-                        className="text-indigo-600 hover:text-indigo-800"
-                      >
-                        {stock.Name}
-                      </Link>
-                    </td>
-                    <td className="py-2 px-4">{stock.close}</td>
-                    <td className="py-2 px-4">{stock.volume}</td>
-                    <td className="py-2 px-4 text-center">
-                      <input
-                        type="button"
-                        id={stock.Symbol}
-                        className={
-                          stock.Symbol in watchListStocks
-                            ? "smallfunctionbtn-primary"
-                            : "smallfunctionbtn-neutral"
+          <div className="table-responsive bg-gray text-black rounded-lg shadow-lg">
+            <table className="w-full border-collapse bg-white rounded-lg shadow-lg">
+              <thead>
+                <tr className="text-gray-800">
+                  <th className="py-2 px-4 border-b">
+                    Ticker{" "}
+                    <span
+                      className="ml-2 flex-none rounded bg-gray-100 text-gray-900 group-hover:bg-gray-200"
+                      onClick={() => {
+                        if (
+                          sortType === "symbol" &&
+                          sortDirection === "ascending"
+                        ) {
+                          setSortDirection("descending");
+                        } else {
+                          setSortType("symbol");
+                          setSortDirection("ascending");
                         }
-                        onClick={handleSaveToWatchlist}
-                        value={stock.Symbol in watchListStocks ? "✓" : "+"}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            )}
-          </table>
+                      }}
+                    >
+                      <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                  </th>
+
+                  <th className="py-2 px-4 border-b">Name</th>
+                  <th className="py-2 px-4 border-b">Last Close</th>
+                  <th className="py-2 px-4 border-b">
+                    Volume{" "}
+                    <span
+                      className="ml-2 flex-none rounded bg-gray-100 text-gray-900 group-hover:bg-gray-200"
+                      onClick={() => {
+                        if (
+                          sortType === "volume" &&
+                          sortDirection === "ascending"
+                        ) {
+                          setSortDirection("descending");
+                        } else {
+                          setSortType("volume");
+                          setSortDirection("ascending");
+                        }
+                      }}
+                    >
+                      <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                  </th>
+                  <th className="py-2 px-4 border-b">Watchlist</th>
+                </tr>
+              </thead>
+              {viewWatchList === true ? (
+                <tbody>
+                  {stocks.map((stock) => {
+                    if (stock.Symbol in watchListStocks) {
+                      return (
+                        <tr
+                          key={stock.Symbol}
+                          className="h-[5rem] hover:bg-teal-200"
+                        >
+                          <td className="py-2 px-4 text-center">
+                            <Link
+                              to={`/trade/${stock.Symbol}`}
+                              className="text-indigo-600 hover:text-indigo-800"
+                            >
+                              {stock.Symbol}
+                            </Link>
+                          </td>
+                          <td className="py-2 px-4">
+                            <Link
+                              to={`/trade/${stock.Symbol}`}
+                              className="text-indigo-600 hover:text-indigo-800"
+                            >
+                              {stock.Name}
+                            </Link>
+                          </td>
+                          <td className="py-2 px-4">{stock.close}</td>
+                          <td className="py-2 px-4">{stock.volume}</td>
+                          <td className="py-2 px-4 text-center">
+                            <input
+                              type="button"
+                              id={stock.Symbol}
+                              className={
+                                stock.Symbol in watchListStocks
+                                  ? "smallfunctionbtn-primary"
+                                  : "smallfunctionbtn-neutral"
+                              }
+                              onClick={handleSaveToWatchlist}
+                              value={
+                                stock.Symbol in watchListStocks ? "✓" : "+"
+                              }
+                            />
+                          </td>
+                        </tr>
+                      );
+                    }
+                  })}
+                </tbody>
+              ) : (
+                <tbody>
+                  {stocks.map((stock) => (
+                    <tr
+                      key={stock.Symbol}
+                      className="h-[5rem] hover:bg-indigo-200"
+                    >
+                      <td className="py-2 px-4 text-center">
+                        <Link
+                          to={`/trade/${stock.Symbol}`}
+                          className="text-indigo-600 hover:text-indigo-800"
+                        >
+                          {stock.Symbol}
+                        </Link>
+                      </td>
+                      <td className="py-2 px-4">
+                        <Link
+                          to={`/trade/${stock.Symbol}`}
+                          className="text-indigo-600 hover:text-indigo-800"
+                        >
+                          {stock.Name}
+                        </Link>
+                      </td>
+                      <td className="py-2 px-4">{stock.close}</td>
+                      <td className="py-2 px-4">{stock.volume}</td>
+                      <td className="py-2 px-4 text-center">
+                        <input
+                          type="button"
+                          id={stock.Symbol}
+                          className={
+                            stock.Symbol in watchListStocks
+                              ? "smallfunctionbtn-primary"
+                              : "smallfunctionbtn-neutral"
+                          }
+                          onClick={handleSaveToWatchlist}
+                          value={stock.Symbol in watchListStocks ? "✓" : "+"}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              )}
+            </table>
+          </div>
         </div>
       </div>
     </div>
