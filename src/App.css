@@ -46,6 +46,15 @@
   }
 }
 
+/* APP Flex Structure */
+.structure {
+  @apply flex flex-col items-center justify-start h-max min-h-screen py-16 px-4 font-sans bg-gray-800 text-white;
+}
+
+.contentcontainer {
+  @apply w-full max-w-xl;
+}
+
 /* Moontrade Logo CSS */
 .moontradelogo-primary {
   font-family: "Open Sans", sans-serif;
@@ -125,4 +134,10 @@ tbody tr:hover {
 
 table a {
   @apply text-[#9571FF] hover:text-[#9571FF] transition;
+}
+
+/* TEXT: HEADING */
+
+.heading1 {
+  @apply text-3xl font-semibold leading-6 text-white;
 }

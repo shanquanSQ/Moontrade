@@ -117,9 +117,13 @@ export const PortfolioPage = () => {
   }, [db]);
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen font-sans bg-gray-800 text-white">
-      <div className="w-full max-w-6xl px-4">
-        <h1>Portfolio Page</h1>
+    <div className="structure">
+      <div className="contentcontainer">
+        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl font-semibold leading-6 text-white">
+            Portfolio
+          </h1>
+        </div>
         <h2 className="text-xl mb-2">Balance: ${credits.toFixed(2)}</h2>
         <h3 className="text-lg mb-4">Positions:</h3>
 
