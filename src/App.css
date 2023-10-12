@@ -103,41 +103,43 @@
 
 /* TABLE CSS */
 .table-responsive {
-  display: block;
-  width: 100%;
-  overflow-x: auto;
+  @apply block w-full overflow-x-auto;
   -webkit-overflow-scrolling: touch;
 }
 
 table {
-  width: 100%;
-  border-collapse: collapse;
-  border-spacing: 0;
-  margin-bottom: 1rem;
+  @apply min-w-full border-collapse mb-4 divide-y divide-gray-300;
 }
 
 th,
 td {
-  padding: 0.75rem;
+  @apply py-3 px-2;
   vertical-align: top;
-  border-top: 1px solid #dee2e6;
 }
 
 thead th {
-  vertical-align: bottom;
+  @apply text-left text-sm font-semibold text-gray-900 whitespace-nowrap;
+  vertical-align: center;
   border-bottom: 2px solid #dee2e6;
 }
 
-tbody tr:nth-of-type(odd) {
-  background-color: rgba(0, 0, 0, 0.05);
-}
+tbody {
+  @apply divide-y divide-gray-200 bg-white;
 
-tbody tr:hover {
-  background-color: rgba(0, 0, 0, 0.075);
+  tr {
+    @apply odd:bg-gray-100;
+    &:hover {
+      @apply bg-gray-200;
+    }
+  }
+
+  td {
+    @apply py-2 px-2 text-sm whitespace-nowrap text-gray-500;
+  }
 }
 
 table a {
-  @apply text-[#9571FF] hover:text-[#9571FF] transition;
+  @apply text-indigo-600 hover:text-indigo-900 transition;
 }
 
 /* TEXT: HEADING */
