@@ -92,7 +92,7 @@ export function Markets() {
           </select>
         </div>
 
-        <div className="table-responsive bg-white text-black rounded-lg shadow-lg p-4">
+        <div className="table-responsive bg-gray text-black rounded-lg shadow-lg p-4">
           <table className="w-full border-collapse bg-white rounded-lg shadow-lg">
             <thead>
               <tr className="text-gray-800">
