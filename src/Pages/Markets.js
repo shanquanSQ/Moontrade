@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import stockList from "../sp100/sp100.json";
 import { Link } from "react-router-dom";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 function getLastWorkingDay() {
   const today = new Date();
@@ -25,9 +26,18 @@ function getLastWorkingDay() {
   return `${year}-${month}-${day}`;
 }
 
+function formatCurrency(number) {
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+  return formatter.format(number);
+}
+
 export function Markets() {
   const [stocks, setStocks] = useState([]);
-  const [sortType, setSortType] = useState("name");
+  const [sortType, setSortType] = useState("");
+  const [sortDirection, setSortDirection] = useState("ascending");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,19 +71,28 @@ export function Markets() {
   }, []);
 
   useEffect(() => {
-    const sortArray = (type) => {
-      const types = {
-        volume: "volume",
-        name: "name",
+    const sortArray = () => {
+      let sorted = [...stocks];
+      const compareFunc = (a, b) => {
+        if (sortType === "symbol") {
+          if (!a.Symbol) return 1;
+          if (!b.Symbol) return -1;
+          return a.Symbol.localeCompare(b.Symbol);
+        } else if (sortType === "volume") {
+          return (b.volume || 0) - (a.volume || 0);
+        }
       };
-      const sortProperty = types[type];
-      const sorted = [...stocks].sort(
-        (a, b) => (b[sortProperty] || 0) - (a[sortProperty] || 0)
-      );
+
+      sorted.sort((a, b) => {
+        const result = compareFunc(a, b);
+        return sortDirection === "ascending" ? result : -result;
+      });
+
       setStocks(sorted);
     };
-    sortArray(sortType);
-  }, [sortType]);
+
+    sortArray();
+  }, [sortType, sortDirection]);
 
   return (
     <div className="structure">
@@ -82,25 +101,52 @@ export function Markets() {
           <h1 className="heading1">Markets</h1>
         </div>
 
-        <div className="flex flex-row justify-between">
-          <select
-            className="my-2 primary-cta-btn"
-            onChange={(e) => setSortType(e.target.value)}
-          >
-            <option value="name">Sort by Alphabet</option>
-            <option value="volume">Sort by Volume</option>
-          </select>
-        </div>
-
         <div className="table-responsive bg-gray text-black rounded-lg shadow-lg p-4">
           <table className="w-full border-collapse bg-white rounded-lg shadow-lg">
             <thead>
               <tr className="text-gray-800">
-                <th className="py-2 px-4 border-b">Ticker</th>
+                <th className="py-2 px-4 border-b">
+                  Ticker{" "}
+                  <span
+                    className="ml-2 flex-none rounded bg-gray-100 text-gray-900 group-hover:bg-gray-200"
+                    onClick={() => {
+                      if (
+                        sortType === "symbol" &&
+                        sortDirection === "ascending"
+                      ) {
+                        setSortDirection("descending");
+                      } else {
+                        setSortType("symbol");
+                        setSortDirection("ascending");
+                      }
+                    }}
+                  >
+                    <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                </th>
+
                 <th className="py-2 px-4 border-b">Name</th>
                 <th className="py-2 px-4 border-b">Last Close</th>
-                <th className="py-2 px-4 border-b">Volume</th>
-                <th className="py-2 px-4 border-b">Watch</th>
+                <th className="py-2 px-4 border-b">
+                  Volume{" "}
+                  <span
+                    className="ml-2 flex-none rounded bg-gray-100 text-gray-900 group-hover:bg-gray-200"
+                    onClick={() => {
+                      if (
+                        sortType === "volume" &&
+                        sortDirection === "ascending"
+                      ) {
+                        setSortDirection("descending");
+                      } else {
+                        setSortType("volume");
+                        setSortDirection("ascending");
+                      }
+                    }}
+                  >
+                    <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                </th>
+                <th className="py-2 px-4 border-b">Watchlist</th>
               </tr>
             </thead>
             <tbody>
@@ -122,10 +168,10 @@ export function Markets() {
                       {stock.Name}
                     </Link>
                   </td>
-                  <td className="py-2 px-4">{stock.close}</td>
-                  <td className="py-2 px-4">{stock.volume}</td>
+                  <td className="py-2 px-4">{formatCurrency(stock.close)}</td>
+                  <td className="py-2 px-4">{formatCurrency(stock.volume)}</td>
                   <td className="py-2 px-4">
-                    <button className="primary-cta-btn">Add</button>
+                    <button className="primary-cta-btn">+</button>
                   </td>
                 </tr>
               ))}
