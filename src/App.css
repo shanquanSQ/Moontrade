@@ -48,7 +48,7 @@
 
 /* APP Flex Structure */
 .structure {
-  @apply flex flex-col items-center justify-start h-max min-h-screen py-16 px-4 font-sans bg-gray-800 text-white;
+  @apply flex flex-col items-center justify-start h-max min-h-screen pb-16 px-4 font-sans bg-gray-800 text-white;
 }
 
 .contentcontainer {
@@ -176,4 +176,30 @@ table a {
 
 .statsdata {
   @apply mt-1 text-xl font-semibold tracking-tight text-gray-900;
+}
+
+/* DESCRIPTION TABLE */
+
+.desc-table-structure-header {
+  @apply px-4 bg-white text-black p-4 mb-4;
+}
+
+.desc-table-structure-content {
+  @apply mt-6 border-t border-gray-200;
+}
+
+.desc-table-row {
+  @apply px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0;
+}
+
+.desc-table-header {
+  @apply text-base font-semibold leading-7;
+}
+
+.desc-table-title {
+  @apply text-sm font-medium leading-6;
+}
+
+.desc-table-text {
+  @apply mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0;
 }
