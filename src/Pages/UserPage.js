@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getAuth, signOut, updateEmail } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
 import { getDatabase, ref, set, get } from "firebase/database";
 import {
   getStorage,
@@ -8,24 +8,7 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { useAuth } from "../util/auth.js";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-
-const hideInfo = (info, isVisible) => {
-  if (isVisible) {
-    return info;
-  } else {
-    if (info.length <= 2) return info;
-
-    const firstChar = info.charAt(0);
-    const lastChar = info.charAt(info.length - 1);
-    const maskedInfo = `${firstChar}${"*".repeat(info.length - 2)}${lastChar}`;
-    return maskedInfo;
-  }
-};
-
-const storage = getStorage();
 
 export function UserPage() {
   const userAuth = useAuth();
@@ -36,8 +19,6 @@ export function UserPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [phoneNumberError, setPhoneNumberError] = useState("");
   const [profileImage, setProfileImage] = useState(null);
-  const [isPersonalDataVisible, setIsPersonalDataVisible] = useState(false);
-  const [email, setEmail] = useState("");
 
   const db = getDatabase();
   const navigate = useNavigate();
@@ -58,11 +39,10 @@ export function UserPage() {
           setSavedDisplayName(userData.displayName || "");
           setPhoneNumber(userData.phoneNumber || "");
           setSavedPhoneNumber(userData.phoneNumber || "");
-          setEmail(userData.email || "");
         }
 
         const profileImageRef = storageRef(
-          storage,
+          getStorage(),
           `profilePictures/${userAuth.user.uid}`
         );
         const downloadURL = await getStorageDownloadURL(profileImageRef);
@@ -86,6 +66,8 @@ export function UserPage() {
         phoneNumber,
       });
 
+      setSavedDisplayName(displayName);
+      setSavedPhoneNumber(phoneNumber);
       setIsEditing(false);
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -103,14 +85,10 @@ export function UserPage() {
     }
   };
 
-  const handleEyeClick = () => {
-    setIsPersonalDataVisible((prev) => !prev);
-  };
-
   const handleProfilePictureChange = async (e) => {
     const file = e.target.files[0];
     const profileImageRef = storageRef(
-      storage,
+      getStorage(),
       `profilePictures/${userAuth.user.uid}`
     );
 
@@ -153,31 +131,14 @@ export function UserPage() {
           <br />
           <div style={{ display: "flex" }}>
             <div style={{ flex: 1 }}>
-              <p>
-                Email:{" "}
-                {userAuth.user && (
-                  <span>
-                    {isPersonalDataVisible
-                      ? userAuth.user.email
-                      : hideInfo(userAuth.user.email, false)}
-                    <FontAwesomeIcon
-                      icon={isPersonalDataVisible ? faEye : faEyeSlash}
-                      onClick={handleEyeClick}
-                    />
-                  </span>
-                )}
-              </p>
+              <p>Email: {userAuth.user && userAuth.user.email}</p>
               <br />
               <label>
                 Display Name:
                 <br />
                 <input
                   type="text"
-                  value={
-                    isPersonalDataVisible
-                      ? displayName
-                      : hideInfo(savedDisplayName, isPersonalDataVisible)
-                  }
+                  value={isEditing ? displayName : savedDisplayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   readOnly={!isEditing}
                 />
@@ -188,11 +149,7 @@ export function UserPage() {
                 <br />
                 <input
                   type="text"
-                  value={
-                    isPersonalDataVisible
-                      ? phoneNumber
-                      : hideInfo(savedPhoneNumber, isPersonalDataVisible)
-                  }
+                  value={isEditing ? phoneNumber : savedPhoneNumber}
                   onChange={handlePhoneNumberChange}
                   readOnly={!isEditing}
                 />
