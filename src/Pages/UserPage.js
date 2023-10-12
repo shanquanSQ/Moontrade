@@ -46,7 +46,9 @@ export function UserPage() {
     };
     fetchUserData();
   }, [userAuth.user, db]);
-  const handleSave = async () => {
+  const handleSave = async (event) => {
+    event.preventDefault();
+
     try {
       const user = userAuth.user;
       if (!user) return;
@@ -62,6 +64,12 @@ export function UserPage() {
       console.error("Error updating profile:", error);
     }
   };
+
+  const toggleEditing = (event) => {
+    event.preventDefault();
+    setIsEditing(!isEditing);
+  };
+
   const handlePhoneNumberChange = (e) => {
     const value = e.target.value;
     const validPhoneNumber = /^\d+$/.test(value);
@@ -224,7 +232,7 @@ export function UserPage() {
                   ) : (
                     <button
                       className="secondary-cta-btn"
-                      onClick={() => setIsEditing(true)}
+                      onClick={toggleEditing}
                     >
                       Edit
                     </button>
