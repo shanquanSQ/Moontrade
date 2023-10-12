@@ -68,6 +68,16 @@
     text-white;
 }
 
+/* Page Title */
+
+.titlestructure {
+  @apply min-w-0 flex-1 py-4;
+}
+
+.titleheading {
+  @apply text-2xl font-bold leading-7 text-white sm:truncate sm:text-3xl sm:tracking-tight;
+}
+
 /* BUTTONS CSS */
 .primary-cta-btn {
   font-family: "Open Sans", sans-serif;
@@ -142,8 +152,20 @@ table a {
   @apply text-indigo-600 hover:text-indigo-900 transition;
 }
 
-/* TEXT: HEADING */
+/* STATS DATA */
 
-.heading1 {
-  @apply text-3xl font-semibold leading-6 text-white;
+.statsflex {
+  @apply mx-auto grid grid-cols-1 gap-px bg-gray-200 sm:grid-cols-2 lg:grid-cols-4;
+}
+
+.statsbox {
+  @apply flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 bg-white px-4 py-10 sm:px-6 xl:px-8;
+}
+
+.statsheader {
+  @apply text-sm font-medium leading-6 text-gray-500;
+}
+
+.statsdata {
+  @apply mt-1 text-xl font-semibold tracking-tight text-gray-900;
 }
