@@ -177,8 +177,16 @@ export function Markets() {
           <h1 className="titleheading">Markets</h1>
         </div>
 
-        <div className="flex flex-row w-[100%] justify-end">
-          <div>
+        <div className="sm:flex sm:items-center">
+          <div className="sm:flex-auto">
+            <h1 className="text-base font-semibold leading-6 text-white">
+              S&P 100 Stocks
+            </h1>
+            <p className="mt-2 text-sm text-white">
+              View Prices, Trade Stocks and Add to Watchlist
+            </p>
+          </div>
+          <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
             <button
               className={
                 viewWatchList === false
@@ -191,10 +199,9 @@ export function Markets() {
             </button>
           </div>
         </div>
-
-        <div className="table-responsive bg-gray text-black rounded-lg shadow-lg p-4">
-          <div className="table-responsive bg-gray text-black rounded-lg shadow-lg">
-            <table className="w-full border-collapse bg-white rounded-lg shadow-lg">
+        <div className="table-responsive bg-gray text-black">
+          <div className="table-responsive bg-gray text-black ">
+            <table className="w-full border-collapse bg-white">
               <thead>
                 <tr className="text-gray-800">
                   <th className="py-2 px-4 border-b">

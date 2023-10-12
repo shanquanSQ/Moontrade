@@ -11,6 +11,7 @@ import {
   query,
   orderByChild,
   equalTo,
+  update,
 } from "@firebase/database";
 
 export const PortfolioPage = () => {
@@ -20,6 +21,9 @@ export const PortfolioPage = () => {
   const auth = useAuth();
   const userID = auth.user.uid;
   const db = getDatabase();
+
+  const [portfolioPL, setPortfolioPL] = useState(0); // Portfolio PnL
+  const [numTrades, setNumTrades] = useState(0); // # of Trades Done
 
   const calculateTrades = async (aggregatedTrades, trades) => {
     for (const trade of trades) {
@@ -67,6 +71,9 @@ export const PortfolioPage = () => {
         trades.push(childSnapshot.val());
       });
 
+      const numberOfTrades = trades.length;
+      setNumTrades(numberOfTrades);
+
       trades.forEach((trade) => {
         if (!aggregatedTrades[trade.Symbol]) {
           aggregatedTrades[trade.Symbol] = {
@@ -111,6 +118,21 @@ export const PortfolioPage = () => {
         }
       });
 
+      // Calculate total portfolio P&L
+      let totalPL = 0;
+      for (const symbol in aggregatedTrades) {
+        totalPL += aggregatedTrades[symbol].realizedPL;
+      }
+      setPortfolioPL(totalPL);
+
+      // Update Firebase
+      try {
+        const userRef = ref(db, `users/${userID}`);
+        update(userRef, { realizedPnL: totalPL });
+      } catch (error) {
+        console.error("Error updating Firebase:", error);
+      }
+
       // Call the function to calculate trades after constructing aggregatedTrades
       calculateTrades(aggregatedTrades, trades);
     });
@@ -122,10 +144,39 @@ export const PortfolioPage = () => {
         <div className="titlestructure">
           <h1 className="titleheading">Portfolio</h1>
         </div>
-        <h2 className="text-xl mb-2">Balance: ${credits.toFixed(2)}</h2>
-        <h3 className="text-lg mb-4">Positions:</h3>
 
-        <div className="table-responsive bg-white text-black rounded-lg shadow-lg p-4">
+        <div className="sm:flex sm:items-center py-2">
+          <div className="sm:flex-auto">
+            <h1 className="text-base font-semibold leading-6 text-white">
+              Your Portfolio{" "}
+            </h1>
+            <p className="mt-2 text-sm text-white">
+              View Portfolio, P&L and Rank{" "}
+            </p>
+          </div>
+        </div>
+
+        {/* Stats Bar */}
+        <dl className="statsflex">
+          <div className="statsbox">
+            <dt className="statsheader">Portfolio Balance</dt>
+            <dd className="statsdata">${credits.toFixed(2)}</dd>
+          </div>
+          <div className="statsbox">
+            <dt className="statsheader">Portfolio P&L</dt>
+            <dd className="statsdata">${portfolioPL.toFixed(2)}</dd>
+          </div>
+          <div className="statsbox">
+            <dt className="statsheader">No. of Trades</dt>
+            <dd className="statsdata">{numTrades}</dd>
+          </div>
+          <div className="statsbox">
+            <dt className="statsheader">Competition Rank</dt>
+            <dd className="statsdata">#</dd>
+          </div>
+        </dl>
+
+        <div className="table-responsive bg-white text-black p-4">
           <table className="w-full border-collapse">
             <thead>
               <tr className="text-gray-800">
