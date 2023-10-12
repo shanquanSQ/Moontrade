@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 
 import {
+  get,
   getDatabase,
   ref,
   push,
@@ -184,24 +185,25 @@ export function Trade() {
     updateCreditsAndSaveOrder(orderData);
   };
 
-  // Listener to detect changes to Watchlist
-  // useEffect(() => {
-  //   const userWatchListRef = ref(db, `users/${userID}/watchlist/`);
-  //   onValue(userWatchListRef, (snapshot) => {
-  //     console.log("Watchlist onValue triggered");
-  //     console.log(snapshot);
-  //     // const data = [...snapshot];
-  //     // setUserWatchList(data);
-  //   });
-  // }, []);
-
   const handleSaveToWatchlist = () => {
-    // add to user branch
-    // Find the watchlist in the database. Will be tagged to each user.
+    // instantiates watchlist for firebase RTDB
+    // (impt to note that it is just a reference to the db, it is not an empty string or empty list etc.)
     const userWatchListRef = ref(db, `users/${userID}/watchlist/`);
-    set(userWatchListRef, {
-      // [Symbol]: `watch_${userID}`,
-      [Symbol]: `${Symbol}`,
+
+    get(userWatchListRef).then((snapshot) => {
+      const data = snapshot.val();
+      if (data === null) {
+        update(userWatchListRef, { [Symbol]: `${Symbol}` });
+      } else {
+        if (Symbol in data) {
+          console.log(
+            `Already in watchlist, Removing ${Symbol} from Watchlist`
+          );
+          update(userWatchListRef, { [Symbol]: null });
+        } else {
+          update(userWatchListRef, { [Symbol]: `${Symbol}` });
+        }
+      }
     });
   };
 
