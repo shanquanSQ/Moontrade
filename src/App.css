@@ -48,7 +48,7 @@
 
 /* APP Flex Structure */
 .structure {
-  @apply flex flex-col items-center justify-start h-screen py-16 px-4 font-sans bg-gray-800 text-white;
+  @apply flex flex-col items-center justify-start h-max min-h-screen py-16 px-4 font-sans bg-gray-800 text-white;
 }
 
 .contentcontainer {
