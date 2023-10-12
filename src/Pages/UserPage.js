@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getAuth, signOut } from "firebase/auth";
-import { getDatabase, ref, set, get } from "firebase/database";
+import { getDatabase, ref, update, get } from "firebase/database";
 import {
   getStorage,
   getDownloadURL as getStorageDownloadURL,
@@ -61,7 +61,7 @@ export function UserPage() {
       if (!user) return;
 
       const userRef = ref(db, `users/${user.uid}`);
-      await set(userRef, {
+      await update(userRef, {
         displayName,
         phoneNumber,
       });
