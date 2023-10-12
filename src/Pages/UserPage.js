@@ -1,4 +1,26 @@
-import { useAuth } from "../util/auth";
+import React, { useState, useEffect } from "react";
+import { getAuth, signOut, updateEmail } from "firebase/auth";
+import { getDatabase, ref, set, get } from "firebase/database";
+import {
+  getStorage,
+  getDownloadURL as getStorageDownloadURL,
+  ref as storageRef,
+  uploadBytesResumable,
+} from "firebase/storage";
+import { useAuth } from "../util/auth.js";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
+
+const hideInfo = (info, isVisible) => {
+  if (isVisible) {
+    return info;
+  } else {
+    const visibleLength = Math.min(2, info.length); // Show at least 2 characters
+    const maskedInfo = `${"*".repeat(info.length - visibleLength)}`;
+    return info.slice(0, visibleLength) + maskedInfo;
+  }
+};
 
 import { useNavigate } from "react-router-dom";
 
