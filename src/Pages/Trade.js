@@ -14,6 +14,7 @@ import {
   query,
   orderByChild,
   equalTo,
+  onChildChanged,
 } from "firebase/database";
 import { useAuth } from "../util/auth";
 import { TradingView } from "../Components/TradingView/TradingView";
@@ -60,7 +61,7 @@ export function Trade() {
   const [stockChartData, setStockChartData] = useState([]); // Data for the chart
   const [currentHolding, setCurrentHolding] = useState(0);
 
-  const [userWatchList, setUserWatchList] = useState([]); // list of KEY:VALUE => SYMBOL:SYMBOL
+  const [inWatchList, setInWatchList] = useState(false);
 
   useEffect(() => {
     /////////////////////////////////////////
@@ -83,7 +84,7 @@ export function Trade() {
             return { time: response.data.from, value: response.data.close };
           })
           .catch((error) => {
-            console.error(`Error fetching data for date: ${eachDate}`);
+            // console.error(`Error fetching data for date: ${eachDate}`);
           })
       );
 
@@ -185,6 +186,26 @@ export function Trade() {
     updateCreditsAndSaveOrder(orderData);
   };
 
+  // Initialises the first text output for Watchlist Button on page load.
+  useEffect(() => {
+    console.log("watchlist effect");
+    const userWatchListRef = ref(db, `users/${userID}/watchlist/`);
+
+    get(userWatchListRef).then((snapshot) => {
+      console.log("innerloop triggered");
+      const data = snapshot.val();
+      if (data === null) {
+        setInWatchList(false);
+      } else {
+        if (Symbol in data) {
+          setInWatchList(true);
+        } else {
+          setInWatchList(false);
+        }
+      }
+    });
+  }, []);
+
   const handleSaveToWatchlist = () => {
     // instantiates watchlist for firebase RTDB
     // (impt to note that it is just a reference to the db, it is not an empty string or empty list etc.)
@@ -193,14 +214,17 @@ export function Trade() {
     get(userWatchListRef).then((snapshot) => {
       const data = snapshot.val();
       if (data === null) {
+        setInWatchList(true);
         update(userWatchListRef, { [Symbol]: `${Symbol}` });
       } else {
         if (Symbol in data) {
           console.log(
             `Already in watchlist, Removing ${Symbol} from Watchlist`
           );
+          setInWatchList(false);
           update(userWatchListRef, { [Symbol]: null });
         } else {
+          setInWatchList(true);
           update(userWatchListRef, { [Symbol]: `${Symbol}` });
         }
       }
@@ -258,8 +282,15 @@ export function Trade() {
             <h3 className="text-lg">
               Your Current Holdings for {stockData.name}: {currentHolding}
             </h3>
-            <button className="primary-cta-btn" onClick={handleSaveToWatchlist}>
-              Add to WatchList
+            <button
+              className={
+                inWatchList === false ? "primary-cta-btn" : "secondary-cta-btn"
+              }
+              onClick={handleSaveToWatchlist}
+            >
+              {inWatchList === false
+                ? "Add to Watch list"
+                : "Remove from watchlist"}
             </button>
           </div>
         )}
