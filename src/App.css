@@ -97,6 +97,10 @@
   @apply bg-transparent text-[#9092ff] font-normal text-[.8rem] px-[.6rem] py-[.2rem] hover:text-orange-500 active:scale-90;
 }
 
+.smallfunctionbtn {
+  @apply rounded bg-transparent px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-slate-500 border border-slate-400 transition focus:outline-none focus:ring active:bg-slate-200 active:scale-95;
+}
+
 /* TABLE CSS */
 .table-responsive {
   display: block;

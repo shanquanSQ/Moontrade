@@ -100,7 +100,7 @@ export function Markets() {
                 <th className="py-2 px-4 border-b">Name</th>
                 <th className="py-2 px-4 border-b">Last Close</th>
                 <th className="py-2 px-4 border-b">Volume</th>
-                {/* <th className="py-2 px-4 border-b">Action</th> */}
+                <th className="py-2 px-4 border-b">Watch</th>
               </tr>
             </thead>
             <tbody>
@@ -124,11 +124,9 @@ export function Markets() {
                   </td>
                   <td className="py-2 px-4">{stock.close}</td>
                   <td className="py-2 px-4">{stock.volume}</td>
-                  {/* <td className="py-2 px-4">
-                    <button className="primary-cta-btn">
-                      Add to Watchlist
-                    </button>
-                  </td> */}
+                  <td className="py-2 px-4">
+                    <button className="primary-cta-btn">Add</button>
+                  </td>
                 </tr>
               ))}
             </tbody>
