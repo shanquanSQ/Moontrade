@@ -108,46 +108,119 @@ export function UserPage() {
   };
   return (
     <div className="structure">
-      <div className="contentcontainer">
-        <div>
-          {userAuth.isLoggedIn && (
-            <div>
-              <br />
-              <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-                <h1 className="heading1">Profile Page</h1>
-              </div>{" "}
-              <br />
-              <div style={{ display: "flex" }}>
-                <div style={{ flex: 1 }}>
-                  <p>Email: {userAuth.user && userAuth.user.email}</p>
-                  <br />
-                  <label>
-                    Display Name:
-                    <br />
-                    <input
-                      type="text"
-                      value={isEditing ? displayName : savedDisplayName}
-                      onChange={(e) => setDisplayName(e.target.value)}
-                      readOnly={!isEditing}
-                    />
-                  </label>
-                  <br />
-                  <label>
-                    Phone Number:
-                    <br />
-                    <input
-                      type="text"
-                      value={isEditing ? phoneNumber : savedPhoneNumber}
-                      onChange={handlePhoneNumberChange}
-                      readOnly={!isEditing}
-                    />
-                  </label>
-                  {phoneNumberError && (
-                    <p style={{ color: "red" }}>{phoneNumberError}</p>
-                  )}
-                  <br />
+      {userAuth.isLoggedIn && (
+        <form>
+          <div className="contentcontainer">
+            <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+              <h1 className="heading1">Profile Page</h1>
+            </div>
+            <div className="space-y-12">
+              <div className="border-b border-white/10 pb-12">
+                <h2 className="text-base font-semibold leading-7 text-white">
+                  Profile Information
+                </h2>
+
+                {/* Display Name */}
+                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                  <div className="sm:col-span-4">
+                    <label
+                      htmlFor="displayName"
+                      className="block text-sm font-medium leading-6 text-white"
+                    >
+                      Display Name
+                    </label>
+                    <div className="mt-2">
+                      <input
+                        type="text"
+                        name="displayName"
+                        id="displayName"
+                        autoComplete="displayName"
+                        value={isEditing ? displayName : savedDisplayName}
+                        onChange={(e) => setDisplayName(e.target.value)}
+                        readOnly={!isEditing}
+                        className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                        placeholder="Your Display Name"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Phone Number */}
+                  <div className="sm:col-span-4">
+                    <label
+                      htmlFor="phoneNumber"
+                      className="block text-sm font-medium leading-6 text-white"
+                    >
+                      Phone Number
+                    </label>
+                    <div className="mt-2">
+                      <input
+                        type="text"
+                        name="phoneNumber"
+                        id="phoneNumber"
+                        autoComplete="tel"
+                        value={isEditing ? phoneNumber : savedPhoneNumber}
+                        onChange={handlePhoneNumberChange}
+                        readOnly={!isEditing}
+                        className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                        placeholder="Your Phone Number"
+                      />
+                    </div>
+                    {phoneNumberError && (
+                      <p className="mt-1 text-sm text-red-500">
+                        {phoneNumberError}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Profile Picture */}
+                  <div className="col-span-full">
+                    <label
+                      htmlFor="photo"
+                      className="block text-sm font-medium leading-6 text-white"
+                    >
+                      Profile Picture
+                    </label>
+                    <div className="mt-2 flex items-center gap-x-3">
+                      <div
+                        style={{
+                          width: "200px",
+                          height: "200px",
+                          overflow: "hidden",
+                          borderRadius: "50%",
+                        }}
+                      >
+                        <img
+                          src={profileImage}
+                          alt="Profile"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                          }}
+                        />
+                      </div>
+                      <label className="block text-sm font-medium leading-6 text-white">
+                        New Profile Picture:
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleProfilePictureChange}
+                          disabled={!isEditing}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Save and Edit Buttons */}
+                <div className="mt-6 flex items-center justify-end gap-x-6">
                   {isEditing ? (
-                    <button onClick={handleSave}>Save</button>
+                    <button
+                      className="text-sm font-semibold leading-6 text-white"
+                      onClick={handleSave}
+                    >
+                      Save
+                    </button>
                   ) : (
                     <button
                       className="secondary-cta-btn"
@@ -156,51 +229,15 @@ export function UserPage() {
                       Edit
                     </button>
                   )}
-                  <br />
                   <button className="primary-cta-btn" onClick={handleLogout}>
                     Log Out
                   </button>
                 </div>
-                <div style={{ flex: 1, marginLeft: 20 }}>
-                  <label>
-                    Profile Picture:
-                    <br />
-                    <div
-                      style={{
-                        width: "200px",
-                        height: "200px",
-                        overflow: "hidden",
-                        borderRadius: "50%",
-                      }}
-                    >
-                      <img
-                        src={profileImage}
-                        alt="Profile"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                        }}
-                      />
-                    </div>
-                    <br />
-                    <label>
-                      New Profile Picture:
-                      <br />
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleProfilePictureChange}
-                        disabled={!isEditing}
-                      />
-                    </label>
-                  </label>
-                </div>
               </div>
             </div>
-          )}
-        </div>
-      </div>
+          </div>
+        </form>
+      )}
     </div>
   );
 }

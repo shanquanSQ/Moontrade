@@ -271,32 +271,41 @@ export function Trade() {
             Trade: {stockData.name} ({Symbol})
           </h1>
         </div>
-        <p className="my-2">Latest Price: ${stockData.latestPrice}</p>
-        <p className="mb-4">Volume: {stockData.volume}</p>
 
-        {typeof userCredits === "number" && (
-          <div className="mt-4">
-            <h3 className="text-lg">
-              Your Current Balance: ${userCredits.toFixed(2)}
-            </h3>
-            <h3 className="text-lg">
-              Your Current Holdings for {stockData.name}: {currentHolding}
-            </h3>
-            <button
-              className={
-                inWatchList === false ? "primary-cta-btn" : "secondary-cta-btn"
-              }
-              onClick={handleSaveToWatchlist}
-            >
-              {inWatchList === false
-                ? "Add to Watch list"
-                : "Remove from watchlist"}
-            </button>
+        <dl className="statsflex">
+          <div className="statsbox">
+            <dt className="statsheader">Last Price</dt>
+            <dd className="statsdata">${stockData.latestPrice}</dd>
           </div>
-        )}
+          <div className="statsbox">
+            <dt className="statsheader">Volume</dt>
+            <dd className="statsdata">${stockData.volume}</dd>
+          </div>
+          <div className="statsbox">
+            <dt className="statsheader">Stock Holdings</dt>
+            <dd className="statsdata">{currentHolding}</dd>
+          </div>
+          <div className="statsbox">
+            <dt className="statsheader">Portfolio Balance</dt>
+            <dd className="statsdata">${userCredits.toFixed(2)}</dd>
+          </div>
+        </dl>
 
         <div className="mt-4">
-          <TradingView ticker={Symbol} data={stockChartData} />
+          <button
+            className={
+              inWatchList === false ? "primary-cta-btn" : "secondary-cta-btn"
+            }
+            onClick={handleSaveToWatchlist}
+          >
+            {inWatchList === false
+              ? "Add to Watch list"
+              : "Remove from watchlist"}
+          </button>
+        </div>
+
+        <div className="mt-4">
+          <TradingView data={stockChartData} />
         </div>
 
         <form className="mt-4" onSubmit={handleOrderSubmit}>
