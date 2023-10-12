@@ -27,7 +27,7 @@ const hideInfo = (info, isVisible) => {
 
 const storage = getStorage();
 
-const UserPage = () => {
+export function UserPage() {
   const userAuth = useAuth();
   const [displayName, setDisplayName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -249,6 +249,4 @@ const UserPage = () => {
       )}
     </div>
   );
-};
-
-export default UserPage;
+}
