@@ -238,13 +238,56 @@ export function Trade() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen font-sans bg-gray-800 text-white">
-      <div className="w-full max-w-6xl px-4">
-        <h1>
-          Trade {stockData.name} ({Symbol})
-        </h1>
+    <div className="structure">
+      <div className="contentcontainer">
+        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl font-semibold leading-6 text-white">
+            Trade: {stockData.name} ({Symbol})
+          </h1>
+        </div>
         <p className="my-2">Latest Price: ${stockData.latestPrice}</p>
         <p className="mb-4">Volume: {stockData.volume}</p>
+
+        {typeof userCredits === "number" && (
+          <div className="mt-4">
+            <h3 className="text-lg">
+              Your Current Balance: ${userCredits.toFixed(2)}
+            </h3>
+            <h3 className="text-lg">
+              Your Current Holdings for {stockData.name}: {currentHolding}
+            </h3>
+            <button className="primary-cta-btn" onClick={handleSaveToWatchlist}>
+              Add to WatchList
+            </button>
+          </div>
+        )}
+
+        <div className="mt-4">
+          <TradingView ticker={Symbol} data={stockChartData} />
+        </div>
+
+        <form className="mt-4" onSubmit={handleOrderSubmit}>
+          <div className="flex items-center space-x-4">
+            <select
+              className="rounded border p-2 text-black"
+              value={orderType}
+              onChange={(e) => setOrderType(e.target.value)}
+            >
+              <option value="buy">Buy</option>
+              <option value="sell">Sell</option>
+            </select>
+            <input
+              className="rounded border p-2 text-black"
+              type="number"
+              value={orderAmount}
+              onChange={(e) => setOrderAmount(e.target.value)}
+              placeholder="Amount"
+            />
+            <button className="primary-cta-btn" type="submit">
+              Confirm Order
+            </button>
+          </div>
+        </form>
 
         <div className="table-responsive bg-white text-black rounded-lg shadow-lg p-4 mb-4">
           <table className="w-full border-collapse">
@@ -288,47 +331,6 @@ export function Trade() {
             </tbody>
           </table>
         </div>
-
-        {typeof userCredits === "number" && (
-          <div className="mt-4">
-            <h3 className="text-lg">
-              Your Current Balance: ${userCredits.toFixed(2)}
-            </h3>
-            <h3 className="text-lg">
-              Your Current Holdings for {stockData.name}: {currentHolding}
-            </h3>
-            <button className="primary-cta-btn" onClick={handleSaveToWatchlist}>
-              Add to WatchList
-            </button>
-          </div>
-        )}
-
-        <div className="mt-4">
-          <TradingView ticker={Symbol} data={stockChartData} />
-        </div>
-
-        <form className="mt-4" onSubmit={handleOrderSubmit}>
-          <div className="flex items-center space-x-4">
-            <select
-              className="rounded border p-2 text-black"
-              value={orderType}
-              onChange={(e) => setOrderType(e.target.value)}
-            >
-              <option value="buy">Buy</option>
-              <option value="sell">Sell</option>
-            </select>
-            <input
-              className="rounded border p-2 text-black"
-              type="number"
-              value={orderAmount}
-              onChange={(e) => setOrderAmount(e.target.value)}
-              placeholder="Amount"
-            />
-            <button className="primary-cta-btn" type="submit">
-              Confirm Order
-            </button>
-          </div>
-        </form>
       </div>
     </div>
   );

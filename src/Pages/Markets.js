@@ -76,62 +76,63 @@ export function Markets() {
   }, [sortType]);
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen font-sans bg-gray-800 text-white">
-      <div className="w-full max-w-6xl px-4">
-        <h1>Markets</h1>
+    <div className="structure">
+      <div className="contentcontainer">
+        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+          <h1 className="heading1">Markets</h1>
+        </div>
 
-        <div className="flex flex-col items-center justify-center h-screen font-sans">
-          <div className="table-responsive bg-white text-black rounded-lg shadow-lg p-4">
-            <div className="flex flex-row justify-center w-full">
-              <select
-                className="my-2 primary-cta-btn"
-                onChange={(e) => setSortType(e.target.value)}
-              >
-                <option value="name">Alphabetical</option>
-                <option value="volume">Volume</option>
-              </select>
-            </div>
-            <table className="w-full border-collapse bg-white rounded-lg shadow-lg">
-              <thead>
-                <tr className="text-gray-800">
-                  <th className="py-2 px-4 border-b">Ticker</th>
-                  <th className="py-2 px-4 border-b">Name</th>
-                  <th className="py-2 px-4 border-b">Last Close</th>
-                  <th className="py-2 px-4 border-b">Volume</th>
-                  {/* <th className="py-2 px-4 border-b">Action</th> */}
-                </tr>
-              </thead>
-              <tbody>
-                {stocks.map((stock) => (
-                  <tr key={stock.Symbol} className="hover:bg-gray-100">
-                    <td className="py-2 px-4">
-                      <Link
-                        to={`/trade/${stock.Symbol}`}
-                        className="text-indigo-600 hover:text-indigo-800"
-                      >
-                        {stock.Symbol}
-                      </Link>
-                    </td>
-                    <td className="py-2 px-4">
-                      <Link
-                        to={`/trade/${stock.Symbol}`}
-                        className="text-indigo-600 hover:text-indigo-800"
-                      >
-                        {stock.Name}
-                      </Link>
-                    </td>
-                    <td className="py-2 px-4">{stock.close}</td>
-                    <td className="py-2 px-4">{stock.volume}</td>
-                    {/* <td className="py-2 px-4">
+        <div className="flex flex-row justify-between">
+          <select
+            className="my-2 primary-cta-btn"
+            onChange={(e) => setSortType(e.target.value)}
+          >
+            <option value="name">Sort by Alphabet</option>
+            <option value="volume">Sort by Volume</option>
+          </select>
+        </div>
+
+        <div className="table-responsive bg-white text-black rounded-lg shadow-lg p-4">
+          <table className="w-full border-collapse bg-white rounded-lg shadow-lg">
+            <thead>
+              <tr className="text-gray-800">
+                <th className="py-2 px-4 border-b">Ticker</th>
+                <th className="py-2 px-4 border-b">Name</th>
+                <th className="py-2 px-4 border-b">Last Close</th>
+                <th className="py-2 px-4 border-b">Volume</th>
+                {/* <th className="py-2 px-4 border-b">Action</th> */}
+              </tr>
+            </thead>
+            <tbody>
+              {stocks.map((stock) => (
+                <tr key={stock.Symbol} className="hover:bg-fuchsia-400">
+                  <td className="py-2 px-4">
+                    <Link
+                      to={`/trade/${stock.Symbol}`}
+                      className="text-indigo-600 hover:text-indigo-800"
+                    >
+                      {stock.Symbol}
+                    </Link>
+                  </td>
+                  <td className="py-2 px-4">
+                    <Link
+                      to={`/trade/${stock.Symbol}`}
+                      className="text-indigo-600 hover:text-indigo-800"
+                    >
+                      {stock.Name}
+                    </Link>
+                  </td>
+                  <td className="py-2 px-4">{stock.close}</td>
+                  <td className="py-2 px-4">{stock.volume}</td>
+                  {/* <td className="py-2 px-4">
                     <button className="primary-cta-btn">
                       Add to Watchlist
                     </button>
                   </td> */}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

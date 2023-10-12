@@ -15,10 +15,13 @@ export const UserPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen font-sans bg-gray-800 text-white">
-      <div className="w-full max-w-6xl px-4 text-center">
-        <h1>User Profile</h1>
-
+    <div className="structure">
+      <div className="contentcontainer">
+        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+          <h1 className="text-lg font-semibold leading-6 text-white">
+            User Profile
+          </h1>
+        </div>
         <div className="my-4">
           {userAuth.isLoggedIn === false ? "Anonymous" : userAuth.user.email}
         </div>
