@@ -266,8 +266,8 @@ export function Trade() {
   return (
     <div className="structure">
       <div className="contentcontainer">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-semibold leading-6 text-white">
+        <div className="titlestructure">
+          <h1 className="titleheading">
             Trade: {stockData.name} ({Symbol})
           </h1>
         </div>

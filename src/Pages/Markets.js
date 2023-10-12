@@ -97,11 +97,11 @@ export function Markets() {
   return (
     <div className="structure">
       <div className="contentcontainer">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <h1 className="heading1">Markets</h1>
+        <div className="titlestructure">
+          <h1 className="titleheading">Markets</h1>
         </div>
 
-        <div className="table-responsive bg-gray text-black rounded-lg shadow-lg p-4">
+        <div className="table-responsive bg-gray text-black rounded-lg shadow-lg">
           <table className="w-full border-collapse bg-white rounded-lg shadow-lg">
             <thead>
               <tr className="text-gray-800">

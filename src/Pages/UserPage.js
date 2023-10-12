@@ -116,16 +116,16 @@ export function UserPage() {
   };
   return (
     <div className="structure">
-      {userAuth.isLoggedIn && (
-        <form>
-          <div className="contentcontainer">
-            <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-              <h1 className="heading1">Profile Page</h1>
-            </div>
+      <div className="contentcontainer">
+        <div className="titlestructure">
+          <h1 className="titleheading">Profile Page</h1>
+        </div>
+        {userAuth.isLoggedIn && (
+          <form>
             <div className="space-y-12">
               <div className="border-b border-white/10 pb-12">
                 <h2 className="text-base font-semibold leading-7 text-white">
-                  Profile Information
+                  Your Profile
                 </h2>
 
                 {/* Display Name */}
@@ -223,17 +223,11 @@ export function UserPage() {
                 {/* Save and Edit Buttons */}
                 <div className="mt-6 flex items-center justify-end gap-x-6">
                   {isEditing ? (
-                    <button
-                      className="text-sm font-semibold leading-6 text-white"
-                      onClick={handleSave}
-                    >
+                    <button className="secondary-cta-btn" onClick={handleSave}>
                       Save
                     </button>
                   ) : (
-                    <button
-                      className="secondary-cta-btn"
-                      onClick={toggleEditing}
-                    >
+                    <button className="primary-cta-btn" onClick={toggleEditing}>
                       Edit
                     </button>
                   )}
@@ -243,9 +237,9 @@ export function UserPage() {
                 </div>
               </div>
             </div>
-          </div>
-        </form>
-      )}
+          </form>
+        )}
+      </div>
     </div>
   );
 }

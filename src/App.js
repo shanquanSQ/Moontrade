@@ -8,7 +8,6 @@ import { useAuth } from "./util/auth.js";
 // Import Pages
 import { Markets } from "./Pages/Markets";
 import { LogInPage } from "./Pages/LogInPage";
-import { PositionPage } from "./Pages/PositionPage";
 import { UserPage } from "./Pages/UserPage";
 import { Trade } from "./Pages/Trade";
 import { PortfolioPage } from "./Pages/PortfolioPage";

@@ -68,6 +68,16 @@
     text-white;
 }
 
+/* Page Title */
+
+.titlestructure {
+  @apply min-w-0 flex-1 py-4;
+}
+
+.titleheading {
+  @apply text-2xl font-bold leading-7 text-white sm:truncate sm:text-3xl sm:tracking-tight;
+}
+
 /* BUTTONS CSS */
 .primary-cta-btn {
   font-family: "Open Sans", sans-serif;
@@ -140,12 +150,6 @@ tbody {
 
 table a {
   @apply text-indigo-600 hover:text-indigo-900 transition;
-}
-
-/* TEXT: HEADING */
-
-.heading1 {
-  @apply text-3xl font-semibold leading-6 text-white;
 }
 
 /* STATS DATA */
