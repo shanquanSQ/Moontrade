@@ -48,7 +48,7 @@ export const PortfolioPage = () => {
     const userRef = ref(db, `users/${userID}`);
     onValue(userRef, (snapshot) => {
       if (snapshot.exists()) {
-        console.log("User data from Firebase:", snapshot.val());
+        // console.log("User data from Firebase:", snapshot.val());
         setCredits(snapshot.val().credits);
       }
     });

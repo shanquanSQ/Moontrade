@@ -3,6 +3,8 @@ import axios from "axios";
 import stockList from "../sp100/sp100.json";
 import { Link } from "react-router-dom";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { ref, getDatabase, update, get } from "firebase/database";
+import { useAuth } from "../util/auth";
 
 function getLastWorkingDay() {
   const today = new Date();
@@ -38,6 +40,13 @@ export function Markets() {
   const [stocks, setStocks] = useState([]);
   const [sortType, setSortType] = useState("");
   const [sortDirection, setSortDirection] = useState("ascending");
+  const [viewWatchList, setViewWatchList] = useState(false);
+  const [watchListStocks, setWatchListStocks] = useState([]);
+
+  const db = getDatabase();
+  const auth = useAuth();
+  const userID = auth.user.uid; // This will give you the uid of the logged-in user.
+  // might break the page if i refresh
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,6 +80,73 @@ export function Markets() {
   }, []);
 
   useEffect(() => {
+    console.log("onmount");
+    const userWatchListRef = ref(db, `users/${userID}/watchlist/`);
+
+    get(userWatchListRef).then((snapshot) => {
+      setWatchListStocks(snapshot.val());
+    });
+  }, []);
+
+  const handlePopulateWatchList = () => {
+    setViewWatchList(!viewWatchList);
+
+    const userWatchListRef = ref(db, `users/${userID}/watchlist/`);
+
+    get(userWatchListRef).then((snapshot) => {
+      setWatchListStocks(snapshot.val());
+      console.log(snapshot.val());
+    });
+  };
+
+  useEffect(() => {
+    console.log("onmount");
+    const userWatchListRef = ref(db, `users/${userID}/watchlist/`);
+
+    get(userWatchListRef).then((snapshot) => {
+      setWatchListStocks(snapshot.val());
+    });
+  }, []);
+
+  const handleSaveToWatchlist = (ev) => {
+    ev.preventDefault();
+    // console.log(ev.target.id);
+    const Symbol = ev.target.id;
+
+    const userWatchListRef = ref(db, `users/${userID}/watchlist/`);
+
+    get(userWatchListRef).then((snapshot) => {
+      const data = snapshot.val();
+      if (data === null) {
+        update(userWatchListRef, { [Symbol]: `${Symbol}` });
+      } else {
+        if (Symbol in data) {
+          console.log(
+            `Already in watchlist, Removing ${Symbol} from Watchlist`
+          );
+
+          setWatchListStocks((prevState) => {
+            const updatedState = { ...prevState };
+            delete updatedState[Symbol];
+            return updatedState;
+          });
+
+          update(userWatchListRef, { [Symbol]: null });
+        } else {
+          console.log(`Not in watchlist, Adding ${Symbol} Into Watchlist.`);
+
+          setWatchListStocks((prevState) => ({
+            ...prevState,
+            [Symbol]: `${Symbol}`,
+          }));
+
+          update(userWatchListRef, { [Symbol]: `${Symbol}` });
+        }
+      }
+    });
+  };
+
+  useEffect(() => {
     const sortArray = () => {
       let sorted = [...stocks];
       const compareFunc = (a, b) => {
@@ -101,82 +177,161 @@ export function Markets() {
           <h1 className="titleheading">Markets</h1>
         </div>
 
-        <div className="table-responsive bg-gray text-black rounded-lg shadow-lg">
-          <table className="w-full border-collapse bg-white rounded-lg shadow-lg">
-            <thead>
-              <tr className="text-gray-800">
-                <th className="py-2 px-4 border-b">
-                  Ticker{" "}
-                  <span
-                    className="ml-2 flex-none rounded bg-gray-100 text-gray-900 group-hover:bg-gray-200"
-                    onClick={() => {
-                      if (
-                        sortType === "symbol" &&
-                        sortDirection === "ascending"
-                      ) {
-                        setSortDirection("descending");
-                      } else {
-                        setSortType("symbol");
-                        setSortDirection("ascending");
-                      }
-                    }}
-                  >
-                    <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
-                  </span>
-                </th>
+        <div className="flex flex-row w-[100%] justify-end">
+          <div>
+            <button
+              className={
+                viewWatchList === false
+                  ? "primary-cta-btn"
+                  : "secondary-cta-btn"
+              }
+              onClick={handlePopulateWatchList}
+            >
+              Watchlist
+            </button>
+          </div>
+        </div>
 
-                <th className="py-2 px-4 border-b">Name</th>
-                <th className="py-2 px-4 border-b">Last Close</th>
-                <th className="py-2 px-4 border-b">
-                  Volume{" "}
-                  <span
-                    className="ml-2 flex-none rounded bg-gray-100 text-gray-900 group-hover:bg-gray-200"
-                    onClick={() => {
-                      if (
-                        sortType === "volume" &&
-                        sortDirection === "ascending"
-                      ) {
-                        setSortDirection("descending");
-                      } else {
-                        setSortType("volume");
-                        setSortDirection("ascending");
-                      }
-                    }}
-                  >
-                    <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
-                  </span>
-                </th>
-                <th className="py-2 px-4 border-b">Watchlist</th>
-              </tr>
-            </thead>
-            <tbody>
-              {stocks.map((stock) => (
-                <tr key={stock.Symbol} className="hover:bg-fuchsia-400">
-                  <td className="py-2 px-4">
-                    <Link
-                      to={`/trade/${stock.Symbol}`}
-                      className="text-indigo-600 hover:text-indigo-800"
+        <div className="table-responsive bg-gray text-black rounded-lg shadow-lg p-4">
+          <div className="table-responsive bg-gray text-black rounded-lg shadow-lg">
+            <table className="w-full border-collapse bg-white rounded-lg shadow-lg">
+              <thead>
+                <tr className="text-gray-800">
+                  <th className="py-2 px-4 border-b">
+                    Ticker{" "}
+                    <span
+                      className="ml-2 flex-none rounded bg-gray-100 text-gray-900 group-hover:bg-gray-200"
+                      onClick={() => {
+                        if (
+                          sortType === "symbol" &&
+                          sortDirection === "ascending"
+                        ) {
+                          setSortDirection("descending");
+                        } else {
+                          setSortType("symbol");
+                          setSortDirection("ascending");
+                        }
+                      }}
                     >
-                      {stock.Symbol}
-                    </Link>
-                  </td>
-                  <td className="py-2 px-4">
-                    <Link
-                      to={`/trade/${stock.Symbol}`}
-                      className="text-indigo-600 hover:text-indigo-800"
+                      <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                  </th>
+
+                  <th className="py-2 px-4 border-b">Name</th>
+                  <th className="py-2 px-4 border-b">Last Close</th>
+                  <th className="py-2 px-4 border-b">
+                    Volume{" "}
+                    <span
+                      className="ml-2 flex-none rounded bg-gray-100 text-gray-900 group-hover:bg-gray-200"
+                      onClick={() => {
+                        if (
+                          sortType === "volume" &&
+                          sortDirection === "ascending"
+                        ) {
+                          setSortDirection("descending");
+                        } else {
+                          setSortType("volume");
+                          setSortDirection("ascending");
+                        }
+                      }}
                     >
-                      {stock.Name}
-                    </Link>
-                  </td>
-                  <td className="py-2 px-4">{formatCurrency(stock.close)}</td>
-                  <td className="py-2 px-4">{formatCurrency(stock.volume)}</td>
-                  <td className="py-2 px-4">
-                    <button className="primary-cta-btn">+</button>
-                  </td>
+                      <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                  </th>
+                  <th className="py-2 px-4 border-b">Watchlist</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              {viewWatchList === true ? (
+                <tbody>
+                  {stocks.map((stock) => {
+                    if (stock.Symbol in watchListStocks) {
+                      return (
+                        <tr
+                          key={stock.Symbol}
+                          className="h-[5rem] hover:bg-teal-200"
+                        >
+                          <td className="py-2 px-4 text-center">
+                            <Link
+                              to={`/trade/${stock.Symbol}`}
+                              className="text-indigo-600 hover:text-indigo-800"
+                            >
+                              {stock.Symbol}
+                            </Link>
+                          </td>
+                          <td className="py-2 px-4">
+                            <Link
+                              to={`/trade/${stock.Symbol}`}
+                              className="text-indigo-600 hover:text-indigo-800"
+                            >
+                              {stock.Name}
+                            </Link>
+                          </td>
+                          <td className="py-2 px-4">{stock.close}</td>
+                          <td className="py-2 px-4">{stock.volume}</td>
+                          <td className="py-2 px-4 text-center">
+                            <input
+                              type="button"
+                              id={stock.Symbol}
+                              className={
+                                stock.Symbol in watchListStocks
+                                  ? "smallfunctionbtn-primary"
+                                  : "smallfunctionbtn-neutral"
+                              }
+                              onClick={handleSaveToWatchlist}
+                              value={
+                                stock.Symbol in watchListStocks ? "✓" : "+"
+                              }
+                            />
+                          </td>
+                        </tr>
+                      );
+                    }
+                  })}
+                </tbody>
+              ) : (
+                <tbody>
+                  {stocks.map((stock) => (
+                    <tr
+                      key={stock.Symbol}
+                      className="h-[5rem] hover:bg-indigo-200"
+                    >
+                      <td className="py-2 px-4 text-center">
+                        <Link
+                          to={`/trade/${stock.Symbol}`}
+                          className="text-indigo-600 hover:text-indigo-800"
+                        >
+                          {stock.Symbol}
+                        </Link>
+                      </td>
+                      <td className="py-2 px-4">
+                        <Link
+                          to={`/trade/${stock.Symbol}`}
+                          className="text-indigo-600 hover:text-indigo-800"
+                        >
+                          {stock.Name}
+                        </Link>
+                      </td>
+                      <td className="py-2 px-4">{stock.close}</td>
+                      <td className="py-2 px-4">{stock.volume}</td>
+                      <td className="py-2 px-4 text-center">
+                        <input
+                          type="button"
+                          id={stock.Symbol}
+                          className={
+                            stock.Symbol in watchListStocks
+                              ? "smallfunctionbtn-primary"
+                              : "smallfunctionbtn-neutral"
+                          }
+                          onClick={handleSaveToWatchlist}
+                          value={stock.Symbol in watchListStocks ? "✓" : "+"}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              )}
+            </table>
+          </div>
         </div>
       </div>
     </div>
