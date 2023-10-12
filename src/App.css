@@ -72,7 +72,7 @@
 .primary-cta-btn {
   font-family: "Open Sans", sans-serif;
 
-  @apply rounded bg-[#5D5FEF] px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-white transition focus:outline-none focus:ring active:bg-indigo-500 active:scale-95;
+  @apply rounded bg-[#5D5FEF] px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-white transition focus:outline-none focus:ring hover:bg-indigo-600 active:bg-indigo-600 active:scale-95;
 }
 
 .secondary-cta-btn {
@@ -97,8 +97,16 @@
   @apply bg-transparent text-[#9092ff] font-normal text-[.8rem] px-[.6rem] py-[.2rem] hover:text-orange-500 active:scale-90;
 }
 
-.smallfunctionbtn {
-  @apply rounded bg-transparent px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-slate-500 border border-slate-400 transition focus:outline-none focus:ring active:bg-slate-200 active:scale-95;
+.smallfunctionbtn-primary {
+  @apply rounded bg-[#5D5FEF] px-[.1rem] py-[.2rem] min-w-[50%] h-[100%] my-[0.5rem] text-sm font-bold text-white transition focus:outline-none focus:ring active:bg-indigo-500 active:scale-95;
+}
+
+.smallfunctionbtn-secondary {
+  @apply rounded  bg-fuchsia-400 px-[.1rem] py-[.2rem] min-w-[50%] h-[100%] my-[0.5rem] text-sm font-bold text-white transition focus:outline-none  active:bg-fuchsia-500 active:scale-95;
+}
+
+.smallfunctionbtn-neutral {
+  @apply rounded bg-transparent px-[.1rem] py-[.2rem] min-w-[50%] h-[100%] my-[0.5rem] text-sm font-bold text-slate-500 border border-slate-400 transition focus:outline-none active:bg-slate-200 active:scale-95;
 }
 
 /* TABLE CSS */

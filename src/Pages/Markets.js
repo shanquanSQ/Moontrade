@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import stockList from "../sp100/sp100.json";
 import { Link } from "react-router-dom";
+import { ref, getDatabase, update, get } from "firebase/database";
+import { useAuth } from "../util/auth";
 
 function getLastWorkingDay() {
   const today = new Date();
@@ -28,6 +30,13 @@ function getLastWorkingDay() {
 export function Markets() {
   const [stocks, setStocks] = useState([]);
   const [sortType, setSortType] = useState("name");
+  const [viewWatchList, setViewWatchList] = useState(false);
+  const [watchListStocks, setWatchListStocks] = useState([]);
+
+  const db = getDatabase();
+  const auth = useAuth();
+  const userID = auth.user.uid; // This will give you the uid of the logged-in user.
+  // might break the page if i refresh
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,6 +70,64 @@ export function Markets() {
   }, []);
 
   useEffect(() => {
+    console.log("onmount");
+    const userWatchListRef = ref(db, `users/${userID}/watchlist/`);
+
+    get(userWatchListRef).then((snapshot) => {
+      setWatchListStocks(snapshot.val());
+    });
+  }, []);
+
+  const handlePopulateWatchList = () => {
+    setViewWatchList(!viewWatchList);
+
+    const userWatchListRef = ref(db, `users/${userID}/watchlist/`);
+
+    get(userWatchListRef).then((snapshot) => {
+      setWatchListStocks(snapshot.val());
+      console.log(snapshot.val());
+    });
+  };
+
+  const handleSaveToWatchlist = (ev) => {
+    ev.preventDefault();
+    // console.log(ev.target.id);
+    const Symbol = ev.target.id;
+
+    const userWatchListRef = ref(db, `users/${userID}/watchlist/`);
+
+    get(userWatchListRef).then((snapshot) => {
+      const data = snapshot.val();
+      if (data === null) {
+        update(userWatchListRef, { [Symbol]: `${Symbol}` });
+      } else {
+        if (Symbol in data) {
+          console.log(
+            `Already in watchlist, Removing ${Symbol} from Watchlist`
+          );
+
+          setWatchListStocks((prevState) => {
+            const updatedState = { ...prevState };
+            delete updatedState[Symbol];
+            return updatedState;
+          });
+
+          update(userWatchListRef, { [Symbol]: null });
+        } else {
+          console.log(`Not in watchlist, Adding ${Symbol} Into Watchlist.`);
+
+          setWatchListStocks((prevState) => ({
+            ...prevState,
+            [Symbol]: `${Symbol}`,
+          }));
+
+          update(userWatchListRef, { [Symbol]: `${Symbol}` });
+        }
+      }
+    });
+  };
+
+  useEffect(() => {
     const sortArray = (type) => {
       const types = {
         volume: "volume",
@@ -82,14 +149,19 @@ export function Markets() {
           <h1 className="heading1">Markets</h1>
         </div>
 
-        <div className="flex flex-row justify-between">
-          <select
-            className="my-2 primary-cta-btn"
-            onChange={(e) => setSortType(e.target.value)}
-          >
-            <option value="name">Sort by Alphabet</option>
-            <option value="volume">Sort by Volume</option>
-          </select>
+        <div className="flex flex-row w-[100%] justify-end">
+          <div>
+            <button
+              className={
+                viewWatchList === false
+                  ? "primary-cta-btn"
+                  : "secondary-cta-btn"
+              }
+              onClick={handlePopulateWatchList}
+            >
+              Watchlist
+            </button>
+          </div>
         </div>
 
         <div className="table-responsive bg-gray text-black rounded-lg shadow-lg p-4">
@@ -103,33 +175,93 @@ export function Markets() {
                 <th className="py-2 px-4 border-b">Watch</th>
               </tr>
             </thead>
-            <tbody>
-              {stocks.map((stock) => (
-                <tr key={stock.Symbol} className="hover:bg-fuchsia-400">
-                  <td className="py-2 px-4">
-                    <Link
-                      to={`/trade/${stock.Symbol}`}
-                      className="text-indigo-600 hover:text-indigo-800"
-                    >
-                      {stock.Symbol}
-                    </Link>
-                  </td>
-                  <td className="py-2 px-4">
-                    <Link
-                      to={`/trade/${stock.Symbol}`}
-                      className="text-indigo-600 hover:text-indigo-800"
-                    >
-                      {stock.Name}
-                    </Link>
-                  </td>
-                  <td className="py-2 px-4">{stock.close}</td>
-                  <td className="py-2 px-4">{stock.volume}</td>
-                  <td className="py-2 px-4">
-                    <button className="primary-cta-btn">Add</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+            {viewWatchList === true ? (
+              <tbody>
+                {stocks.map((stock) => {
+                  if (stock.Symbol in watchListStocks) {
+                    return (
+                      <tr
+                        key={stock.Symbol}
+                        className="h-[5rem] hover:bg-teal-200"
+                      >
+                        <td className="py-2 px-4 text-center">
+                          <Link
+                            to={`/trade/${stock.Symbol}`}
+                            className="text-indigo-600 hover:text-indigo-800"
+                          >
+                            {stock.Symbol}
+                          </Link>
+                        </td>
+                        <td className="py-2 px-4">
+                          <Link
+                            to={`/trade/${stock.Symbol}`}
+                            className="text-indigo-600 hover:text-indigo-800"
+                          >
+                            {stock.Name}
+                          </Link>
+                        </td>
+                        <td className="py-2 px-4">{stock.close}</td>
+                        <td className="py-2 px-4">{stock.volume}</td>
+                        <td className="py-2 px-4 text-center">
+                          <input
+                            type="button"
+                            id={stock.Symbol}
+                            className={
+                              stock.Symbol in watchListStocks
+                                ? "smallfunctionbtn-primary"
+                                : "smallfunctionbtn-neutral"
+                            }
+                            onClick={handleSaveToWatchlist}
+                            value={stock.Symbol in watchListStocks ? "✓" : "+"}
+                          />
+                        </td>
+                      </tr>
+                    );
+                  }
+                })}
+              </tbody>
+            ) : (
+              <tbody>
+                {stocks.map((stock) => (
+                  <tr
+                    key={stock.Symbol}
+                    className="h-[5rem] hover:bg-indigo-200"
+                  >
+                    <td className="py-2 px-4 text-center">
+                      <Link
+                        to={`/trade/${stock.Symbol}`}
+                        className="text-indigo-600 hover:text-indigo-800"
+                      >
+                        {stock.Symbol}
+                      </Link>
+                    </td>
+                    <td className="py-2 px-4">
+                      <Link
+                        to={`/trade/${stock.Symbol}`}
+                        className="text-indigo-600 hover:text-indigo-800"
+                      >
+                        {stock.Name}
+                      </Link>
+                    </td>
+                    <td className="py-2 px-4">{stock.close}</td>
+                    <td className="py-2 px-4">{stock.volume}</td>
+                    <td className="py-2 px-4 text-center">
+                      <input
+                        type="button"
+                        id={stock.Symbol}
+                        className={
+                          stock.Symbol in watchListStocks
+                            ? "smallfunctionbtn-primary"
+                            : "smallfunctionbtn-neutral"
+                        }
+                        onClick={handleSaveToWatchlist}
+                        value={stock.Symbol in watchListStocks ? "✓" : "+"}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            )}
           </table>
         </div>
       </div>
