@@ -145,7 +145,7 @@ export const PortfolioPage = () => {
           <h1 className="titleheading">Portfolio</h1>
         </div>
 
-        <div className="sm:flex sm:items-center py-2">
+        <div className="sm:flex sm:items-center pb-6">
           <div className="sm:flex-auto">
             <h1 className="text-base font-semibold leading-6 text-txtcolor-primary">
               Your Portfolio{" "}
@@ -153,6 +153,11 @@ export const PortfolioPage = () => {
             <p className="mt-2 text-sm text-txtcolor-secondary">
               View Portfolio, P&L and Rank{" "}
             </p>
+          </div>
+          <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+            <Link to="/leaderboard" className="primary-cta-btn">
+              View Leaderboard
+            </Link>
           </div>
         </div>
 
