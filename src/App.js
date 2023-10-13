@@ -8,7 +8,6 @@ import { useAuth } from "./util/auth.js";
 // Import Pages
 import { Markets } from "./Pages/Markets";
 import { LogInPage } from "./Pages/LogInPage";
-import { PositionPage } from "./Pages/PositionPage";
 import { UserPage } from "./Pages/UserPage";
 import { Trade } from "./Pages/Trade";
 import { PortfolioPage } from "./Pages/PortfolioPage";
@@ -18,6 +17,7 @@ import { NewSignUpPage } from "./Pages/NewSignUpPage";
 // Import Components
 import { Navbar } from "./Components/NavBar/Navbar.js";
 import { TradingView } from "./Components/TradingView/TradingView.js";
+import { StatusBar } from "./Components/StatusBar/StatusBar";
 
 // Import Styling
 import "./App.css";
@@ -50,15 +50,11 @@ function App() {
     });
   }, []);
 
-  // useEffect(() => {
-  //   setShowNavBar(!!(userAuth && userAuth.user));
-  // }, [userAuth]);
-
-  // console.log("app.js userAuth: ", userAuth);
-  // console.log("navbar status: ", showNavBar);
-
   return (
     <AuthProvider>
+      <div className="absolute top-0 z-[99]">
+        <StatusBar />
+      </div>
       {showNavBar && <Navbar />}
       <Routes>
         <Route path="/" element={<LandingPage />} />

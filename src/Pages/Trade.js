@@ -14,6 +14,7 @@ import {
   query,
   orderByChild,
   equalTo,
+  onChildChanged,
 } from "firebase/database";
 import { useAuth } from "../util/auth";
 import { TradingView } from "../Components/TradingView/TradingView";
@@ -60,7 +61,7 @@ export function Trade() {
   const [stockChartData, setStockChartData] = useState([]); // Data for the chart
   const [currentHolding, setCurrentHolding] = useState(0);
 
-  const [userWatchList, setUserWatchList] = useState([]); // list of KEY:VALUE => SYMBOL:SYMBOL
+  const [inWatchList, setInWatchList] = useState(false);
 
   useEffect(() => {
     /////////////////////////////////////////
@@ -83,7 +84,7 @@ export function Trade() {
             return { time: response.data.from, value: response.data.close };
           })
           .catch((error) => {
-            console.error(`Error fetching data for date: ${eachDate}`);
+            // console.error(`Error fetching data for date: ${eachDate}`);
           })
       );
 
@@ -185,6 +186,26 @@ export function Trade() {
     updateCreditsAndSaveOrder(orderData);
   };
 
+  // Initialises the first text output for Watchlist Button on page load.
+  useEffect(() => {
+    console.log("watchlist effect");
+    const userWatchListRef = ref(db, `users/${userID}/watchlist/`);
+
+    get(userWatchListRef).then((snapshot) => {
+      console.log("innerloop triggered");
+      const data = snapshot.val();
+      if (data === null) {
+        setInWatchList(false);
+      } else {
+        if (Symbol in data) {
+          setInWatchList(true);
+        } else {
+          setInWatchList(false);
+        }
+      }
+    });
+  }, []);
+
   const handleSaveToWatchlist = () => {
     // instantiates watchlist for firebase RTDB
     // (impt to note that it is just a reference to the db, it is not an empty string or empty list etc.)
@@ -193,14 +214,17 @@ export function Trade() {
     get(userWatchListRef).then((snapshot) => {
       const data = snapshot.val();
       if (data === null) {
+        setInWatchList(true);
         update(userWatchListRef, { [Symbol]: `${Symbol}` });
       } else {
         if (Symbol in data) {
           console.log(
             `Already in watchlist, Removing ${Symbol} from Watchlist`
           );
+          setInWatchList(false);
           update(userWatchListRef, { [Symbol]: null });
         } else {
+          setInWatchList(true);
           update(userWatchListRef, { [Symbol]: `${Symbol}` });
         }
       }
@@ -242,69 +266,112 @@ export function Trade() {
   return (
     <div className="structure">
       <div className="contentcontainer">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-semibold leading-6 text-white">
-            Trade: {stockData.name} ({Symbol})
-          </h1>
+        <div className="titlestructure">
+          <h1 className="titleheading">Trade</h1>
         </div>
-        <p className="my-2">Latest Price: ${stockData.latestPrice}</p>
-        <p className="mb-4">Volume: {stockData.volume}</p>
 
-        {typeof userCredits === "number" && (
-          <div className="mt-4">
-            <h3 className="text-lg">
-              Your Current Balance: ${userCredits.toFixed(2)}
-            </h3>
-            <h3 className="text-lg">
-              Your Current Holdings for {stockData.name}: {currentHolding}
-            </h3>
-            <button className="primary-cta-btn" onClick={handleSaveToWatchlist}>
-              Add to WatchList
+        <div className="sm:flex sm:items-center">
+          <div className="sm:flex-auto">
+            <h1 className="text-base font-semibold leading-6 text-txtcolor-primary">
+              {stockData.name} ({Symbol}){" "}
+            </h1>
+            <p className="mt-2 text-sm text-txtcolor-secondary">
+              Buy, Sell & Add to Watchlist
+            </p>
+          </div>
+          <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+            <button
+              className={
+                inWatchList === false ? "primary-cta-btn" : "secondary-cta-btn"
+              }
+              onClick={handleSaveToWatchlist}
+            >
+              {inWatchList === false
+                ? "Add to Watch list"
+                : "Remove from watchlist"}
             </button>
           </div>
-        )}
+        </div>
+
+        {/* Stats Bar */}
+        <dl className="statsflex">
+          <div className="statsbox">
+            <dt className="statsheader">Last Price</dt>
+            <dd className="statsdata">${stockData.latestPrice}</dd>
+          </div>
+          <div className="statsbox">
+            <dt className="statsheader">Volume</dt>
+            <dd className="statsdata">${stockData.volume}</dd>
+          </div>
+          <div className="statsbox">
+            <dt className="statsheader">Stock Holdings</dt>
+            <dd className="statsdata">{currentHolding}</dd>
+          </div>
+          <div className="statsbox">
+            <dt className="statsheader">Portfolio Balance</dt>
+            <dd className="statsdata">${userCredits.toFixed(2)}</dd>
+          </div>
+        </dl>
+
+        {/* TradingView */}
 
         <div className="mt-4">
-          <TradingView ticker={Symbol} data={stockChartData} />
+          <TradingView data={stockChartData} />
         </div>
 
-        <form className="mt-4" onSubmit={handleOrderSubmit}>
-          <div className="flex items-center space-x-4">
-            <select
-              className="rounded border p-2 text-black"
-              value={orderType}
-              onChange={(e) => setOrderType(e.target.value)}
-            >
-              <option value="buy">Buy</option>
-              <option value="sell">Sell</option>
-            </select>
-            <input
-              className="rounded border p-2 text-black"
-              type="number"
-              value={orderAmount}
-              onChange={(e) => setOrderAmount(e.target.value)}
-              placeholder="Amount"
-            />
-            <button className="primary-cta-btn" type="submit">
-              Confirm Order
-            </button>
-          </div>
-        </form>
+        {/* Trade Form */}
 
-        <div className="table-responsive bg-white text-black rounded-lg shadow-lg p-4 mb-4">
-          <table className="w-full border-collapse">
-            <tbody>
-              <tr>
-                <td>Name</td>
-                <td>{stockData.name}</td>
-              </tr>
-              <tr>
-                <td>Description</td>
-                <td>{stockData.description}</td>
-              </tr>
-              <tr>
-                <td>Homepage URL</td>
-                <td>
+        <div className="px-4 bg-white text-black p-4 my-2">
+          <h3 className="text-base font-semibold leading-7">Trade ${Symbol}</h3>
+          <form className="mt-4" onSubmit={handleOrderSubmit}>
+            <div className="flex items-center space-x-4">
+              <select
+                className="rounded border p-2 pr-8 text-black"
+                value={orderType}
+                onChange={(e) => setOrderType(e.target.value)}
+              >
+                <option value="buy">Buy </option>
+                <option value="sell">Sell</option>
+              </select>
+
+              <input
+                className="rounded border p-2 text-black"
+                type="number"
+                value={orderAmount}
+                onChange={(e) => setOrderAmount(e.target.value)}
+                placeholder="Amount"
+              />
+            </div>
+            <div className="flex items-center space-x-4">
+              <button className="primary-cta-btn" type="submit">
+                Confirm Order
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Stock Description Table*/}
+
+        <div className="desc-table-structure-header">
+          <h3 className="desc-table-header">
+            {Symbol}: {stockData.name} - Stock Information
+          </h3>
+
+          <div className="desc-table-structure-content">
+            <dl className="divide-y divide-gray-200">
+              <div className="desc-table-row">
+                <dt className="desc-table-title">Name</dt>
+                <dd className="desc-table-text">{stockData.name}</dd>
+              </div>
+
+              <div className="desc-table-row">
+                <dt className="desc-table-title">Description</dt>
+                <dd className="desc-table-text">{stockData.description}</dd>
+              </div>
+
+              <div className="desc-table-row">
+                <dt className="desc-table-title">Homepage URL</dt>
+                <dd className="desc-table-text">
                   <a
                     href={stockData.homepageURL}
                     target="_blank"
@@ -312,26 +379,17 @@ export function Trade() {
                   >
                     {stockData.homepageURL}
                   </a>
-                </td>
-              </tr>
-              <tr>
-                <td>Logo</td>
-                <td>
-                  <img
-                    src={stockData.logoURL}
-                    alt={`${stockData.name} logo`}
-                    style={{ width: "50px", height: "50px" }}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Market Capitalization</td>
-                <td>
+                </dd>
+              </div>
+
+              <div className="desc-table-row">
+                <dt className="desc-table-title">Market Capitalization</dt>
+                <dd className="desc-table-text">
                   ${(stockData.marketCap / 1000000000).toFixed(2)} Billion
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                </dd>
+              </div>
+            </dl>
+          </div>
         </div>
       </div>
     </div>

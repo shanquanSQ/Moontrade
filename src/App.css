@@ -11,19 +11,8 @@
   justify-content: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 .App-header {
-  background-color: #282c34;
+  /* background-color: #282c34; */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -37,18 +26,9 @@
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 /* APP Flex Structure */
 .structure {
-  @apply flex flex-col items-center justify-start h-max min-h-screen py-16 px-4 font-sans bg-gray-800 text-white;
+  @apply flex flex-col items-center justify-start h-max min-h-screen pb-16 px-4 font-sans bg-fill-bg text-white;
 }
 
 .contentcontainer {
@@ -68,76 +48,137 @@
     text-white;
 }
 
+/* Page Title */
+
+.titlestructure {
+  @apply min-w-0 flex-1 py-4;
+}
+
+.titleheading {
+  @apply text-2xl font-bold leading-7 text-header-primary sm:truncate sm:text-3xl sm:tracking-tight;
+}
+
 /* BUTTONS CSS */
 .primary-cta-btn {
   font-family: "Open Sans", sans-serif;
 
-  @apply rounded bg-[#5D5FEF] px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-white transition focus:outline-none focus:ring active:bg-indigo-500 active:scale-95;
+  @apply rounded bg-fill-primary px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-white transition focus:outline-none  hover:bg-indigo-600 active:bg-indigo-600 active:scale-95;
 }
 
 .secondary-cta-btn {
   font-family: "Open Sans", sans-serif;
 
-  @apply rounded bg-fuchsia-400 px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-slate-700  transition focus:outline-none focus:ring active:bg-fuchsia-500 active:scale-95;
+  @apply rounded bg-fill-secondary px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-slate-700  transition focus:outline-none  active:bg-fuchsia-500 active:scale-95;
 }
 
 .neutral-btn-one {
   font-family: "Open Sans", sans-serif;
 
-  @apply rounded bg-transparent px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-slate-500 border border-slate-400 transition focus:outline-none focus:ring active:bg-slate-200 active:scale-95;
+  @apply rounded bg-transparent px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-slate-500 border border-slate-400 transition focus:outline-none  active:bg-slate-200 active:scale-95;
 }
 
 /* UTILITY BTNS */
 .closebtn {
-  font-family: "Open Sans", sans-serif;
-  width: 2rem;
-  height: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
   text-align: center;
 
-  @apply bg-transparent text-[#9092ff] font-normal text-[.8rem] px-[.6rem] py-[.2rem] hover:text-orange-500 active:scale-90;
+  @apply bg-transparent text-[hsl(239,100%,78%)] font-normal text-[.9rem] px-[.6rem] py-[.2rem] hover:text-orange-500 active:scale-[85%];
+}
+
+.smallfunctionbtn-primary {
+  @apply rounded bg-fill-primary px-[.1rem] py-[.2rem] min-w-[50%] h-[100%] my-[0.5rem] text-sm font-bold text-white transition focus:outline-none hover:bg-indigo-600 active:bg-indigo-500 active:scale-95;
+}
+
+.smallfunctionbtn-secondary {
+  @apply rounded  bg-fill-secondary px-[.1rem] py-[.2rem] min-w-[50%] h-[100%] my-[0.5rem] text-sm font-bold text-white transition focus:outline-none  active:bg-fuchsia-500 active:scale-95;
+}
+
+.smallfunctionbtn-neutral {
+  @apply rounded bg-transparent px-[.1rem] py-[.2rem] min-w-[50%] h-[100%] my-[0.5rem] text-sm font-bold text-slate-500 border border-slate-400 transition focus:outline-none active:bg-slate-200 active:scale-95;
 }
 
 /* TABLE CSS */
 .table-responsive {
-  display: block;
-  width: 100%;
-  overflow-x: auto;
+  @apply block w-full overflow-x-auto;
   -webkit-overflow-scrolling: touch;
 }
 
 table {
-  width: 100%;
-  border-collapse: collapse;
-  border-spacing: 0;
-  margin-bottom: 1rem;
+  @apply min-w-full border-collapse mb-4 divide-y divide-gray-300;
 }
 
 th,
 td {
-  padding: 0.75rem;
+  @apply py-3 px-2;
   vertical-align: top;
-  border-top: 1px solid #dee2e6;
 }
 
 thead th {
-  vertical-align: bottom;
+  @apply text-left text-sm font-semibold text-gray-900 whitespace-nowrap;
+  vertical-align: center;
   border-bottom: 2px solid #dee2e6;
 }
 
-tbody tr:nth-of-type(odd) {
-  background-color: rgba(0, 0, 0, 0.05);
-}
+tbody {
+  @apply divide-y divide-gray-200 bg-white;
 
-tbody tr:hover {
-  background-color: rgba(0, 0, 0, 0.075);
+  tr {
+    @apply odd:bg-gray-100;
+    &:hover {
+      @apply bg-gray-200;
+    }
+  }
+
+  td {
+    @apply py-2 px-2 text-sm whitespace-nowrap text-gray-500;
+  }
 }
 
 table a {
-  @apply text-[#9571FF] hover:text-[#9571FF] transition;
+  @apply text-indigo-600 hover:text-indigo-900 transition;
 }
 
-/* TEXT: HEADING */
+/* STATS DATA */
 
-.heading1 {
-  @apply text-3xl font-semibold leading-6 text-white;
+.statsflex {
+  @apply mx-auto grid grid-cols-1 gap-px bg-gray-200 sm:grid-cols-2 lg:grid-cols-4;
+}
+
+.statsbox {
+  @apply flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 bg-white px-4 py-10 sm:px-6 xl:px-8;
+}
+
+.statsheader {
+  @apply text-sm font-medium leading-6 text-gray-500;
+}
+
+.statsdata {
+  @apply mt-1 text-xl font-semibold tracking-tight text-gray-900;
+}
+
+/* DESCRIPTION TABLE */
+
+.desc-table-structure-header {
+  @apply px-4 bg-white text-black p-4 mb-4;
+}
+
+.desc-table-structure-content {
+  @apply mt-6 border-t border-gray-200;
+}
+
+.desc-table-row {
+  @apply px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0;
+}
+
+.desc-table-header {
+  @apply text-base font-semibold leading-7;
+}
+
+.desc-table-title {
+  @apply text-sm font-medium leading-6;
+}
+
+.desc-table-text {
+  @apply mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0;
 }

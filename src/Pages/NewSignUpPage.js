@@ -1,15 +1,7 @@
 import { useState } from "react";
-import { createContext } from "react";
 import { useAuth } from "../util/auth.js";
 import { useNavigate } from "react-router-dom";
-
-// Firebase Auth
-// import {
-//   createUserWithEmailAndPassword,
-//   signInWithEmailAndPassword,
-//   setPersistence,
-//   browserSessionPersistence,
-// } from "firebase/auth";
+import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 
 export const NewSignUpPage = () => {
   const [user, setUser] = useState({ user: "", password: "" });
@@ -38,10 +30,10 @@ export const NewSignUpPage = () => {
       <div className="flex flex-row justify-center h-[100vh]">
         <div className="relative flex flex-col justify-start p-[2rem] pt-[5rem] min-w-[30%]">
           <button
-            className="absolute top-[1rem] left-[1rem] closebtn"
+            className="absolute top-[1rem] left-[1rem] z-[100]"
             onClick={() => navigate("/")}
           >
-            back
+            <ChevronLeftIcon className="closebtn" />
           </button>
           <div className="flex flex-row justify-center w-[100%] pb-[2rem] lg:pb-[3rem]">
             <div className=" w-[40%]">

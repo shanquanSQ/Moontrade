@@ -13,7 +13,39 @@ body {
   font-family: "Open Sans", sans-serif;
 }
 
-/* code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
-} */
+@layer base {
+  :root {
+    /* Fills */
+    --color-bg: 0deg 0% 100%;
+    --color-primary: 239deg 82% 65%;
+    --color-secondary: 292deg 91% 73%;
+
+    /* Header Colours */
+    --header-pri: 239deg 82% 65%;
+
+    /* Text Colours */
+    --text-pri: 0deg 0% 20%;
+    --text-secondary: 0deg 0% 40%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      /* Fills */
+      --color-bg: 215deg 13% 13%;
+      --color-primary: 239deg 82% 65%;
+      --color-secondary: 292deg 91% 73%;
+
+      /* Header Colours */
+      --header-pri: 239deg 62% 75%;
+
+      /* Text Colours */
+      --text-pri: 239deg 82% 65%;
+      --text-secondary: 0deg 0% 100%;
+    }
+  }
+
+  /* :root[data-theme="dark"] {
+    --color-primary: 109deg 82% 65%;
+    --color-secondary: 292deg 91% 73%;
+  } */
+}
