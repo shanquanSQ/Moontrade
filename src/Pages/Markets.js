@@ -85,6 +85,7 @@ export function Markets() {
 
     get(userWatchListRef).then((snapshot) => {
       setWatchListStocks(snapshot.val());
+      console.log("mount snapshot: ", snapshot.val());
     });
   }, []);
 
@@ -95,22 +96,12 @@ export function Markets() {
 
     get(userWatchListRef).then((snapshot) => {
       setWatchListStocks(snapshot.val());
-      console.log(snapshot.val());
+      console.log("buttonclick: ", snapshot.val());
     });
   };
 
-  useEffect(() => {
-    console.log("onmount");
-    const userWatchListRef = ref(db, `users/${userID}/watchlist/`);
-
-    get(userWatchListRef).then((snapshot) => {
-      setWatchListStocks(snapshot.val());
-    });
-  }, []);
-
   const handleSaveToWatchlist = (ev) => {
     ev.preventDefault();
-    // console.log(ev.target.id);
     const Symbol = ev.target.id;
 
     const userWatchListRef = ref(db, `users/${userID}/watchlist/`);
@@ -118,6 +109,7 @@ export function Markets() {
     get(userWatchListRef).then((snapshot) => {
       const data = snapshot.val();
       if (data === null) {
+        setWatchListStocks({ [Symbol]: `${Symbol}` });
         update(userWatchListRef, { [Symbol]: `${Symbol}` });
       } else {
         if (Symbol in data) {
@@ -126,6 +118,7 @@ export function Markets() {
           );
 
           setWatchListStocks((prevState) => {
+            console.log("deleting stock");
             const updatedState = { ...prevState };
             delete updatedState[Symbol];
             return updatedState;
@@ -145,6 +138,30 @@ export function Markets() {
       }
     });
   };
+
+  // const handleButtonColour = (ev) => {
+  //   // ev.preventDefault();
+  //   console.log("is this triggering");
+  //   // let Symbol = ev.target.id;
+  //   // let Symbol = input;
+  //   console.log("button symbol is: ", Symbol);
+
+  //   if (watchListStocks !== null) {
+  //     console.log("outer loop");
+  //     if (Symbol in watchListStocks) {
+  //       console.log("yayy");
+  //       // return "smallfunctionbtn-primary";
+  //       return true;
+  //     } else {
+  //       // return "smallfunctionbtn-neutral";
+  //       return false;
+  //     }
+  //   } else {
+  //     console.log("else loop");
+  //     // return "smallfunctionbtn-neutral";
+  //     return false;
+  //   }
+  // };
 
   useEffect(() => {
     const sortArray = () => {
@@ -251,47 +268,52 @@ export function Markets() {
               {viewWatchList === true ? (
                 <tbody>
                   {stocks.map((stock) => {
-                    if (stock.Symbol in watchListStocks) {
-                      return (
-                        <tr
-                          key={stock.Symbol}
-                          className="h-[5rem] hover:bg-teal-200"
-                        >
-                          <td className="py-2 px-4 text-center">
-                            <Link
-                              to={`/trade/${stock.Symbol}`}
-                              className="text-indigo-600 hover:text-indigo-800"
-                            >
-                              {stock.Symbol}
-                            </Link>
-                          </td>
-                          <td className="py-2 px-4">
-                            <Link
-                              to={`/trade/${stock.Symbol}`}
-                              className="text-indigo-600 hover:text-indigo-800"
-                            >
-                              {stock.Name}
-                            </Link>
-                          </td>
-                          <td className="py-2 px-4">{stock.close}</td>
-                          <td className="py-2 px-4">{stock.volume}</td>
-                          <td className="py-2 px-4 text-center">
-                            <input
-                              type="button"
-                              id={stock.Symbol}
-                              className={
-                                stock.Symbol in watchListStocks
-                                  ? "smallfunctionbtn-primary"
-                                  : "smallfunctionbtn-neutral"
-                              }
-                              onClick={handleSaveToWatchlist}
-                              value={
-                                stock.Symbol in watchListStocks ? "✓" : "+"
-                              }
-                            />
-                          </td>
-                        </tr>
-                      );
+                    if (watchListStocks !== null) {
+                      if (stock.Symbol in watchListStocks) {
+                        return (
+                          <tr
+                            key={stock.Symbol}
+                            className="h-[5rem] hover:bg-teal-200"
+                          >
+                            <td className="py-2 px-4 text-center">
+                              <Link
+                                to={`/trade/${stock.Symbol}`}
+                                className="text-indigo-600 hover:text-indigo-800"
+                              >
+                                {stock.Symbol}
+                              </Link>
+                            </td>
+                            <td className="py-2 px-4">
+                              <Link
+                                to={`/trade/${stock.Symbol}`}
+                                className="text-indigo-600 hover:text-indigo-800"
+                              >
+                                {stock.Name}
+                              </Link>
+                            </td>
+                            <td className="py-2 px-4">{stock.close}</td>
+                            <td className="py-2 px-4">{stock.volume}</td>
+                            <td className="py-2 px-4 text-center">
+                              <input
+                                type="button"
+                                id={stock.Symbol}
+                                className={
+                                  watchListStocks &&
+                                  stock.Symbol in watchListStocks
+                                    ? "smallfunctionbtn-primary"
+                                    : "smallfunctionbtn-neutral"
+                                }
+                                onClick={handleSaveToWatchlist}
+                                value={
+                                  stock.Symbol in watchListStocks ? "✓" : "+"
+                                }
+                              />
+                            </td>
+                          </tr>
+                        );
+                      }
+                    } else {
+                      return null;
                     }
                   })}
                 </tbody>
@@ -324,13 +346,19 @@ export function Markets() {
                         <input
                           type="button"
                           id={stock.Symbol}
+                          // className={
+                          //   handleButtonColour
+                          //     ? "smallfunctionbtn-primary"
+                          //     : "smallfunctionbtn-neutral"
+                          // }
                           className={
-                            stock.Symbol in watchListStocks
+                            watchListStocks && stock.Symbol in watchListStocks
                               ? "smallfunctionbtn-primary"
                               : "smallfunctionbtn-neutral"
                           }
                           onClick={handleSaveToWatchlist}
-                          value={stock.Symbol in watchListStocks ? "✓" : "+"}
+                          value={`✓`}
+                          // value={stock.Symbol in watchListStocks ? "✓" : "+"}
                         />
                       </td>
                     </tr>

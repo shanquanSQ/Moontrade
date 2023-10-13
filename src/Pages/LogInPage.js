@@ -3,14 +3,6 @@ import { createContext } from "react";
 import { useAuth } from "../util/auth.js";
 import { useNavigate } from "react-router-dom";
 
-// Firebase Auth
-// import {
-//   createUserWithEmailAndPassword,
-//   signInWithEmailAndPassword,
-//   setPersistence,
-//   browserSessionPersistence,
-// } from "firebase/auth";
-
 export const LogInPage = () => {
   const [user, setUser] = useState({ user: "", password: "" });
   const navigate = useNavigate();
