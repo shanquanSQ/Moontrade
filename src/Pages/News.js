@@ -23,7 +23,6 @@ export function News() {
       const newsData = {};
 
       // Sequentially fetch news data for each stock symbol
-      // In real-world apps, consider optimizing for parallel requests while respecting API rate limits
       for (const symbol in watchListStocks) {
         try {
           const response = await axios.get(
