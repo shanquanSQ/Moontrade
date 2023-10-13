@@ -272,10 +272,10 @@ export function Trade() {
 
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
-            <h1 className="text-base font-semibold leading-6 text-white">
+            <h1 className="text-base font-semibold leading-6 text-txtcolor-primary">
               {stockData.name} ({Symbol}){" "}
             </h1>
-            <p className="mt-2 text-sm text-white">
+            <p className="mt-2 text-sm text-txtcolor-secondary">
               Buy, Sell & Add to Watchlist
             </p>
           </div>

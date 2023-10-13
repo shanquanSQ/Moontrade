@@ -1,5 +1,9 @@
-import { useState, React } from "react";
-import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
+import { useState, React, useEffect } from "react";
+import {
+  QuestionMarkCircleIcon,
+  SunIcon,
+  MoonIcon,
+} from "@heroicons/react/24/solid";
 import "./StatusBar.css";
 
 export const StatusBar = () => {
@@ -17,12 +21,9 @@ export const StatusBar = () => {
   return (
     <>
       <div className="flex flex-row justify-end gap-[1rem] w-[100vw] h-[4rem] pt-[1.2rem] px-[5%] lg:px-[35%] overflow-hidden ">
-        <input
-          type="button"
-          className="theme-btn"
-          value={themeMode ? "Light" : "Dark"}
-          onClick={handleToggleTheme}
-        />
+        <button className="theme-btn" onClick={handleToggleTheme}>
+          {themeMode ? <SunIcon /> : <MoonIcon />}
+        </button>
         <QuestionMarkCircleIcon className="supportbtn" />
         <div className=" w-[1.3rem] pt-[.1rem]">
           <img src={LOGO_SMALL} alt="moontrade logo" />

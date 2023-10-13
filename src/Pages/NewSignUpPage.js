@@ -30,7 +30,7 @@ export const NewSignUpPage = () => {
       <div className="flex flex-row justify-center h-[100vh]">
         <div className="relative flex flex-col justify-start p-[2rem] pt-[5rem] min-w-[30%]">
           <button
-            className="absolute top-[1rem] left-[1rem]"
+            className="absolute top-[1rem] left-[1rem] z-[100]"
             onClick={() => navigate("/")}
           >
             <ChevronLeftIcon className="closebtn" />

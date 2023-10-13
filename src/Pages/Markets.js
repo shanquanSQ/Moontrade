@@ -173,10 +173,10 @@ export function Markets() {
 
           <div className="sm:flex sm:items-center">
             <div className="sm:flex-auto">
-              <h1 className="text-base font-semibold leading-6 text-white">
+              <h1 className="text-base font-semibold leading-6 text-txtcolor-primary">
                 S&P 100 Stocks
               </h1>
-              <p className="mt-2 text-sm text-slate-300">
+              <p className="mt-2 text-sm text-txtcolor-secondary">
                 View Prices, Trade Stocks and Add to Watchlist
               </p>
             </div>
@@ -288,7 +288,10 @@ export function Markets() {
                                   }
                                   onClick={handleSaveToWatchlist}
                                   value={
-                                    stock.Symbol in watchListStocks ? "✓" : "+"
+                                    watchListStocks &&
+                                    stock.Symbol in watchListStocks
+                                      ? "✓"
+                                      : "+"
                                   }
                                 />
                               </td>
@@ -329,19 +332,17 @@ export function Markets() {
                           <input
                             type="button"
                             id={stock.Symbol}
-                            // className={
-                            //   handleButtonColour
-                            //     ? "smallfunctionbtn-primary"
-                            //     : "smallfunctionbtn-neutral"
-                            // }
                             className={
                               watchListStocks && stock.Symbol in watchListStocks
                                 ? "smallfunctionbtn-primary"
                                 : "smallfunctionbtn-neutral"
                             }
                             onClick={handleSaveToWatchlist}
-                            value={`✓`}
-                            // value={stock.Symbol in watchListStocks ? "✓" : "+"}
+                            value={
+                              watchListStocks && stock.Symbol in watchListStocks
+                                ? "✓"
+                                : "+"
+                            }
                           />
                         </td>
                       </tr>
