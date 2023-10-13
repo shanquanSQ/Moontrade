@@ -9,8 +9,13 @@ import {
 } from "firebase/storage";
 import { useAuth } from "../util/auth.js";
 import { useNavigate } from "react-router-dom";
+
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
+
 export function UserPage() {
   const userAuth = useAuth();
+  const [newPassword, setNewPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [savedDisplayName, setSavedDisplayName] = useState("");
@@ -23,6 +28,8 @@ export function UserPage() {
 
   const [inputRefCode, setInputRefCode] = useState("");
   const [refCodeError, setRefCodeError] = useState("");
+
+  const [isVisible, setIsVisible] = useState(false);
 
   const db = getDatabase();
   const navigate = useNavigate();
@@ -124,6 +131,22 @@ export function UserPage() {
       });
   };
 
+  const handleChangePassword = async () => {
+    // Additional check: Ensure password length is adequate
+    if (newPassword.length < 6) {
+      setPasswordError("Password should be at least 6 characters long");
+      return;
+    }
+
+    try {
+      await userAuth.changePassword(newPassword);
+      alert("Password changed successfully");
+      setNewPassword("");
+    } catch (error) {
+      console.error("Error changing password:", error);
+    }
+  };
+
   // Define the Stripe Payment Link
   const stripePaymentLink = "https://buy.stripe.com/test_7sIaEQ4zbdR6dgc000";
 
@@ -217,6 +240,11 @@ export function UserPage() {
     }
   };
 
+  const toggleVisibility = async (e) => {
+    e.preventDefault();
+    setIsVisible(!isVisible);
+  };
+
   return (
     <div className="structure">
       <div className="contentcontainer">
@@ -230,6 +258,13 @@ export function UserPage() {
                 <h2 className="text-base font-semibold leading-7 py-2 text-white">
                   Edit Your Profile
                 </h2>
+                <button onClick={toggleVisibility}>
+                  {isVisible ? (
+                    <EyeSlashIcon className="h-6 w-6 text-white" />
+                  ) : (
+                    <EyeIcon className="h-6 w-6 text-white" />
+                  )}
+                </button>
 
                 {/* Display Name */}
                 <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
@@ -242,7 +277,7 @@ export function UserPage() {
                     </label>
                     <div className="mt-2">
                       <input
-                        type="text"
+                        type={isVisible ? "text" : "password"}
                         name="displayName"
                         id="displayName"
                         autoComplete="displayName"
@@ -265,7 +300,7 @@ export function UserPage() {
                     </label>
                     <div className="mt-2">
                       <input
-                        type="text"
+                        type={isVisible ? "text" : "password"}
                         name="phoneNumber"
                         id="phoneNumber"
                         autoComplete="tel"
@@ -336,10 +371,35 @@ export function UserPage() {
                   )}
                 </div>
 
+                {/* Change Password */}
+
+                <h2 className="text-base font-semibold leading-7 py-4 text-white">
+                  <label htmlFor="newPassword">Change Password</label>
+                </h2>
+
+                <input
+                  type="password"
+                  id="newPassword"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                />
+                {passwordError && (
+                  <p style={{ color: "red" }}>{passwordError}</p>
+                )}
+                <button
+                  type="button"
+                  className="primary-cta-btn"
+                  onClick={handleChangePassword}
+                >
+                  Submit New Password
+                </button>
+
+                {/* Referral Code Display */}
+
                 <h2 className="text-base font-semibold leading-7 py-4 text-white">
                   Refer 10 friends for 25000 each
                 </h2>
-                {/* Referral Code Display */}
                 <div className="sm:col-span-4 py-2">
                   <label className="block text-sm font-medium leading-6 text-white">
                     Your referral code

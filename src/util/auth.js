@@ -7,6 +7,7 @@ import {
   browserSessionPersistence,
   signOut,
   onAuthStateChanged,
+  updatePassword,
 } from "firebase/auth";
 import { useContext, useEffect, useState } from "react";
 import { createContext } from "react";
@@ -96,6 +97,26 @@ export const AuthProvider = ({ children }) => {
       });
   };
 
+  const changePassword = (newPassword) => {
+    return new Promise((resolve, reject) => {
+      if (user) {
+        updatePassword(user, newPassword)
+          .then(() => {
+            console.log("Password updated successfully");
+            resolve("Password updated successfully");
+          })
+          .catch((error) => {
+            console.error("Error updating password:", error);
+            reject(error);
+          });
+      } else {
+        const error = "No user is currently logged in";
+        console.log(error);
+        reject(error);
+      }
+    });
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -104,6 +125,7 @@ export const AuthProvider = ({ children }) => {
         signInUser,
         signOutUser,
         createUser,
+        changePassword,
       }}
     >
       {children}
