@@ -6,13 +6,14 @@ import {
 } from "@heroicons/react/24/solid";
 import "./StatusBar.css";
 
+import { toggleTheme } from "../../util/themeUtility";
+
 export const StatusBar = () => {
   const [themeMode, setThemeMode] = useState(false);
 
   const handleToggleTheme = () => {
     setThemeMode(!themeMode);
-    // This needs to affect context provider.
-    // Maybe create a Theme provider.
+    toggleTheme();
   };
 
   const LOGO_SMALL =
@@ -20,12 +21,15 @@ export const StatusBar = () => {
 
   return (
     <>
-      <div className="flex flex-row justify-end gap-[1rem] w-[100vw] h-[4rem] pt-[1.2rem] px-[5%] lg:px-[35%] overflow-hidden ">
+      <div className="flex flex-row justify-end gap-[1rem] lg:gap-[2rem] max-w-[98vw] pt-[.9rem] px-[5%] lg:px-[35%] overflow-hidden">
         <button className="theme-btn" onClick={handleToggleTheme}>
           {themeMode ? <SunIcon /> : <MoonIcon />}
         </button>
-        <QuestionMarkCircleIcon className="supportbtn" />
-        <div className=" w-[1.3rem] pt-[.1rem]">
+        <button onClick={() => console.log("clicked")}>
+          <QuestionMarkCircleIcon className="supportbtn" />
+        </button>
+        {/* Note that the width of Logo is actually depending on the status bar width %, not the % size of the logo.. */}
+        <div className=" w-[8.5%] lg:w-[6%] pt-[.1rem] ">
           <img src={LOGO_SMALL} alt="moontrade logo" />
         </div>
       </div>

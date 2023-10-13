@@ -60,21 +60,15 @@
 
 /* BUTTONS CSS */
 .primary-cta-btn {
-  font-family: "Open Sans", sans-serif;
-
   @apply rounded bg-fill-primary px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-white transition focus:outline-none  hover:bg-indigo-600 active:bg-indigo-600 active:scale-95;
 }
 
 .secondary-cta-btn {
-  font-family: "Open Sans", sans-serif;
-
-  @apply rounded bg-fill-secondary px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-slate-700  transition focus:outline-none  active:bg-fuchsia-500 active:scale-95;
+  @apply rounded bg-fill-secondary px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-white  transition focus:outline-none  active:bg-fuchsia-500 active:scale-95;
 }
 
 .neutral-btn-one {
-  font-family: "Open Sans", sans-serif;
-
-  @apply rounded bg-transparent px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-slate-500 border border-slate-400 transition focus:outline-none  active:bg-slate-200 active:scale-95;
+  @apply rounded bg-transparent px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-txtcolor-neutral border border-slate-400 transition focus:outline-none  active:bg-slate-200 active:scale-95;
 }
 
 /* UTILITY BTNS */
@@ -142,11 +136,11 @@ table a {
 /* STATS DATA */
 
 .statsflex {
-  @apply mx-auto grid grid-cols-1 gap-px bg-gray-200 sm:grid-cols-2 lg:grid-cols-4;
+  @apply mx-auto grid grid-cols-1 gap-px bg-gray-200 sm:grid-cols-2 lg:grid-cols-4 rounded-md;
 }
 
 .statsbox {
-  @apply flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 bg-white px-4 py-10 sm:px-6 xl:px-8;
+  @apply flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 bg-white px-4 py-10 sm:px-6 xl:px-8 rounded-md;
 }
 
 .statsheader {
