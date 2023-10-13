@@ -21,6 +21,7 @@ export function UserPage() {
   const db = getDatabase();
   const navigate = useNavigate();
   const auth = getAuth();
+
   useEffect(() => {
     const fetchUserData = async () => {
       if (!userAuth.user) return;
@@ -114,6 +115,34 @@ export function UserPage() {
         console.error("Error logging out:", error);
       });
   };
+
+  // Define the Stripe Payment Link
+  const stripePaymentLink = "https://buy.stripe.com/test_7sIaEQ4zbdR6dgc000";
+
+  const handleTopUp = () => {
+    // Redirect to the Stripe Payment Link URL
+    window.open(stripePaymentLink, "_blank");
+    updateCredits();
+  };
+
+  const updateCredits = async () => {
+    // Mock logic to update user's credits in your app. For simulation and not for production.
+    if (!userAuth.user) return;
+    try {
+      const userRef = ref(db, `users/${userAuth.user.uid}`);
+      const snapshot = await get(userRef);
+      if (snapshot.exists()) {
+        const userData = snapshot.val();
+        const newCredits = (userData.credits || 0) + 100000; // Adding 100000 credits for testing
+        await update(userRef, {
+          credits: newCredits,
+        });
+      }
+    } catch (error) {
+      console.error("Error updating credits:", error);
+    }
+  };
+
   return (
     <div className="structure">
       <div className="contentcontainer">
@@ -127,6 +156,17 @@ export function UserPage() {
                 <h2 className="text-base font-semibold leading-7 text-white">
                   Your Profile
                 </h2>
+
+                {/* Top up credits */}
+                <div className="mt-6 flex items-center justify-end gap-x-6">
+                  <button
+                    type="button" // Make sure to specify the type to prevent form submission
+                    className="secondary-cta-btn"
+                    onClick={handleTopUp}
+                  >
+                    Top Up Credits
+                  </button>
+                </div>
 
                 {/* Display Name */}
                 <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
@@ -231,6 +271,11 @@ export function UserPage() {
                       Edit
                     </button>
                   )}
+                </div>
+
+                {/* Save and Edit Buttons */}
+
+                <div className="mt-6 flex items-center justify-end gap-x-6">
                   <button className="primary-cta-btn" onClick={handleLogout}>
                     Log Out
                   </button>
