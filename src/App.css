@@ -60,21 +60,15 @@
 
 /* BUTTONS CSS */
 .primary-cta-btn {
-  font-family: "Open Sans", sans-serif;
-
   @apply rounded bg-fill-primary px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-white transition focus:outline-none  hover:bg-indigo-600 active:bg-indigo-600 active:scale-95;
 }
 
 .secondary-cta-btn {
-  font-family: "Open Sans", sans-serif;
-
-  @apply rounded bg-fill-secondary px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-slate-700  transition focus:outline-none  active:bg-fuchsia-500 active:scale-95;
+  @apply rounded bg-fill-secondary px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-white  transition focus:outline-none  active:bg-fuchsia-500 active:scale-95;
 }
 
 .neutral-btn-one {
-  font-family: "Open Sans", sans-serif;
-
-  @apply rounded bg-transparent px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-slate-500 border border-slate-400 transition focus:outline-none  active:bg-slate-200 active:scale-95;
+  @apply rounded bg-transparent px-8 py-3 w-[100%] my-[0.5rem] text-sm font-bold text-txtcolor-neutral border border-slate-400 transition focus:outline-none  active:bg-slate-200 active:scale-95;
 }
 
 /* UTILITY BTNS */
