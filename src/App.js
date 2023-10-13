@@ -52,7 +52,7 @@ function App() {
 
   return (
     <AuthProvider>
-      <div className="absolute top-0 z-[99]">
+      <div className="absolute top-0 z-[99] w-full">
         <StatusBar />
       </div>
       {showNavBar && <Navbar />}

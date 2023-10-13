@@ -157,7 +157,7 @@ export const PortfolioPage = () => {
         </div>
 
         {/* Stats Bar */}
-        <dl className="statsflex">
+        <dl className="statsflex mb-[.2rem] lg:mb-[.5rem]">
           <div className="statsbox">
             <dt className="statsheader">Portfolio Balance</dt>
             <dd className="statsdata">${credits.toFixed(2)}</dd>
@@ -175,8 +175,7 @@ export const PortfolioPage = () => {
             <dd className="statsdata">#</dd>
           </div>
         </dl>
-
-        <div className="table-responsive bg-white text-black p-4">
+        <div className="table-responsive bg-white text-black px-4 pt-4 pb-0 rounded-md">
           <table className="w-full border-collapse">
             <thead>
               <tr className="text-gray-800">

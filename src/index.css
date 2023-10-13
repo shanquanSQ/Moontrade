@@ -21,13 +21,15 @@ body {
     --color-secondary: 292deg 91% 73%;
 
     /* Header Colours */
-    --header-pri: 239deg 82% 65%;
+    --header-pri: 239deg 62% 75%;
 
     /* Text Colours */
-    --text-pri: 0deg 0% 20%;
+    --text-pri: 239deg 82% 65%;
     --text-secondary: 0deg 0% 40%;
+    --text-neutral: 0deg 0% 30%;
   }
 
+  /* This will respond to system preferences on load */
   @media (prefers-color-scheme: dark) {
     :root {
       /* Fills */
@@ -41,11 +43,23 @@ body {
       /* Text Colours */
       --text-pri: 239deg 82% 65%;
       --text-secondary: 0deg 0% 100%;
+      --text-neutral: 0deg 0% 60%;
     }
   }
 
-  /* :root[data-theme="dark"] {
-    --color-primary: 109deg 82% 65%;
+  /* This is the forced toggle dark mode */
+  :root[data-theme="dark"] {
+    /* Fills */
+    --color-bg: 215deg 13% 13%;
+    --color-primary: 239deg 82% 65%;
     --color-secondary: 292deg 91% 73%;
-  } */
+
+    /* Header Colours */
+    --header-pri: 239deg 62% 75%;
+
+    /* Text Colours */
+    --text-pri: 239deg 82% 65%;
+    --text-secondary: 0deg 0% 100%;
+    --text-neutral: 0deg 0% 60%;
+  }
 }

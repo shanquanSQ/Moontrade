@@ -7,7 +7,7 @@ export const LandingPage = () => {
 
   return (
     <>
-      <div className="flex flex-row justify-center h-[100vh]">
+      <div className="flex flex-row justify-center h-[100vh] bg-fill-bg">
         <div className="flex flex-col justify-between  p-[2rem] pt-[7rem] min-w-[30%]  ">
           <div className="flex flex-row justify-center w-[100%]  ">
             <div className="relative left-[-25%] w-[40%]">

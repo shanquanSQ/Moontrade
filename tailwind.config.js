@@ -1,6 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{html,js}"],
+  darkMode: "class",
+
   theme: {
     extend: {
       fontFamily: {
@@ -20,6 +22,7 @@ module.exports = {
         txtcolor: {
           primary: "hsl(var(--text-pri) / 1)",
           secondary: "hsl(var(--text-secondary) / 1)",
+          neutral: "hsl(var(--text-neutral) / 1)",
         },
         header: {
           primary: "hsl(var(--header-pri) / 1)",

@@ -227,8 +227,8 @@ export function UserPage() {
           <form>
             <div className="space-y-12">
               <div className="pb-12">
-                <h2 className="text-base font-semibold leading-7 py-2 text-white">
-                  Edit Your Profile
+                <h2 className="text-base font-semibold leading-7 py-2 text-txtcolor-primary">
+                  Your MoonTrade Profile
                 </h2>
 
                 {/* Display Name */}
@@ -236,7 +236,7 @@ export function UserPage() {
                   <div className="sm:col-span-4">
                     <label
                       htmlFor="displayName"
-                      className="block text-sm font-medium leading-6 text-white"
+                      className="block text-sm font-medium leading-6 text-txtcolor-secondary"
                     >
                       Display Name
                     </label>
@@ -249,7 +249,7 @@ export function UserPage() {
                         value={isEditing ? displayName : savedDisplayName}
                         onChange={(e) => setDisplayName(e.target.value)}
                         readOnly={!isEditing}
-                        className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-txtcolor-secondary shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                         placeholder="Your Display Name"
                       />
                     </div>
@@ -259,7 +259,7 @@ export function UserPage() {
                   <div className="sm:col-span-4">
                     <label
                       htmlFor="phoneNumber"
-                      className="block text-sm font-medium leading-6 text-white"
+                      className="block text-sm font-medium leading-6 text-txtcolor-secondary"
                     >
                       Phone Number
                     </label>
@@ -272,7 +272,7 @@ export function UserPage() {
                         value={isEditing ? phoneNumber : savedPhoneNumber}
                         onChange={handlePhoneNumberChange}
                         readOnly={!isEditing}
-                        className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-txtcolor-secondary shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                         placeholder="Your Phone Number"
                       />
                     </div>
@@ -287,7 +287,7 @@ export function UserPage() {
                   <div className="col-span-full">
                     <label
                       htmlFor="photo"
-                      className="block text-sm font-medium leading-6 text-white"
+                      className="block text-sm font-medium leading-6 text-txtcolor-secondary"
                     >
                       Profile Picture
                     </label>
@@ -302,7 +302,7 @@ export function UserPage() {
                       >
                         <img
                           src={profileImage}
-                          alt="Profile"
+                          alt=" "
                           style={{
                             width: "100%",
                             height: "100%",
@@ -310,7 +310,7 @@ export function UserPage() {
                           }}
                         />
                       </div>
-                      <label className="block text-sm font-medium leading-6 text-white">
+                      <label className="block text-sm font-medium leading-6 text-txtcolor-secondary">
                         New Profile Picture:
                         <input
                           type="file"
@@ -336,19 +336,19 @@ export function UserPage() {
                   )}
                 </div>
 
-                <h2 className="text-base font-semibold leading-7 py-4 text-white">
+                <h2 className="text-base font-semibold leading-7 py-4 text-txtcolor-secondary">
                   Refer 10 friends for 25000 each
                 </h2>
                 {/* Referral Code Display */}
                 <div className="sm:col-span-4 py-2">
-                  <label className="block text-sm font-medium leading-6 text-white">
-                    Your referral code
+                  <label className="block text-sm font-medium leading-6 text-txtcolor-primary">
+                    Your Referral Code
                   </label>
                   <div className="mt-2">
-                    <p className="text-white">
+                    <p className="text-txtcolor-secondary">
                       <input
                         value={refCode}
-                        className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-txtcolor-secondary shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                       />
                     </p>
                   </div>
@@ -356,7 +356,7 @@ export function UserPage() {
 
                 {/* Referral Code Input */}
                 <div className="sm:col-span-4 py-2">
-                  <label className="block text-sm font-medium leading-6 text-white">
+                  <label className="block text-sm font-medium leading-6 text-txtcolor-secondary">
                     Enter Referral Code
                   </label>
                   <div className="mt-2">
@@ -364,7 +364,7 @@ export function UserPage() {
                       type="text"
                       value={inputRefCode}
                       onChange={(e) => setInputRefCode(e.target.value)}
-                      className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-txtcolor-secondary shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                       placeholder="Enter Referral Code"
                     />
                   </div>
@@ -383,7 +383,7 @@ export function UserPage() {
                   </button>
                 </div>
 
-                <h2 className="text-base font-semibold leading-7 py-2 text-white">
+                <h2 className="text-base font-semibold leading-7 py-2 text-txtcolor-secondary">
                   Buy 100,000 credits for $5
                 </h2>
                 {/* Top up credits */}
@@ -400,7 +400,7 @@ export function UserPage() {
                 {/* Logout */}
 
                 <div className="mt-6 flex items-center justify-end gap-x-6">
-                  <button className="primary-cta-btn" onClick={handleLogout}>
+                  <button className="neutral-btn-one" onClick={handleLogout}>
                     Log Out
                   </button>
                 </div>
