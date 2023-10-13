@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getAuth, signOut } from "firebase/auth";
-import { getDatabase, ref, update, get } from "firebase/database";
+import { getDatabase, ref, set, get } from "firebase/database";
 import {
   getStorage,
   getDownloadURL as getStorageDownloadURL,
@@ -10,6 +10,21 @@ import {
 import { useAuth } from "../util/auth.js";
 import { useNavigate } from "react-router-dom";
 
+const hideInfo = (info, isVisible) => {
+  if (isVisible) {
+    return info;
+  } else {
+    if (info.length <= 2) return info;
+
+    const firstChar = info.charAt(0);
+    const lastChar = info.charAt(info.length - 1);
+    const maskedInfo = `${firstChar}${"*".repeat(info.length - 2)}${lastChar}`;
+    return maskedInfo;
+  }
+};
+
+const storage = getStorage();
+
 export function UserPage() {
   const userAuth = useAuth();
   const [displayName, setDisplayName] = useState("");
@@ -17,62 +32,14 @@ export function UserPage() {
   const [savedDisplayName, setSavedDisplayName] = useState("");
   const [savedPhoneNumber, setSavedPhoneNumber] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const [phoneNumberError, setPhoneNumberError] = useState("");
+  const [phoneNumberError, setPhoneNumberError] = useState(""); // Added phoneNumberError state
   const [profileImage, setProfileImage] = useState(null);
+  const [isPersonalDataVisible, setIsPersonalDataVisible] = useState(false);
+  const [setEmail] = useState(""); // Warning: setEmail is not used in this code
 
   const db = getDatabase();
   const navigate = useNavigate();
-
   const auth = getAuth();
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (!userAuth.user) return;
-
-      try {
-        const userRef = ref(db, `users/${userAuth.user.uid}`);
-        const snapshot = await get(userRef);
-
-        if (snapshot.exists()) {
-          const userData = snapshot.val();
-          setDisplayName(userData.displayName || "");
-          setSavedDisplayName(userData.displayName || "");
-          setPhoneNumber(userData.phoneNumber || "");
-          setSavedPhoneNumber(userData.phoneNumber || "");
-        }
-
-        const profileImageRef = storageRef(
-          getStorage(),
-          `profilePictures/${userAuth.user.uid}`
-        );
-        const downloadURL = await getStorageDownloadURL(profileImageRef);
-        setProfileImage(downloadURL);
-      } catch (error) {
-        console.error("Error retrieving user data:", error);
-      }
-    };
-
-    fetchUserData();
-  }, [userAuth.user, db]);
-
-  const handleSave = async () => {
-    try {
-      const user = userAuth.user;
-      if (!user) return;
-
-      const userRef = ref(db, `users/${user.uid}`);
-      await update(userRef, {
-        displayName,
-        phoneNumber,
-      });
-
-      setSavedDisplayName(displayName);
-      setSavedPhoneNumber(phoneNumber);
-      setIsEditing(false);
-    } catch (error) {
-      console.error("Error updating profile:", error);
-    }
-  };
 
   const handlePhoneNumberChange = (e) => {
     const value = e.target.value;
@@ -85,10 +52,83 @@ export function UserPage() {
     }
   };
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!userAuth.user) return;
+
+      try {
+        const userRef = ref(db, `users/${userAuth.user.uid}`);
+        const snapshot = await get(userRef);
+
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+          setDisplayName(userData.displayName || "");
+          setSavedDisplayName(
+            isPersonalDataVisible
+              ? userData.displayName || ""
+              : hideInfo(userData.displayName || "", true)
+          );
+          setPhoneNumber(userData.phoneNumber || "");
+          setSavedPhoneNumber(
+            isPersonalDataVisible
+              ? userData.phoneNumber || ""
+              : hideInfo(userData.phoneNumber || "", true)
+          );
+          setEmail(
+            isPersonalDataVisible
+              ? userData.email || ""
+              : hideInfo(userAuth.user.email || "", true)
+          );
+        }
+
+        const profileImageRef = storageRef(
+          storage,
+          `profilePictures/${userAuth.user.uid}`
+        );
+        const downloadURL = await getStorageDownloadURL(profileImageRef);
+        setProfileImage(downloadURL);
+      } catch (error) {
+        console.error("Error retrieving user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, [userAuth.user, db, isPersonalDataVisible, setEmail]);
+
+  const handleSave = async () => {
+    try {
+      const user = userAuth.user;
+      if (!user) return;
+
+      const userRef = ref(db, `users/${user.uid}`);
+      await set(userRef, {
+        displayName,
+        phoneNumber,
+      });
+
+      setIsEditing(false);
+      setSavedDisplayName(displayName);
+      setSavedPhoneNumber(phoneNumber);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+  };
+
+  const handleToggleVisibility = () => {
+    setIsPersonalDataVisible((prev) => !prev);
+    if (!isPersonalDataVisible) {
+      setSavedDisplayName(hideInfo(displayName, true));
+      setSavedPhoneNumber(hideInfo(phoneNumber, true));
+    } else {
+      setSavedDisplayName(displayName);
+      setSavedPhoneNumber(phoneNumber);
+    }
+  };
+
   const handleProfilePictureChange = async (e) => {
     const file = e.target.files[0];
     const profileImageRef = storageRef(
-      getStorage(),
+      storage,
       `profilePictures/${userAuth.user.uid}`
     );
 
@@ -131,15 +171,34 @@ export function UserPage() {
           <br />
           <div style={{ display: "flex" }}>
             <div style={{ flex: 1 }}>
-              <p>Email: {userAuth.user && userAuth.user.email}</p>
+              <p>
+                Email:{" "}
+                {userAuth.user && (
+                  <span>
+                    {isPersonalDataVisible
+                      ? userAuth.user.email
+                      : hideInfo(userAuth.user.email, false)}
+                    <button onClick={handleToggleVisibility}>
+                      {isPersonalDataVisible ? "🔓" : "🔒"}
+                    </button>
+                  </span>
+                )}
+              </p>
               <br />
               <label>
                 Display Name:
                 <br />
                 <input
                   type="text"
-                  value={isEditing ? displayName : savedDisplayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
+                  value={
+                    isPersonalDataVisible
+                      ? displayName
+                      : hideInfo(savedDisplayName, isPersonalDataVisible)
+                  }
+                  onChange={(e) => {
+                    setDisplayName(e.target.value);
+                    setSavedDisplayName(e.target.value);
+                  }}
                   readOnly={!isEditing}
                 />
               </label>
@@ -149,7 +208,11 @@ export function UserPage() {
                 <br />
                 <input
                   type="text"
-                  value={isEditing ? phoneNumber : savedPhoneNumber}
+                  value={
+                    isPersonalDataVisible
+                      ? phoneNumber
+                      : hideInfo(savedPhoneNumber, isPersonalDataVisible)
+                  }
                   onChange={handlePhoneNumberChange}
                   readOnly={!isEditing}
                 />
