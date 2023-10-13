@@ -32,10 +32,9 @@ export function UserPage() {
   const [savedDisplayName, setSavedDisplayName] = useState("");
   const [savedPhoneNumber, setSavedPhoneNumber] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const [phoneNumberError, setPhoneNumberError] = useState(""); // Added phoneNumberError state
+  const [phoneNumberError, setPhoneNumberError] = useState("");
   const [profileImage, setProfileImage] = useState(null);
   const [isPersonalDataVisible, setIsPersonalDataVisible] = useState(false);
-  const [setEmail] = useState(""); // Warning: setEmail is not used in this code
 
   const db = getDatabase();
   const navigate = useNavigate();
