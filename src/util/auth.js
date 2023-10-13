@@ -45,9 +45,14 @@ export const AuthProvider = ({ children }) => {
         const db = getDatabase();
         const userRef = ref(db, "users/" + userUID);
 
+        // Generate a random referral code
+        const refCode = uuidv4();
+
         set(userRef, {
           credits: INITIAL_CREDITS,
           realizedPnL: INITIAL_PNL,
+          refCode: refCode,
+          usedRefCode: false,
         });
 
         setUser(userCredential.user);
