@@ -75,7 +75,7 @@
 }
 
 .titleheading {
-  @apply text-2xl font-bold leading-7 text-white sm:truncate sm:text-3xl sm:tracking-tight;
+  @apply text-2xl font-bold leading-7 text-[#9092ff] sm:truncate sm:text-3xl sm:tracking-tight;
 }
 
 /* BUTTONS CSS */
@@ -99,12 +99,11 @@
 
 /* UTILITY BTNS */
 .closebtn {
-  font-family: "Open Sans", sans-serif;
-  width: 2rem;
-  height: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
   text-align: center;
 
-  @apply bg-transparent text-[#9092ff] font-normal text-[.8rem] px-[.6rem] py-[.2rem] hover:text-orange-500 active:scale-90;
+  @apply bg-transparent text-[#9092ff] font-normal text-[.9rem] px-[.6rem] py-[.2rem] hover:text-orange-500 active:scale-[85%];
 }
 
 .smallfunctionbtn-primary {

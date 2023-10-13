@@ -150,7 +150,7 @@ export const PortfolioPage = () => {
             <h1 className="text-base font-semibold leading-6 text-white">
               Your Portfolio{" "}
             </h1>
-            <p className="mt-2 text-sm text-white">
+            <p className="mt-2 text-sm text-slate-300">
               View Portfolio, P&L and Rank{" "}
             </p>
           </div>
