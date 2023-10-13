@@ -6,6 +6,7 @@ import {
   ChartBarSquareIcon,
   BuildingLibraryIcon,
   UserCircleIcon,
+  NewspaperIcon,
 } from "@heroicons/react/24/solid";
 
 export const Navbar = () => {
@@ -14,6 +15,12 @@ export const Navbar = () => {
       <NavLink to="markets">
         <div>
           <ChartBarSquareIcon className="h-6 w-6" />
+        </div>
+      </NavLink>
+
+      <NavLink to="news">
+        <div>
+          <NewspaperIcon className="h-6 w-6" />
         </div>
       </NavLink>
 

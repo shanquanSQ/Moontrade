@@ -13,6 +13,7 @@ import { Trade } from "./Pages/Trade";
 import { PortfolioPage } from "./Pages/PortfolioPage";
 import { LandingPage } from "./Pages/LandingPage";
 import { NewSignUpPage } from "./Pages/NewSignUpPage";
+import { News } from "./Pages/News";
 
 // Import Components
 import { Navbar } from "./Components/NavBar/Navbar.js";
@@ -66,6 +67,7 @@ function App() {
         <Route path="portfolio" element={<PortfolioPage />} />
         <Route path="/trade/:Symbol" element={<Trade />} />
         <Route path="user" element={<UserPage />} />
+        <Route path="news" element={<News />} />
       </Routes>
     </AuthProvider>
   );
