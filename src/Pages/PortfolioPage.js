@@ -147,10 +147,10 @@ export const PortfolioPage = () => {
 
         <div className="sm:flex sm:items-center py-2">
           <div className="sm:flex-auto">
-            <h1 className="text-base font-semibold leading-6 text-white">
+            <h1 className="text-base font-semibold leading-6 text-txtcolor-primary">
               Your Portfolio{" "}
             </h1>
-            <p className="mt-2 text-sm text-slate-300">
+            <p className="mt-2 text-sm text-txtcolor-secondary">
               View Portfolio, P&L and Rank{" "}
             </p>
           </div>
