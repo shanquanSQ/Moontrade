@@ -42,11 +42,23 @@ export function Markets() {
   const [sortDirection, setSortDirection] = useState("ascending");
   const [viewWatchList, setViewWatchList] = useState(false);
   const [watchListStocks, setWatchListStocks] = useState([]);
+  const [userID, setUserID] = useState("");
 
   const db = getDatabase();
-  const auth = useAuth();
-  const userID = auth.user.uid; // This will give you the uid of the logged-in user.
-  // might break the page if i refresh
+  const userAuth = useAuth(); // our custom provider
+
+  useEffect(() => {
+    console.log("useeffect set user id");
+    if (userAuth.user === null) {
+      const userInfo = localStorage.getItem("userLocalInfo");
+      console.log("get info");
+      setUserID(userInfo.uid);
+    } else {
+      console.log("set info");
+      localStorage.setItem("userLocalInfo", userAuth.user);
+      setUserID(userAuth.user.uid);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,16 +89,6 @@ export function Markets() {
     };
 
     fetchData();
-  }, []);
-
-  useEffect(() => {
-    console.log("onmount");
-    const userWatchListRef = ref(db, `users/${userID}/watchlist/`);
-
-    get(userWatchListRef).then((snapshot) => {
-      setWatchListStocks(snapshot.val());
-      console.log("mount snapshot: ", snapshot.val());
-    });
   }, []);
 
   const handlePopulateWatchList = () => {

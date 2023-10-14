@@ -27,14 +27,14 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     console.log("auth.js useEffect triggered");
-    // console.log("auth.js isLoggedIn: ", isLoggedIn);
-    // console.log("auth.js user: ", user);
     onAuthStateChanged(auth, (user) => {
       console.log("auth.js onAuthStateChange Triggered");
       if (user) {
         console.log("auth.js user logged in: ", user);
         setUser(user);
         setIsLoggedIn(true);
+      } else {
+        console.log("else branch");
       }
     });
   }, []);
@@ -66,10 +66,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signInUser = (userInput) => {
-    ///// SetPersistence is what is storing the userAuth whenever we refresh, so even when you log out the navBar is not reset.
-    //// But still having runtime errors when i refresh a page
-    // setPersistence(auth, browserSessionPersistence)
-    //   .then(() => {
     signInWithEmailAndPassword(auth, userInput.email, userInput.password)
       .then((userCredential) => {
         setUser(userCredential.user);
@@ -79,10 +75,6 @@ export const AuthProvider = ({ children }) => {
       .catch((error) => {
         console.error("Error signing in:", error);
       });
-    // })
-    // .catch((error) => {
-    //   console.error("Error setting persistence:", error);
-    // });
   };
 
   const signOutUser = () => {

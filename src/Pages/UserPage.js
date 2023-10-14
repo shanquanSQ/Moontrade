@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getAuth, signOut } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import { getDatabase, ref, set, update, get } from "firebase/database";
 import {
   getStorage,
@@ -122,15 +122,9 @@ export function UserPage() {
     }
   };
 
-  const handleLogout = () => {
-    signOut(auth)
-      .then(() => {
-        console.log("Successfully logged out");
-        navigate("/"); // Redirect to the login page
-      })
-      .catch((error) => {
-        console.error("Error logging out:", error);
-      });
+  const handleLogout = (ev) => {
+    ev.preventDefault();
+    userAuth.signOutUser();
   };
 
   const handleChangePassword = async () => {
