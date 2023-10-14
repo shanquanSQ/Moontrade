@@ -6,10 +6,26 @@ import { ref, getDatabase, get } from "firebase/database";
 export function News() {
   const [news, setNews] = useState({});
   const [watchListStocks, setWatchListStocks] = useState([]);
+  const [userID, setUserID] = useState("");
 
-  const auth = useAuth();
-  const userID = auth.user.uid;
+  // const auth = useAuth();
+  // const userID = auth.user.uid;
   const db = getDatabase();
+
+  const userAuth = useAuth(); // our custom provider
+
+  useEffect(() => {
+    console.log("useeffect set user id");
+    if (userAuth.user === null) {
+      const userInfo = localStorage.getItem("userLocalInfo");
+      console.log("get info");
+      setUserID(userInfo.uid);
+    } else {
+      console.log("set info");
+      localStorage.setItem("userLocalInfo", userAuth.user);
+      setUserID(userAuth.user.uid);
+    }
+  }, []);
 
   useEffect(() => {
     const userWatchListRef = ref(db, `users/${userID}/watchlist/`);
