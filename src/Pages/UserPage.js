@@ -96,6 +96,7 @@ export function UserPage() {
       setPhoneNumberError("Phone number must consist of numbers only.");
     }
   };
+
   const handleProfilePictureChange = async (e) => {
     const file = e.target.files[0];
     const profileImageRef = storageRef(
@@ -120,6 +121,7 @@ export function UserPage() {
       console.error("Error uploading profile picture:", error);
     }
   };
+
   const handleLogout = () => {
     signOut(auth)
       .then(() => {
@@ -260,9 +262,9 @@ export function UserPage() {
                 </h2>
                 <button onClick={toggleVisibility}>
                   {isVisible ? (
-                    <EyeSlashIcon className="h-6 w-6 text-white" />
+                    <EyeSlashIcon className="h-6 w-6 text-txtcolor-secondary" />
                   ) : (
-                    <EyeIcon className="h-6 w-6 text-white" />
+                    <EyeIcon className="h-6 w-6 text-txtcolor-secondary" />
                   )}
                 </button>
 
@@ -284,7 +286,7 @@ export function UserPage() {
                         value={isEditing ? displayName : savedDisplayName}
                         onChange={(e) => setDisplayName(e.target.value)}
                         readOnly={!isEditing}
-                        className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-txtcolor-secondary shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border border-slate-400 bg-white/5 py-1.5 text-txtcolor-secondary shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                         placeholder="Your Display Name"
                       />
                     </div>
@@ -307,7 +309,7 @@ export function UserPage() {
                         value={isEditing ? phoneNumber : savedPhoneNumber}
                         onChange={handlePhoneNumberChange}
                         readOnly={!isEditing}
-                        className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-txtcolor-secondary shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border border-slate-400 bg-white/5 py-1.5 text-txtcolor-secondary shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                         placeholder="Your Phone Number"
                       />
                     </div>
@@ -371,18 +373,18 @@ export function UserPage() {
                   )}
                 </div>
 
-
                 {/* Change Password */}
 
                 <h2 className="text-base font-semibold leading-7 py-4 text-txtcolor-secondary">
-Change Password                </h2>
+                  Change Password{" "}
+                </h2>
 
                 <input
                   type="password"
                   id="newPassword"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border border-slate-400 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                 />
                 {passwordError && (
                   <p style={{ color: "red" }}>{passwordError}</p>
@@ -408,7 +410,7 @@ Change Password                </h2>
                     <p className="text-txtcolor-secondary">
                       <input
                         value={refCode}
-                        className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-txtcolor-secondary shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border border-slate-400 bg-white/5 py-1.5 text-txtcolor-secondary shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                       />
                     </p>
                   </div>
@@ -424,7 +426,7 @@ Change Password                </h2>
                       type="text"
                       value={inputRefCode}
                       onChange={(e) => setInputRefCode(e.target.value)}
-                      className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-txtcolor-secondary shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border border-slate-400  bg-white/5 py-1.5 text-txtcolor-secondary shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                       placeholder="Enter Referral Code"
                     />
                   </div>
@@ -459,7 +461,7 @@ Change Password                </h2>
 
                 {/* Logout */}
 
-                <div className="mt-6 flex items-center justify-end gap-x-6">
+                <div className="mt-3 flex items-center justify-end gap-x-6">
                   <button className="neutral-btn-one" onClick={handleLogout}>
                     Log Out
                   </button>

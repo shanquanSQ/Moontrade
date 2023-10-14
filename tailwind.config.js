@@ -1,13 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{html,js}"],
-  darkMode: "class",
+  darkMode: "data-theme",
 
   theme: {
     extend: {
       fontFamily: {
         sans: ["Open Sans", "sans-serif"],
-        // sans: ["Oswald, ui-serif"],
       },
 
       backgroundColor: {
@@ -15,6 +14,8 @@ module.exports = {
           primary: "hsl(var(--color-primary) / 1)",
           secondary: "hsl(var(--color-secondary) / 1)",
           bg: "hsl(var(--color-bg) / 1)",
+          table: "hsl(var(--color-table) / 1)",
+          tableheader: "hsl(var(--color-tbheader) / 1)",
         },
       },
 

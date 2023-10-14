@@ -28,8 +28,7 @@ export const StatusBar = () => {
         <button onClick={() => console.log("clicked")}>
           <QuestionMarkCircleIcon className="supportbtn" />
         </button>
-        {/* Note that the width of Logo is actually depending on the status bar width %, not the % size of the logo.. */}
-        <div className=" w-[8.5%] lg:w-[6%] pt-[.1rem] ">
+        <div className=" w-[2rem] lg:w-[2rem] pt-[.1rem] ">
           <img src={LOGO_SMALL} alt="moontrade logo" />
         </div>
       </div>

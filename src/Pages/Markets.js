@@ -221,7 +221,7 @@ export function Markets() {
                       </span>
                     </th>
 
-                    <th className="py-2 px-4 border-b">Name</th>
+                    <th className="py-2 px-4 border-b ">Name</th>
                     <th className="py-2 px-4 border-b">Last Close</th>
                     <th className="py-2 px-4 border-b">
                       Volume{" "}
@@ -261,7 +261,7 @@ export function Markets() {
                               <td className="py-2 px-4 text-center">
                                 <Link
                                   to={`/trade/${stock.Symbol}`}
-                                  className="text-indigo-600 hover:text-indigo-800"
+                                  className="text-indigo-600 font-bold hover:text-indigo-800"
                                 >
                                   {stock.Symbol}
                                 </Link>
@@ -313,7 +313,7 @@ export function Markets() {
                         <td className="py-2 px-4 text-center">
                           <Link
                             to={`/trade/${stock.Symbol}`}
-                            className="text-indigo-600 hover:text-indigo-800"
+                            className="text-indigo-600 font-bold hover:text-indigo-800"
                           >
                             {stock.Symbol}
                           </Link>
@@ -321,7 +321,7 @@ export function Markets() {
                         <td className="py-2 px-4">
                           <Link
                             to={`/trade/${stock.Symbol}`}
-                            className="text-indigo-600 hover:text-indigo-800"
+                            className="text-indigo-600 text-bold hover:text-indigo-800"
                           >
                             {stock.Name}
                           </Link>
