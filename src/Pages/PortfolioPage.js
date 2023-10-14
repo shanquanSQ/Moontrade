@@ -195,7 +195,10 @@ export const PortfolioPage = () => {
               {positions.map((position, index) => (
                 <tr key={index} className="hover:bg-gray-100">
                   <td>
-                    <Link to={`/trade/${position.Symbol}`}>
+                    <Link
+                      to={`/trade/${position.Symbol}`}
+                      className="font-bold"
+                    >
                       {position.Symbol}
                     </Link>
                   </td>

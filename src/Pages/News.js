@@ -64,19 +64,19 @@ export function News() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center bg-white py-4">
+        <div className="flex flex-col items-center bg-white py-4 rounded-md">
           <div className="mx-auto max-w-xl px-4">
             <div className="mx-auto max-w-xl lg:max-w-xl">
               {Object.keys(news).length > 0 ? (
                 Object.keys(news).map((symbol) => (
                   <div key={symbol} className="mt-4 space-y-4">
-                    <h2 className="text-xl font-bold tracking-tight text-gray-700 sm:text-3xl">
+                    <h2 className="text-xl font-bold tracking-tight text-txtcolor-primary sm:text-3xl">
                       Latest for {symbol}
                     </h2>
                     {news[symbol].map((article, index) => (
                       <article
                         key={index}
-                        className="flex flex-col gap-8 lg:flex-row"
+                        className="flex flex-col gap-8 lg:flex-row border-b border-slate-300"
                       >
                         <div className="group max-w-xl">
                           <h3 className="mt-3 text-lg font-semibold leading-6 text-gray-900 group-hover:text-gray-600">
