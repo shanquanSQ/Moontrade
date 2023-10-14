@@ -145,7 +145,7 @@ export const PortfolioPage = () => {
           <h1 className="titleheading">Portfolio</h1>
         </div>
 
-        <div className="sm:flex sm:items-center py-2">
+        <div className="sm:flex sm:items-center pb-6">
           <div className="sm:flex-auto">
             <h1 className="text-base font-semibold leading-6 text-txtcolor-primary">
               Your Portfolio{" "}
@@ -154,29 +154,48 @@ export const PortfolioPage = () => {
               View Portfolio, P&L and Rank{" "}
             </p>
           </div>
+          <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+            <Link to="/leaderboard" className="primary-cta-btn">
+              View Leaderboard
+            </Link>
+          </div>
         </div>
 
         {/* Stats Bar */}
-        <dl className="statsflex">
+        <dl className="statsflex mb-[.2rem] lg:mb-[.5rem]">
           <div className="statsbox">
             <dt className="statsheader">Portfolio Balance</dt>
             <dd className="statsdata">${credits.toFixed(2)}</dd>
           </div>
           <div className="statsbox">
             <dt className="statsheader">Portfolio P&L</dt>
-            <dd className="statsdata">${portfolioPL.toFixed(2)}</dd>
+            <dd
+              className={`statsneutral ${
+                portfolioPL >= 0 ? "text-green-700" : "text-red-700"
+              }`}
+            >
+              ${portfolioPL.toFixed(2)}
+            </dd>
           </div>
           <div className="statsbox">
             <dt className="statsheader">No. of Trades</dt>
             <dd className="statsdata">{numTrades}</dd>
           </div>
           <div className="statsbox">
-            <dt className="statsheader">Competition Rank</dt>
-            <dd className="statsdata">#</dd>
+            <dt className="statsheader">P&L %</dt>
+            <dd
+              className={`statsneutral ${
+                portfolioPL >= 0 ? "text-green-700" : "text-red-700"
+              }`}
+            >
+              {credits !== 0
+                ? ((portfolioPL / credits) * 100).toFixed(2)
+                : "N/A"}
+              %
+            </dd>
           </div>
         </dl>
-
-        <div className="table-responsive bg-white text-black p-4">
+        <div className="table-responsive bg-white text-black px-4 pt-4 pb-0 rounded-md">
           <table className="w-full border-collapse">
             <thead>
               <tr className="text-gray-800">

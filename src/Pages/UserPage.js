@@ -9,8 +9,13 @@ import {
 } from "firebase/storage";
 import { useAuth } from "../util/auth.js";
 import { useNavigate } from "react-router-dom";
+
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
+
 export function UserPage() {
   const userAuth = useAuth();
+  const [newPassword, setNewPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [savedDisplayName, setSavedDisplayName] = useState("");
@@ -23,6 +28,8 @@ export function UserPage() {
 
   const [inputRefCode, setInputRefCode] = useState("");
   const [refCodeError, setRefCodeError] = useState("");
+
+  const [isVisible, setIsVisible] = useState(false);
 
   const db = getDatabase();
   const navigate = useNavigate();
@@ -124,6 +131,22 @@ export function UserPage() {
       });
   };
 
+  const handleChangePassword = async () => {
+    // Additional check: Ensure password length is adequate
+    if (newPassword.length < 6) {
+      setPasswordError("Password should be at least 6 characters long");
+      return;
+    }
+
+    try {
+      await userAuth.changePassword(newPassword);
+      alert("Password changed successfully");
+      setNewPassword("");
+    } catch (error) {
+      console.error("Error changing password:", error);
+    }
+  };
+
   // Define the Stripe Payment Link
   const stripePaymentLink = "https://buy.stripe.com/test_7sIaEQ4zbdR6dgc000";
 
@@ -217,6 +240,11 @@ export function UserPage() {
     }
   };
 
+  const toggleVisibility = async (e) => {
+    e.preventDefault();
+    setIsVisible(!isVisible);
+  };
+
   return (
     <div className="structure">
       <div className="contentcontainer">
@@ -227,29 +255,36 @@ export function UserPage() {
           <form>
             <div className="space-y-12">
               <div className="pb-12">
-                <h2 className="text-base font-semibold leading-7 py-2 text-white">
-                  Edit Your Profile
+                <h2 className="text-base font-semibold leading-7 py-2 text-txtcolor-primary">
+                  Your MoonTrade Profile
                 </h2>
+                <button onClick={toggleVisibility}>
+                  {isVisible ? (
+                    <EyeSlashIcon className="h-6 w-6 text-white" />
+                  ) : (
+                    <EyeIcon className="h-6 w-6 text-white" />
+                  )}
+                </button>
 
                 {/* Display Name */}
                 <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                   <div className="sm:col-span-4">
                     <label
                       htmlFor="displayName"
-                      className="block text-sm font-medium leading-6 text-white"
+                      className="block text-sm font-medium leading-6 text-txtcolor-secondary"
                     >
                       Display Name
                     </label>
                     <div className="mt-2">
                       <input
-                        type="text"
+                        type={isVisible ? "text" : "password"}
                         name="displayName"
                         id="displayName"
                         autoComplete="displayName"
                         value={isEditing ? displayName : savedDisplayName}
                         onChange={(e) => setDisplayName(e.target.value)}
                         readOnly={!isEditing}
-                        className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-txtcolor-secondary shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                         placeholder="Your Display Name"
                       />
                     </div>
@@ -259,20 +294,20 @@ export function UserPage() {
                   <div className="sm:col-span-4">
                     <label
                       htmlFor="phoneNumber"
-                      className="block text-sm font-medium leading-6 text-white"
+                      className="block text-sm font-medium leading-6 text-txtcolor-secondary"
                     >
                       Phone Number
                     </label>
                     <div className="mt-2">
                       <input
-                        type="text"
+                        type={isVisible ? "text" : "password"}
                         name="phoneNumber"
                         id="phoneNumber"
                         autoComplete="tel"
                         value={isEditing ? phoneNumber : savedPhoneNumber}
                         onChange={handlePhoneNumberChange}
                         readOnly={!isEditing}
-                        className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-txtcolor-secondary shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                         placeholder="Your Phone Number"
                       />
                     </div>
@@ -287,7 +322,7 @@ export function UserPage() {
                   <div className="col-span-full">
                     <label
                       htmlFor="photo"
-                      className="block text-sm font-medium leading-6 text-white"
+                      className="block text-sm font-medium leading-6 text-txtcolor-secondary"
                     >
                       Profile Picture
                     </label>
@@ -302,7 +337,7 @@ export function UserPage() {
                       >
                         <img
                           src={profileImage}
-                          alt="Profile"
+                          alt=" "
                           style={{
                             width: "100%",
                             height: "100%",
@@ -310,7 +345,7 @@ export function UserPage() {
                           }}
                         />
                       </div>
-                      <label className="block text-sm font-medium leading-6 text-white">
+                      <label className="block text-sm font-medium leading-6 text-txtcolor-secondary">
                         New Profile Picture:
                         <input
                           type="file"
@@ -336,19 +371,44 @@ export function UserPage() {
                   )}
                 </div>
 
-                <h2 className="text-base font-semibold leading-7 py-4 text-white">
+
+                {/* Change Password */}
+
+                <h2 className="text-base font-semibold leading-7 py-4 text-txtcolor-secondary">
+Change Password                </h2>
+
+                <input
+                  type="password"
+                  id="newPassword"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                />
+                {passwordError && (
+                  <p style={{ color: "red" }}>{passwordError}</p>
+                )}
+                <button
+                  type="button"
+                  className="primary-cta-btn"
+                  onClick={handleChangePassword}
+                >
+                  Submit New Password
+                </button>
+
+                {/* Referral Code Display */}
+
+                <h2 className="text-base font-semibold leading-7 py-4 text-txtcolor-secondary">
                   Refer 10 friends for 25000 each
                 </h2>
-                {/* Referral Code Display */}
                 <div className="sm:col-span-4 py-2">
-                  <label className="block text-sm font-medium leading-6 text-white">
-                    Your referral code
+                  <label className="block text-sm font-medium leading-6 text-txtcolor-primary">
+                    Your Referral Code
                   </label>
                   <div className="mt-2">
-                    <p className="text-white">
+                    <p className="text-txtcolor-secondary">
                       <input
                         value={refCode}
-                        className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-txtcolor-secondary shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                       />
                     </p>
                   </div>
@@ -356,7 +416,7 @@ export function UserPage() {
 
                 {/* Referral Code Input */}
                 <div className="sm:col-span-4 py-2">
-                  <label className="block text-sm font-medium leading-6 text-white">
+                  <label className="block text-sm font-medium leading-6 text-txtcolor-secondary">
                     Enter Referral Code
                   </label>
                   <div className="mt-2">
@@ -364,7 +424,7 @@ export function UserPage() {
                       type="text"
                       value={inputRefCode}
                       onChange={(e) => setInputRefCode(e.target.value)}
-                      className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-txtcolor-secondary shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                       placeholder="Enter Referral Code"
                     />
                   </div>
@@ -383,7 +443,7 @@ export function UserPage() {
                   </button>
                 </div>
 
-                <h2 className="text-base font-semibold leading-7 py-2 text-white">
+                <h2 className="text-base font-semibold leading-7 py-2 text-txtcolor-secondary">
                   Buy 100,000 credits for $5
                 </h2>
                 {/* Top up credits */}
@@ -400,7 +460,7 @@ export function UserPage() {
                 {/* Logout */}
 
                 <div className="mt-6 flex items-center justify-end gap-x-6">
-                  <button className="primary-cta-btn" onClick={handleLogout}>
+                  <button className="neutral-btn-one" onClick={handleLogout}>
                     Log Out
                   </button>
                 </div>
