@@ -148,7 +148,11 @@ table a {
 }
 
 .statsdata {
-  @apply mt-1 text-xl font-semibold tracking-tight text-gray-900;
+  @apply mt-1 text-xl font-semibold tracking-tight text-gray-800;
+}
+
+.statsneutral {
+  @apply mt-1 text-xl font-semibold tracking-tight;
 }
 
 /* DESCRIPTION TABLE */

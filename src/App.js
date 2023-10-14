@@ -14,6 +14,7 @@ import { PortfolioPage } from "./Pages/PortfolioPage";
 import { LandingPage } from "./Pages/LandingPage";
 import { NewSignUpPage } from "./Pages/NewSignUpPage";
 import { News } from "./Pages/News";
+import { LeaderboardPage } from "./Pages/LeaderboardPage";
 
 // Import Components
 import { Navbar } from "./Components/NavBar/Navbar.js";
@@ -65,6 +66,7 @@ function App() {
         <Route path="markets" element={<Markets />} />
         <Route path="user" element={<UserPage />} />
         <Route path="portfolio" element={<PortfolioPage />} />
+        <Route path="/leaderboard" element={<LeaderboardPage />} />
         <Route path="/trade/:Symbol" element={<Trade />} />
         <Route path="user" element={<UserPage />} />
         <Route path="news" element={<News />} />
