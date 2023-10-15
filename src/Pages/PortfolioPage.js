@@ -257,7 +257,7 @@ export const PortfolioPage = () => {
             </dd>
           </div>
         </dl>
-        <div className="table-responsive bg-white text-black px-4 pt-4 pb-0 rounded-md">
+        <div className="table-responsive bg-white text-black rounded-md">
           <table className="w-full border-collapse">
             <thead>
               <tr className="text-gray-800">
