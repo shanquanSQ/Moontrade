@@ -46,9 +46,9 @@ npm start
 
 5. Visit http://localhost:3000 in your browser.
 
-## 📈 Features
+## 📈 Usage
 
-### Core Features
+### Detailed Features
 
 1. **User Authentication**: Manage user access and secure user data via Firebase Auth.
 2. **User Portfolio**:
