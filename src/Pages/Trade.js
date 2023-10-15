@@ -20,9 +20,13 @@ import { useAuth } from "../util/auth";
 import { TradingView } from "../Components/TradingView/TradingView";
 import { formatCurrency } from "../util/formattingUtils";
 
-// Helper Functions
-// Month in JavaScript is 0-indexed (January is 0, February is 1, etc),
-// But I made some modifications so you can key in 1-12 normally, just fyi
+/**
+ * Helper function to get all dates within a specified month.
+ *
+ * @param {number} month - 1-indexed month number (1 = January, 2 = February, etc.)
+ * @param {number} year - The year.
+ * @returns {string[]} - An array containing all the date strings for the specified month.
+ */
 function getDatesInMonth(month, year) {
   const date = new Date(year, month - 1, 1);
   const days = [];
@@ -38,8 +42,15 @@ function getDatesInMonth(month, year) {
   return days;
 }
 
-// getDatesInMonth(1, 2023);
-
+/**
+ * The `Trade` component provides interfaces and visualizations for trading operations,
+ * such as buying, selling, and watching stock details.
+ *
+ * It fetches and displays stock details from the Polygon.io API and allows
+ * a user to buy/sell stocks or add/remove stocks from their watchlist.
+ *
+ * @returns {React.Element} - A React component to perform trade operations.
+ */
 export function Trade() {
   const { Symbol } = useParams();
   const db = getDatabase();
@@ -169,6 +180,14 @@ export function Trade() {
     });
   }, [userID, Symbol, db]);
 
+  /**
+   * Handles the submission of a new order (buy or sell).
+   *
+   * Validates the transaction and, if valid, updates user credits and saves
+   * the order to the database.
+   *
+   * @param {Event} event - The form submission event.
+   */
   const handleOrderSubmit = (event) => {
     event.preventDefault();
 
@@ -207,6 +226,13 @@ export function Trade() {
     });
   }, []);
 
+  /**
+   * Toggles the selected stock symbol in or out of the user's watchlist.
+   *
+   * This handler fetches the current watchlist from Firebase Realtime Database,
+   * updates it in a way dependent on the current watchlist state for the symbol,
+   * then sets the new watchlist to the database.
+   */
   const handleSaveToWatchlist = () => {
     // instantiates watchlist for firebase RTDB
     // (impt to note that it is just a reference to the db, it is not an empty string or empty list etc.)
@@ -250,6 +276,14 @@ export function Trade() {
     return true;
   };
 
+  /**
+   * Updates user credits and saves order data to the database.
+   *
+   * Performs a transaction to update the user's credits based on the order type
+   * and amount, and subsequently stores the order data in the database.
+   *
+   * @param {Object} orderData - The order data to save to the database.
+   */
   const updateCreditsAndSaveOrder = (orderData) => {
     const userCreditsRef = ref(db, `users/${userID}/credits`);
     runTransaction(userCreditsRef, (currentCredits) => {
@@ -271,6 +305,7 @@ export function Trade() {
           <h1 className="titleheading">Trade</h1>
         </div>
 
+        {/* Page Subtitle Header */}
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
             <h1 className="text-base font-semibold leading-6 text-txtcolor-primary">
@@ -293,6 +328,8 @@ export function Trade() {
             </button>
           </div>
         </div>
+
+        {/* Main Page Content */}
 
         {/* Stats Bar */}
         <dl className="statsflex">
@@ -390,7 +427,7 @@ export function Trade() {
               <div className="desc-table-row">
                 <dt className="desc-table-title">Market Capitalization</dt>
                 <dd className="desc-table-text">
-                  ${(stockData.marketCap / 1000000000).toFixed(2)} Billion
+                  {formatCurrency(stockData.marketCap / 1000000000)} Billion
                 </dd>
               </div>
             </dl>

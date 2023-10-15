@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../util/auth";
 import axios from "axios";
+import { formatCurrency } from "../util/formattingUtils";
 
 // Firebase v9 SDK imports
 import {
@@ -14,6 +15,17 @@ import {
   update,
 } from "@firebase/database";
 
+/**
+ * The `PortfolioPage` component is responsible for displaying the user's trading
+ * portfolio, which includes their trades, credits, P&L data, and portfolio balance.
+ *
+ * This component fetches user and trade data from Firebase Realtime Database
+ * and performs calculations to display the user's Portfolio P&L, Number of Trades Done,
+ * and individual trade details.
+ *
+ * @component
+ * @returns JSX.Element
+ */
 export const PortfolioPage = () => {
   const navigate = useNavigate();
   const [credits, setCredits] = useState(0);
@@ -25,9 +37,19 @@ export const PortfolioPage = () => {
   const [portfolioPL, setPortfolioPL] = useState(0); // Portfolio PnL
   const [numTrades, setNumTrades] = useState(0); // # of Trades Done
 
+  /**
+   * Calculates trades using fetched stock price and updates the state.
+   * Also calculates Unrealized P&L for each aggregated trade.
+   *
+   * @function
+   * @async
+   * @param {Object} aggregatedTrades - Object containing all trades, aggregated by stock symbol.
+   * @param {Array} trades - Array of individual trades to be processed.
+   */
   const calculateTrades = async (aggregatedTrades, trades) => {
     for (const trade of trades) {
       try {
+        // Fetch the last trade details for the stock symbol from the Polygon API.
         const response = await axios.get(
           `https://api.polygon.io/v2/last/trade/${trade.Symbol}?apiKey=${process.env.REACT_APP_POLYGON_API_KEY}`
         );
@@ -37,7 +59,14 @@ export const PortfolioPage = () => {
         // Store current market price to the aggregatedTrade object
         aggregatedTrade.currentPrice = currentMarketPrice;
 
-        // Calculate Unrealized P&L
+        /**
+         * Calculate Unrealized P&L:
+         * The unrealized profit and loss is calculated by taking
+         * the difference between the current market price and the average buy price,
+         * then multiplied by the amount of the stock owned.
+         *
+         * Unrealized P&L = (currentMarketPrice - averageBuyPrice) * amount
+         */
         aggregatedTrade.unrealizedPL =
           (currentMarketPrice - aggregatedTrade.averageBuyPrice) *
           aggregatedTrade.amount;
@@ -74,6 +103,14 @@ export const PortfolioPage = () => {
       const numberOfTrades = trades.length;
       setNumTrades(numberOfTrades);
 
+      /**
+       * Constructing aggregatedTrades:
+       * For each trade, a symbol-wise aggregation is prepared.
+       * It calculates cumulative values needed for later calculations
+       * such as total buy cost, total sell cost, amount of stock bought and sold, etc.
+       * It helps to calculate various performance metrics of the portfolio such as
+       * average buy/sell price, realized and unrealized P&L, etc.
+       */
       trades.forEach((trade) => {
         if (!aggregatedTrades[trade.Symbol]) {
           aggregatedTrades[trade.Symbol] = {
@@ -105,12 +142,34 @@ export const PortfolioPage = () => {
             parseFloat(trade.amount) * trade.price;
         }
 
+        /**
+         * Calculating Average Buy Price:
+         * The average buy price is calculated by dividing the total cost spent on buying
+         * the stock by the total amount bought.
+         *
+         * averageBuyPrice = totalBuyCost / buyAmount
+         */
         aggregatedTrade.averageBuyPrice =
           aggregatedTrade.totalBuyCost / aggregatedTrade.buyAmount || 0;
+
+        /**
+         * Calculating Average Sell Price:
+         * The average sell price is calculated by dividing the total cost received from selling
+         * the stock by the total amount sold.
+         *
+         * averageSellPrice = totalSellCost / sellAmount
+         */
         aggregatedTrade.averageSellPrice =
           aggregatedTrade.totalSellCost / aggregatedTrade.sellAmount || 0;
 
-        // Calculate Realized P&L
+        /**
+         * Calculating Realized P&L for Sell Trades:
+         * When the stock is sold, the realized profit and loss are calculated by taking
+         * the difference between the sell price and the average buy price,
+         * then multiplied by the amount of the stock sold.
+         *
+         * realizedPL += (sellPrice - averageBuyPrice) * amountSold
+         */
         if (trade.type === "sell") {
           aggregatedTrade.realizedPL +=
             (trade.price - aggregatedTrade.averageBuyPrice) *
@@ -145,6 +204,7 @@ export const PortfolioPage = () => {
           <h1 className="titleheading">Portfolio</h1>
         </div>
 
+        {/* Page Subtitle Header */}
         <div className="sm:flex sm:items-center pb-6">
           <div className="sm:flex-auto">
             <h1 className="text-base font-semibold leading-6 text-txtcolor-primary">
@@ -161,11 +221,13 @@ export const PortfolioPage = () => {
           </div>
         </div>
 
+        {/* Main Page Content */}
+
         {/* Stats Bar */}
         <dl className="statsflex mb-[.2rem] lg:mb-[.5rem]">
           <div className="statsbox">
             <dt className="statsheader">Portfolio Balance</dt>
-            <dd className="statsdata">${credits.toFixed(2)}</dd>
+            <dd className="statsdata">{formatCurrency(credits)}</dd>
           </div>
           <div className="statsbox">
             <dt className="statsheader">Portfolio P&L</dt>
@@ -174,7 +236,7 @@ export const PortfolioPage = () => {
                 portfolioPL >= 0 ? "text-green-700" : "text-red-700"
               }`}
             >
-              ${portfolioPL.toFixed(2)}
+              {formatCurrency(portfolioPL)}
             </dd>
           </div>
           <div className="statsbox">
@@ -223,14 +285,14 @@ export const PortfolioPage = () => {
                     </Link>
                   </td>
                   <td>{position.name}</td>
-                  <td>${position.currentPrice.toFixed(2)}</td>
+                  <td>{formatCurrency(position.currentPrice)}</td>
                   <td>{position.amount}</td>
-                  <td>${position.averageBuyPrice.toFixed(2)}</td>
+                  <td>{formatCurrency(position.averageBuyPrice)}</td>
                   <td>{position.buyAmount.toFixed(0)}</td>
-                  <td>${position.averageSellPrice.toFixed(2)}</td>
+                  <td>{formatCurrency(position.averageSellPrice)}</td>
                   <td>{position.sellAmount.toFixed(0)}</td>
-                  <td>${position.unrealizedPL.toFixed(2)}</td>
-                  <td>${position.realizedPL.toFixed(2)}</td>{" "}
+                  <td>{formatCurrency(position.unrealizedPL)}</td>
+                  <td>{formatCurrency(position.realizedPL)}</td>{" "}
                 </tr>
               ))}
             </tbody>

@@ -207,6 +207,7 @@ export function Markets() {
             <h1 className="titleheading">Markets</h1>
           </div>
 
+          {/* Page Subtitle Header */}
           <div className="sm:flex sm:items-center">
             <div className="sm:flex-auto">
               <h1 className="text-base font-semibold leading-6 text-txtcolor-primary">
@@ -229,6 +230,8 @@ export function Markets() {
               </button>
             </div>
           </div>
+
+          {/* Main Page Content */}
           <div className="table-responsive bg-gray text-black">
             <div className="table-responsive bg-gray text-black rounded-md">
               <table className="w-full border-collapse bg-white">
