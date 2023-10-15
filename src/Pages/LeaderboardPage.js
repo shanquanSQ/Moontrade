@@ -8,6 +8,12 @@ import {
 } from "@firebase/database";
 import { Link } from "react-router-dom";
 
+/**
+ * `LeaderboardPage` Component - Displays a leaderboard of users based on their realized P&L.
+ *
+ * @component
+ * @returns {ReactElement} JSX that renders into leaderboard of users.
+ */
 export const LeaderboardPage = () => {
   const [users, setUsers] = useState([]);
 
@@ -15,6 +21,13 @@ export const LeaderboardPage = () => {
     const db = getDatabase();
     const usersRef = query(ref(db, "users"), orderByChild("realizedPnL"));
 
+    /**
+     * Snapshot value event listener.
+     *
+     * Retrieves and organizes user data from the snapshot and updates state.
+     *
+     * @param {object} snapshot - Firebase snapshot object.
+     */
     onValue(usersRef, (snapshot) => {
       const usersData = [];
       snapshot.forEach((childSnapshot) => {

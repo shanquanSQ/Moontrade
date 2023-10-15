@@ -18,6 +18,7 @@ import {
 } from "firebase/database";
 import { useAuth } from "../util/auth";
 import { TradingView } from "../Components/TradingView/TradingView";
+import { formatCurrency } from "../util/formattingUtils";
 
 // Helper Functions
 // Month in JavaScript is 0-indexed (January is 0, February is 1, etc),
@@ -297,11 +298,13 @@ export function Trade() {
         <dl className="statsflex">
           <div className="statsbox">
             <dt className="statsheader">Last Price</dt>
-            <dd className="statsdata">${stockData.latestPrice}</dd>
+            <dd className="statsdata">
+              {formatCurrency(stockData.latestPrice)}
+            </dd>
           </div>
           <div className="statsbox">
             <dt className="statsheader">Volume</dt>
-            <dd className="statsdata">${stockData.volume}</dd>
+            <dd className="statsdata">{formatCurrency(stockData.volume)}</dd>
           </div>
           <div className="statsbox">
             <dt className="statsheader">Stock Holdings</dt>
@@ -309,7 +312,9 @@ export function Trade() {
           </div>
           <div className="statsbox">
             <dt className="statsheader">Portfolio Balance</dt>
-            <dd className="statsdata">${userCredits.toFixed(2)}</dd>
+            <dd className="statsdata">
+              {formatCurrency(userCredits.toFixed(2))}
+            </dd>
           </div>
         </dl>
 
