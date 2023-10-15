@@ -18,7 +18,6 @@ import { LeaderboardPage } from "./Pages/LeaderboardPage";
 
 // Import Components
 import { Navbar } from "./Components/NavBar/Navbar.js";
-import { TradingView } from "./Components/TradingView/TradingView.js";
 import { StatusBar } from "./Components/StatusBar/StatusBar";
 
 // Import Styling
@@ -28,18 +27,11 @@ import "./App.css";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase/firebase";
 
-// Save the Firebase message folder name as a constant to avoid bugs due to misspelling
-const DB_MESSAGES_KEY = "tradingdatabase"; //This corresponds to the Firebase RTDB branch/document
-const STORAGE_KEY = "filestorage/"; // This corresponds to the Firebase Storage branch/document
-
 function App() {
   const [showNavBar, setShowNavBar] = useState(false);
   const userAuth = useAuth();
 
   useEffect(() => {
-    // console.log("App.js useEffect is triggered");
-    // console.log("userauth context is: ", userAuth); // Not sure why this is always initialised as null even when it is in useEffect.
-
     onAuthStateChanged(auth, (user) => {
       console.log("App.js onAuthStateChange Triggered");
       if (user) {

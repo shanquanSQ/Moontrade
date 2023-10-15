@@ -2,6 +2,13 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../util/auth.js";
 import { useEffect } from "react";
 
+/**
+ * The landing page component provides an interface for navigation to either the login
+ * page for existing users or the signup page for new users.
+ *
+ * @component
+ * @returns {ReactElement} The rendered component.
+ */
 export const LandingPage = () => {
   const navigate = useNavigate();
 

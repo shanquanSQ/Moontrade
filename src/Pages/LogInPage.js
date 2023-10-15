@@ -3,14 +3,23 @@ import { useAuth } from "../util/auth.js";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 
+/**
+ * `LogInPage` Component - Allows a user to log in using their credentials.
+ *
+ * @component
+ * @returns {ReactElement} JSX to render the login page.
+ */
 export const LogInPage = () => {
   const [user, setUser] = useState({ user: "", password: "" });
   const navigate = useNavigate();
-
-  // this will allow access to the auth functions from our custom auth.js in util
-  // similar to userObject in Sam's video
   const userAuth = useAuth();
 
+  /**
+   * Handles the change of input fields and updates the state accordingly.
+   *
+   * @function
+   * @param {Event} ev - The event object related to the change of input field.
+   */
   const handleChange = (ev) => {
     let name = ev.target.name;
     let value = ev.target.value;
@@ -21,6 +30,11 @@ export const LogInPage = () => {
     console.log("yay");
   };
 
+  /**
+   * Handles the user login upon form submission.
+   *
+   * @function
+   */
   const handleLogIn = () => {
     userAuth.signInUser(user);
   };
@@ -57,7 +71,7 @@ export const LogInPage = () => {
                 value={user.email}
                 autoComplete="off"
                 placeholder="Insert your registered email"
-                className="input input-bordered w-full input-sm lg:input-md mb-[.5rem] lg:mb-[1rem]"
+                className=" w-full h-[2rem] lg:h-[2.5rem] rounded-md border border-slate-400 bg-white/5  text-txtcolor-secondary shadow-sm ring-1 ring-inset ring-white/10  focus:ring-indigo-500 text-[1rem] mb-[1rem] "
               />
               <br />
 
@@ -72,7 +86,7 @@ export const LogInPage = () => {
                 value={user.password}
                 autoComplete="off"
                 placeholder="Insert your passsword"
-                className="input input-bordered w-full input-sm lg:input-md"
+                className=" w-full h-[2rem] lg:h-[2.5rem] rounded-md border border-slate-400 bg-white/5  text-txtcolor-secondary shadow-sm ring-1 ring-inset ring-white/10  focus:ring-indigo-500 text-[1rem] "
               />
             </div>
             <div className="">

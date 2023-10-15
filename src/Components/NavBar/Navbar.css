@@ -7,9 +7,9 @@ nav a {
 }
 
 nav a.active {
-  @apply text-blue-700 font-bold;
+  @apply text-txtcolor-primary font-bold;
 }
 
 nav a:hover {
-  @apply text-blue-500 scale-[130%];
+  @apply text-txtcolor-primary scale-[130%];
 }

@@ -3,6 +3,14 @@ import { useAuth } from "../util/auth.js";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 
+/**
+ * NewSignUpPage component
+ *
+ * This component renders a sign-up page allowing new users to create an account.
+ * The component includes form fields for email and password, as well as options
+ * to navigate back or log in if the user is already registered.
+ *
+ */
 export const NewSignUpPage = () => {
   const [user, setUser] = useState({ user: "", password: "" });
   const navigate = useNavigate();
@@ -57,7 +65,7 @@ export const NewSignUpPage = () => {
                 value={user.email}
                 autoComplete="off"
                 placeholder="Insert your registered email"
-                className="input input-bordered w-full input-sm lg:input-md mb-[.5rem] lg:mb-[1rem]"
+                className=" w-full h-[2rem] lg:h-[2.5rem] rounded-md border border-slate-400 bg-white/5  text-txtcolor-secondary shadow-sm ring-1 ring-inset ring-white/10  focus:ring-indigo-500 text-[1rem] mb-[1rem] "
               />
               <br />
 
@@ -72,7 +80,7 @@ export const NewSignUpPage = () => {
                 value={user.password}
                 autoComplete="off"
                 placeholder="Insert your passsword"
-                className="input input-bordered w-full input-sm lg:input-md"
+                className=" w-full h-[2rem] lg:h-[2.5rem] rounded-md border border-slate-400 bg-white/5  text-txtcolor-secondary shadow-sm ring-1 ring-inset ring-white/10  focus:ring-indigo-500 text-[1rem] "
               />
             </div>
             <div className="">

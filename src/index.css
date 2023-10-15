@@ -18,7 +18,9 @@ body {
     /* Fills */
     --color-bg: 0deg 0% 100%;
     --color-primary: 239deg 82% 65%;
-    --color-secondary: 292deg 91% 73%;
+    --color-secondary: 292deg 99% 68%;
+    --color-table: 0deg 0% 100%;
+    --color-tbheader: 0deg 0% 100%;
 
     /* Header Colours */
     --header-pri: 239deg 62% 75%;
@@ -33,26 +35,51 @@ body {
   @media (prefers-color-scheme: dark) {
     :root {
       /* Fills */
-      --color-bg: 215deg 13% 13%;
+      --color-bg: 0deg 0% 100%;
       --color-primary: 239deg 82% 65%;
-      --color-secondary: 292deg 91% 73%;
+      --color-secondary: 292deg 99% 68%;
+      --color-table: 0deg 0% 100%;
+      --color-tbheader: 0deg 0% 100%;
 
       /* Header Colours */
       --header-pri: 239deg 62% 75%;
 
       /* Text Colours */
       --text-pri: 239deg 82% 65%;
+      --text-secondary: 0deg 0% 40%;
+      --text-neutral: 0deg 0% 30%;
+    }
+  }
+  /* 
+    This will respond to system preferences on load
+  @media (prefers-color-scheme: dark) {
+    :root {
+      Fills
+      --color-bg: 215deg 13% 13%;
+      --color-bg: 0deg 0% 100%;
+      --color-primary: 239deg 82% 65%;
+      --color-secondary: 292deg 99% 68%;
+      --color-table: 0deg 0% 95%;
+      --color-tbheader: 239deg 82% 85%;
+
+      Header Colours
+      --header-pri: 239deg 62% 75%;
+
+      Text Colours
+      --text-pri: 239deg 82% 65%;
       --text-secondary: 0deg 0% 100%;
       --text-neutral: 0deg 0% 60%;
     }
-  }
+  } */
 
   /* This is the forced toggle dark mode */
   :root[data-theme="dark"] {
     /* Fills */
     --color-bg: 215deg 13% 13%;
     --color-primary: 239deg 82% 65%;
-    --color-secondary: 292deg 91% 73%;
+    --color-secondary: 292deg 99% 68%;
+    --color-table: 239deg 50% 95%;
+    --color-tbheader: 239deg 82% 85%;
 
     /* Header Colours */
     --header-pri: 239deg 62% 75%;

@@ -2,17 +2,17 @@
 
 .App {
   font-family: "Open Sans", sans-serif;
-  background-color: #282c34; /* Consider using bg-gray-800 if you are using a dark theme */
-  color: white; /* Consider using text-white for text color */
-  min-height: 100vh; /* Full height to ensure the background color covers the full viewport */
+  background-color: #282c34;
+  color: white;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
-.App-header {
-  /* background-color: #282c34; */
+/* .App-header {
+  background-color: #282c34;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -20,7 +20,7 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
-}
+} */
 
 .App-link {
   color: #61dafb;
@@ -81,7 +81,7 @@
 }
 
 .smallfunctionbtn-primary {
-  @apply rounded bg-fill-primary px-[.1rem] py-[.2rem] min-w-[50%] h-[100%] my-[0.5rem] text-sm font-bold text-white transition focus:outline-none hover:bg-indigo-600 active:bg-indigo-500 active:scale-95;
+  @apply rounded bg-fill-primary px-[.1rem] py-[.2rem] w-[2rem] h-[100%] my-[0.5rem] text-sm font-bold text-white transition focus:outline-none hover:bg-indigo-600 active:bg-indigo-500 active:scale-95;
 }
 
 .smallfunctionbtn-secondary {
@@ -102,16 +102,20 @@ table {
   @apply min-w-full border-collapse mb-4 divide-y divide-gray-300;
 }
 
-th,
-td {
-  @apply py-3 px-2;
+th {
   vertical-align: top;
+  @apply py-3 px-2 bg-fill-tableheader;
+}
+
+td {
+  vertical-align: top;
+  @apply py-3 px-2 bg-fill-table;
 }
 
 thead th {
   @apply text-left text-sm font-semibold text-gray-900 whitespace-nowrap;
   vertical-align: center;
-  border-bottom: 2px solid #dee2e6;
+  border-bottom: 2px solid #c5c9ce;
 }
 
 tbody {

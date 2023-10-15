@@ -3,13 +3,31 @@ import axios from "axios";
 import { useAuth } from "../util/auth";
 import { ref, getDatabase, get } from "firebase/database";
 
+/**
+ * A React component that fetches and displays the latest news for
+ * stocks listed in the user's watchlist. It retrieves the watchlist
+ * from Firebase, fetches news for each stock using the Polygon API,
+ * and displays the news in a structured format.
+ */
 export function News() {
   const [news, setNews] = useState({});
   const [watchListStocks, setWatchListStocks] = useState([]);
-
-  const auth = useAuth();
-  const userID = auth.user.uid;
+  const [userID, setUserID] = useState("");
   const db = getDatabase();
+  const userAuth = useAuth();
+
+  useEffect(() => {
+    console.log("useeffect set user id");
+    if (userAuth.user === null) {
+      const userInfo = localStorage.getItem("userLocalInfo");
+      console.log("get info");
+      setUserID(userInfo.uid);
+    } else {
+      console.log("set info");
+      localStorage.setItem("userLocalInfo", userAuth.user);
+      setUserID(userAuth.user.uid);
+    }
+  }, []);
 
   useEffect(() => {
     const userWatchListRef = ref(db, `users/${userID}/watchlist/`);
@@ -53,6 +71,7 @@ export function News() {
           <h1 className="titleheading">News</h1>
         </div>
 
+        {/* Page Subtitle Header */}
         <div className="sm:flex sm:items-center py-2">
           <div className="sm:flex-auto">
             <h1 className="text-base font-semibold leading-6 text-txtcolor-primary">
@@ -64,19 +83,21 @@ export function News() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center bg-white py-4">
+        {/* Main Page Content */}
+
+        <div className="flex flex-col items-center bg-white py-4 rounded-md">
           <div className="mx-auto max-w-xl px-4">
             <div className="mx-auto max-w-xl lg:max-w-xl">
               {Object.keys(news).length > 0 ? (
                 Object.keys(news).map((symbol) => (
                   <div key={symbol} className="mt-4 space-y-4">
-                    <h2 className="text-xl font-bold tracking-tight text-gray-700 sm:text-3xl">
+                    <h2 className="text-xl font-bold tracking-tight text-txtcolor-primary sm:text-3xl">
                       Latest for {symbol}
                     </h2>
                     {news[symbol].map((article, index) => (
                       <article
                         key={index}
-                        className="flex flex-col gap-8 lg:flex-row"
+                        className="flex flex-col gap-8 lg:flex-row border-b border-slate-300"
                       >
                         <div className="group max-w-xl">
                           <h3 className="mt-3 text-lg font-semibold leading-6 text-gray-900 group-hover:text-gray-600">
