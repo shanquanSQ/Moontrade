@@ -91,6 +91,17 @@ export function Markets() {
     fetchData();
   }, []);
 
+  // Ensures that Watchlist is loaded on page load + when userAuth changes from null to containing to firebase auth's user
+  // AND only WHEN userID is set (i.e. the authenticated user info has been retrieved from firebase auth and put into state) then we run this.
+  useEffect(() => {
+    const userWatchListRef = ref(db, `users/${userID}/watchlist/`);
+
+    get(userWatchListRef).then((snapshot) => {
+      setWatchListStocks(snapshot.val());
+      console.log("stocks watchlist snapshot: ", snapshot.val());
+    });
+  }, [userID]);
+
   const handlePopulateWatchList = () => {
     setViewWatchList(!viewWatchList);
 
@@ -98,7 +109,7 @@ export function Markets() {
 
     get(userWatchListRef).then((snapshot) => {
       setWatchListStocks(snapshot.val());
-      console.log("buttonclick: ", snapshot.val());
+      console.log("watchlist button click: ", snapshot.val());
     });
   };
 

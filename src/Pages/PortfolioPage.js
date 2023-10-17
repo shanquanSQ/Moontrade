@@ -15,12 +15,27 @@ import {
 } from "@firebase/database";
 
 export const PortfolioPage = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [credits, setCredits] = useState(0);
   const [positions, setPositions] = useState([]);
   const auth = useAuth();
+  // const [userID, setUserID] = useState("");
+
   const userID = auth.user.uid;
   const db = getDatabase();
+
+  // useEffect(() => {
+  //   console.log("useeffect set user id portfolio");
+  //   if (auth.user === null) {
+  //     const userInfo = localStorage.getItem("userLocalInfo");
+  //     console.log("portfolio get info");
+  //     setUserID(userInfo.uid);
+  //   } else {
+  //     console.log("portfolio set info");
+  //     localStorage.setItem("userLocalInfo", auth.user);
+  //     setUserID(auth.user.uid);
+  //   }
+  // }, []);
 
   const [portfolioPL, setPortfolioPL] = useState(0); // Portfolio PnL
   const [numTrades, setNumTrades] = useState(0); // # of Trades Done
@@ -62,6 +77,8 @@ export const PortfolioPage = () => {
       orderByChild("userId"),
       equalTo(userID)
     );
+
+    console.log("ordersRef is: ", ordersRef);
 
     onValue(ordersRef, (snapshot) => {
       const trades = [];
@@ -136,7 +153,7 @@ export const PortfolioPage = () => {
       // Call the function to calculate trades after constructing aggregatedTrades
       calculateTrades(aggregatedTrades, trades);
     });
-  }, [db]);
+  }, [db, userID]);
 
   return (
     <div className="structure">
@@ -165,7 +182,10 @@ export const PortfolioPage = () => {
         <dl className="statsflex mb-[.2rem] lg:mb-[.5rem]">
           <div className="statsbox">
             <dt className="statsheader">Portfolio Balance</dt>
-            <dd className="statsdata">${credits.toFixed(2)}</dd>
+            <dd className="statsdata">
+              ${credits.toFixed(2)}
+              {/* ${credits} */}
+            </dd>
           </div>
           <div className="statsbox">
             <dt className="statsheader">Portfolio P&L</dt>
