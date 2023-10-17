@@ -3,6 +3,14 @@ import { useAuth } from "../util/auth.js";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 
+/**
+ * NewSignUpPage component
+ *
+ * This component renders a sign-up page allowing new users to create an account.
+ * The component includes form fields for email and password, as well as options
+ * to navigate back or log in if the user is already registered.
+ *
+ */
 export const NewSignUpPage = () => {
   const [user, setUser] = useState({ user: "", password: "" });
   const navigate = useNavigate();

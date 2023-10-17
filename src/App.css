@@ -2,9 +2,9 @@
 
 .App {
   font-family: "Open Sans", sans-serif;
-  background-color: #282c34; /* Consider using bg-gray-800 if you are using a dark theme */
-  color: white; /* Consider using text-white for text color */
-  min-height: 100vh; /* Full height to ensure the background color covers the full viewport */
+  background-color: #282c34;
+  color: white;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;

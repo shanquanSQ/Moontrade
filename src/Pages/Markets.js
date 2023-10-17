@@ -5,7 +5,17 @@ import { Link } from "react-router-dom";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { ref, getDatabase, update, get } from "firebase/database";
 import { useAuth } from "../util/auth";
+import { formatCurrency } from "../util/formattingUtils";
 
+/**
+ * Get the date string for the last working day in "yyyy-mm-dd" format.
+ *
+ * If today is Monday, it returns the date for the previous Friday.
+ * If today is Sunday, it returns the date for the previous Saturday.
+ * Otherwise, it returns the date for the previous day.
+ *
+ * @returns {string} The date string of the last working day.
+ */
 function getLastWorkingDay() {
   const today = new Date();
   let lastWorkingDay = new Date(today);
@@ -28,14 +38,16 @@ function getLastWorkingDay() {
   return `${year}-${month}-${day}`;
 }
 
-function formatCurrency(number) {
-  const formatter = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  });
-  return formatter.format(number);
-}
-
+/**
+ * The `Markets` component fetches and displays stock information for a specified list of stocks.
+ * Users can view stock details, sort them, and manage a personalized watchlist of stocks.
+ *
+ * @component
+ * @example
+ * return (
+ *   <Markets />
+ * )
+ */
 export function Markets() {
   const [stocks, setStocks] = useState([]);
   const [sortType, setSortType] = useState("");
@@ -61,6 +73,14 @@ export function Markets() {
   }, []);
 
   useEffect(() => {
+    /**
+     * Fetch stock data and update the `stocks` state.
+     *
+     * This function makes API requests in parallel to fetch data for all stocks listed
+     * in `stockList`, and updates the `stocks` state with the fetched data.
+     *
+     * @async
+     */
     const fetchData = async () => {
       const lastWorkingDate = getLastWorkingDay();
       const promises = stockList.map((stock) =>
@@ -102,6 +122,12 @@ export function Markets() {
     });
   }, [userID]);
 
+  /**
+   * Populate the user's watchlist and toggle the `viewWatchList` state.
+   *
+   * This function toggles the `viewWatchList` state and, if it becomes `true`, fetches
+   * and sets the user's watchlist stocks from Firebase into the `watchListStocks` state.
+   */
   const handlePopulateWatchList = () => {
     setViewWatchList(!viewWatchList);
 
@@ -113,6 +139,14 @@ export function Markets() {
     });
   };
 
+  /**
+   * Add or remove a stock from the user's watchlist in Firebase and update local state.
+   *
+   * If the stock identified by the button `id` is already in the user's watchlist, it will
+   * be removed. If it's not, it will be added.
+   *
+   * @param {React.SyntheticEvent} ev - The React synthetic event.
+   */
   const handleSaveToWatchlist = (ev) => {
     ev.preventDefault();
     const Symbol = ev.target.id;
@@ -184,6 +218,7 @@ export function Markets() {
             <h1 className="titleheading">Markets</h1>
           </div>
 
+          {/* Page Subtitle Header */}
           <div className="sm:flex sm:items-center">
             <div className="sm:flex-auto">
               <h1 className="text-base font-semibold leading-6 text-txtcolor-primary">
@@ -206,6 +241,8 @@ export function Markets() {
               </button>
             </div>
           </div>
+
+          {/* Main Page Content */}
           <div className="table-responsive bg-gray text-black">
             <div className="table-responsive bg-gray text-black rounded-md">
               <table className="w-full border-collapse bg-white">
@@ -287,8 +324,12 @@ export function Markets() {
                                   {stock.Name}
                                 </Link>
                               </td>
-                              <td className="py-2 px-4">{stock.close}</td>
-                              <td className="py-2 px-4">{stock.volume}</td>
+                              <td className="py-2 px-4">
+                                {formatCurrency(stock.close)}
+                              </td>
+                              <td className="py-2 px-4">
+                                {formatCurrency(stock.volume)}
+                              </td>
                               <td className="py-2 px-4 text-center">
                                 <input
                                   type="button"
@@ -339,8 +380,12 @@ export function Markets() {
                             {stock.Name}
                           </Link>
                         </td>
-                        <td className="py-2 px-4">{stock.close}</td>
-                        <td className="py-2 px-4">{stock.volume}</td>
+                        <td className="py-2 px-4">
+                          {formatCurrency(stock.close)}
+                        </td>
+                        <td className="py-2 px-4">
+                          {formatCurrency(stock.volume)}
+                        </td>
                         <td className="py-2 px-4 text-center">
                           <input
                             type="button"
