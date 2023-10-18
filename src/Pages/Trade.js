@@ -78,17 +78,21 @@ export function Trade() {
   useEffect(() => {
     /////////////////////////////////////////
     // Polygon.io API call to get Daily Open/Close data.
-    // Need to run the API call 30 times to get monthly data.
+    // Need to run the API call sufficient times to get monthly data.
     ////////////////////////////////////////
 
     // Need to un-hardcode this
-    const daysInfo = getDatesInMonth(9, 2023);
+    const daysInfo = getDatesInMonth(10, 2023);
+    const daysInfo2 = getDatesInMonth(11, 2023);
+    const combinedDates = daysInfo.concat(daysInfo2);
+
+    console.log("days- ", daysInfo);
 
     const fetchData = async () => {
-      const collectedAPIcall = daysInfo.map((eachDate) =>
+      const collectedAPIcall = combinedDates.map((eachDate) =>
         axios
           .get(
-            `https://api.polygon.io/v1/open-close/AAPL/${eachDate.toString()}?adjusted=true&apiKey=${
+            `https://api.polygon.io/v1/open-close/${Symbol}/${eachDate.toString()}?adjusted=true&apiKey=${
               process.env.REACT_APP_POLYGON_API_KEY
             }`
           )
